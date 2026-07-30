@@ -37,15 +37,18 @@ class TimeEntryRepository:
         return total
 
     @staticmethod
-    def get_stats(db: Session):
+    def get_stats(db: Session, days: int = 7):
+        today = datetime.utcnow().date()
+        start_day = today - timedelta(days=days - 1)
+        filtered = db.query(TimeEntry).filter(func.date(TimeEntry.start_time) >= start_day).subquery()
         # Tempo por categoria
         category_stats = (
             db.query(
                 Project.category,
-                func.coalesce(func.sum(TimeEntry.duration_seconds), 0).label("total_seconds"),
+                func.coalesce(func.sum(filtered.c.duration_seconds), 0).label("total_seconds"),
             )
-            .select_from(TimeEntry)
-            .join(Task, Task.id == TimeEntry.task_id)
+            .select_from(filtered)
+            .join(Task, Task.id == filtered.c.task_id)
             .join(Project, Project.id == Task.project_id)
             .group_by(Project.category)
             .all()
@@ -57,25 +60,23 @@ class TimeEntryRepository:
                 Task.name,
                 Task.color,
                 Project.category,
-                func.coalesce(func.sum(TimeEntry.duration_seconds), 0).label("total_seconds"),
+                func.coalesce(func.sum(filtered.c.duration_seconds), 0).label("total_seconds"),
             )
-            .select_from(TimeEntry)
-            .join(Task, Task.id == TimeEntry.task_id)
+            .select_from(filtered)
+            .join(Task, Task.id == filtered.c.task_id)
             .join(Project, Project.id == Task.project_id)
             .group_by(Task.id, Task.name, Task.color, Project.category)
-            .order_by(func.sum(TimeEntry.duration_seconds).desc())
+            .order_by(func.sum(filtered.c.duration_seconds).desc())
             .all()
         )
         
         # Tempo por dia
-        today = datetime.utcnow().date()
-        seven_days_ago = today - timedelta(days=6)
         day_stats = (
             db.query(
                 func.date(TimeEntry.start_time).label("day"),
                 func.coalesce(func.sum(TimeEntry.duration_seconds), 0).label("total_seconds"),
             )
-            .filter(func.date(TimeEntry.start_time) >= seven_days_ago)
+            .filter(func.date(TimeEntry.start_time) >= start_day)
             .group_by(func.date(TimeEntry.start_time))
             .order_by(func.date(TimeEntry.start_time))
             .all()
@@ -85,5 +86,6 @@ class TimeEntryRepository:
             "category_stats": category_stats,
             "task_stats": task_stats,
             "day_stats": day_stats,
-            "seven_days_ago": seven_days_ago
+            "start_day": start_day,
+            "total_seconds": db.query(func.coalesce(func.sum(TimeEntry.duration_seconds), 0)).scalar()
         }

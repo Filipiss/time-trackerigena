@@ -251,8 +251,8 @@ export async function deleteTimeEntry(id) {
 /**
  * Buscar estatísticas para o dashboard
  */
-export async function fetchStats() {
-  const stats = await request('/api/time-entries/stats');
+export async function fetchStats(period = 'week') {
+  const stats = await request(`/api/time-entries/stats?period=${period}`);
   
   return {
     ...stats,

@@ -11,6 +11,16 @@
   margin: 0;
 }
 
+.dashboard-header, .chart-title-row, .dashboard-filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.dashboard-filters { justify-content: flex-end; }
+
 /* Cards de Resumo */
 .summary-cards {
   display: grid;

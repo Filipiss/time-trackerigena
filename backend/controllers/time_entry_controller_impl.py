@@ -49,9 +49,12 @@ def create_time_entry():
 
 @time_entry_bp.route("/stats", methods=["GET"])
 def get_stats():
+    period = request.args.get("period", "week")
+    if period not in ("week", "month", "year"):
+        return error_response("Período inválido", 422)
     db = get_db_session()
     try:
-        stats = TimeEntryService.get_dashboard_stats(db)
+        stats = TimeEntryService.get_dashboard_stats(db, period)
         return success_response(stats_response_schema.dump(stats))
     finally:
         db.close()

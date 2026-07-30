@@ -41,6 +41,7 @@ class DayStatSchema(Schema):
 
 
 class StatsResponseSchema(Schema):
+    total_seconds = fields.Int()
     time_by_category = fields.List(fields.Nested(CategoryStatSchema))
     time_by_task = fields.List(fields.Nested(TaskStatSchema))
     time_by_day = fields.List(fields.Nested(DayStatSchema))
