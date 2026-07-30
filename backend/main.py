@@ -10,11 +10,25 @@ from utils.database import Base, engine
 from routes.project_routes import project_bp
 from routes.task_routes import task_bp
 from routes.time_entry_routes import time_entry_bp
+from routes.category_routes import category_bp
+from models.category import Category
+from models.project import Project
 
 load_dotenv()
 
 # Cria todas as tabelas no banco de dados, se não existirem
 Base.metadata.create_all(bind=engine)
+
+# Mantém as categorias já existentes no banco local acessíveis no novo gerenciamento.
+from utils.database import get_db_session
+db = get_db_session()
+try:
+    for (name,) in db.query(Project.category).distinct().all():
+        if name and not db.query(Category).filter_by(name=name).first():
+            db.add(Category(name=name))
+    db.commit()
+finally:
+    db.close()
 
 def create_app():
     app = Flask(__name__)
@@ -35,6 +49,7 @@ def create_app():
     app.register_blueprint(project_bp)
     app.register_blueprint(task_bp)
     app.register_blueprint(time_entry_bp)
+    app.register_blueprint(category_bp)
 
     @app.route("/", methods=["GET"])
     def root():

@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchProjects, createProject, deleteProject, fetchTasks, createTask, updateTask, deleteTask } from '../api';
+import { fetchProjects, createProject, deleteProject, fetchTasks, createTask, updateTask, deleteTask, fetchCategories, createCategory, updateCategory, deleteCategory } from '../api';
 import './TaskManager.css';
 
 export default function TaskManager({ onTaskChange, onNavigateToHistory }) {
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [newCategoryName, setNewCategoryName] = useState('');
   const [loading, setLoading] = useState(true);
 
   // Forms
@@ -23,12 +25,15 @@ export default function TaskManager({ onTaskChange, onNavigateToHistory }) {
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const [projData, taskData] = await Promise.all([
+      const [projData, taskData, categoryData] = await Promise.all([
         fetchProjects(),
-        fetchTasks()
+        fetchTasks(),
+        fetchCategories()
       ]);
       setProjects(projData || []);
       setTasks(taskData || []);
+      setCategories(categoryData || []);
+      setActiveTab(current => categoryData?.some(category => category.name.toLowerCase() === current) ? current : (categoryData?.[0]?.name.toLowerCase() || ''));
       if (projData && projData.length > 0 && !newTaskProjectId) {
         setNewTaskProjectId(projData[0].id);
       }
@@ -57,6 +62,38 @@ export default function TaskManager({ onTaskChange, onNavigateToHistory }) {
     } finally {
       setCreatingProject(false);
     }
+  };
+
+  const handleCreateCategory = async (e) => {
+    e.preventDefault();
+    if (!newCategoryName.trim()) return;
+    try {
+      const category = await createCategory(newCategoryName.trim());
+      setCategories(previous => [...previous, category]);
+      setNewCategoryName('');
+      setNewProjectCategory(category.name);
+      setActiveTab(category.name.toLowerCase());
+    } catch (error) { alert('Erro: ' + error.message); }
+  };
+
+  const handleEditCategory = async (category) => {
+    const name = window.prompt('Novo nome da categoria:', category.name);
+    if (!name?.trim() || name.trim() === category.name) return;
+    try {
+      const updated = await updateCategory(category.id, name.trim());
+      setCategories(previous => previous.map(item => item.id === updated.id ? updated : item));
+      setProjects(previous => previous.map(project => project.category === category.name ? { ...project, category: updated.name.toLowerCase() } : project));
+      setActiveTab(current => current === category.name.toLowerCase() ? updated.name.toLowerCase() : current);
+    } catch (error) { alert('Erro: ' + error.message); }
+  };
+
+  const handleDeleteCategory = async (category) => {
+    if (!window.confirm(`Excluir a categoria "${category.name}"? Ela precisa estar sem projetos.`)) return;
+    try {
+      await deleteCategory(category.id);
+      setCategories(previous => previous.filter(item => item.id !== category.id));
+      setActiveTab(current => current === category.name.toLowerCase() ? '' : current);
+    } catch (error) { alert('Erro: ' + error.message); }
   };
 
   const handleCreateTask = async (e) => {
@@ -127,6 +164,17 @@ export default function TaskManager({ onTaskChange, onNavigateToHistory }) {
       </div>
 
       <div className="forms-grid">
+        <form className="task-form glass-card-static" onSubmit={handleCreateCategory}>
+          <div className="task-form-title">Nova Categoria</div>
+          <div className="task-form-field">
+            <label className="task-form-label">Nome</label>
+            <input className="input" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} required />
+          </div>
+          <button type="submit" className="btn btn-primary" style={{marginTop: '15px'}}>+ Criar Categoria</button>
+          <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '15px'}}>
+            {categories.map(category => <span key={category.id} className="badge" style={{display: 'inline-flex', gap: '4px', alignItems: 'center'}}>{category.name}<button type="button" className="btn-icon" onClick={() => handleEditCategory(category)} title="Editar categoria">✏️</button><button type="button" className="btn-icon" onClick={() => handleDeleteCategory(category)} title="Excluir categoria" style={{color: 'var(--color-danger)'}}>🗑️</button></span>)}
+          </div>
+        </form>
         <form className="task-form glass-card-static" onSubmit={handleCreateProject}>
           <div className="task-form-title">📁 Novo Projeto</div>
           <div className="task-form-field">
@@ -135,10 +183,9 @@ export default function TaskManager({ onTaskChange, onNavigateToHistory }) {
           </div>
           <div className="task-form-field" style={{marginTop: '10px'}}>
             <label className="task-form-label">Categoria</label>
-            <div className="category-toggle">
-              <button type="button" className={`category-toggle-btn ${newProjectCategory === 'loco' ? 'active-loco' : ''}`} onClick={() => setNewProjectCategory('loco')}>Loco</button>
-              <button type="button" className={`category-toggle-btn ${newProjectCategory === 'freelas' ? 'active-freelas' : ''}`} onClick={() => setNewProjectCategory('freelas')}>Freelas</button>
-            </div>
+            <select className="input" value={newProjectCategory} onChange={e => setNewProjectCategory(e.target.value)} required>
+              {categories.map(category => <option key={category.id} value={category.name}>{category.name}</option>)}
+            </select>
           </div>
           <button type="submit" className="btn btn-primary" style={{marginTop: '15px'}} disabled={creatingProject}>+ Criar Projeto</button>
         </form>
@@ -173,8 +220,7 @@ export default function TaskManager({ onTaskChange, onNavigateToHistory }) {
       </div>
 
       <div className="category-tabs">
-        <button className={`tab-btn ${activeTab === 'loco' ? 'active-loco' : ''}`} onClick={() => setActiveTab('loco')}>🏢 Loco</button>
-        <button className={`tab-btn ${activeTab === 'freelas' ? 'active-freelas' : ''}`} onClick={() => setActiveTab('freelas')}>💼 Freelas</button>
+        {categories.map(category => <button key={category.id} className={`tab-btn ${activeTab === category.name.toLowerCase() ? 'active-loco' : ''}`} onClick={() => setActiveTab(category.name.toLowerCase())}>{category.name}</button>)}
       </div>
 
       <div className="projects-grid">

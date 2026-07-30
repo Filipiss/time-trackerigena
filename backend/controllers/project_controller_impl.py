@@ -13,8 +13,6 @@ project_update_schema = ProjectUpdateSchema()
 @project_bp.route("/", methods=["GET"])
 def list_projects():
     category = request.args.get("category")
-    if category and category not in ("Loco", "Freelas"):
-        return error_response("Categoria deve ser 'Loco' ou 'Freelas'", 400)
         
     db = get_db_session()
     try:

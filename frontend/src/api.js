@@ -37,6 +37,11 @@ async function request(endpoint, options = {}) {
   }
 }
 
+export const fetchCategories = () => request('/api/categories');
+export const createCategory = (name) => request('/api/categories', { method: 'POST', body: JSON.stringify({ name }) });
+export const updateCategory = (id, name) => request(`/api/categories/${id}`, { method: 'PUT', body: JSON.stringify({ name }) });
+export const deleteCategory = (id) => request(`/api/categories/${id}`, { method: 'DELETE' });
+
 // ===================== PROJECTS =====================
 
 /**
