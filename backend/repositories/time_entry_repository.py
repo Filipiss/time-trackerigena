@@ -37,10 +37,11 @@ class TimeEntryRepository:
         return total
 
     @staticmethod
-    def get_stats(db: Session, days: int = 7):
+    def get_stats(db: Session, days: int = 7, start_date: str = None, end_date: str = None):
         today = datetime.utcnow().date()
-        start_day = today - timedelta(days=days - 1)
-        filtered = db.query(TimeEntry).filter(func.date(TimeEntry.start_time) >= start_day).subquery()
+        start_day = datetime.strptime(start_date, "%Y-%m-%d").date() if start_date else today - timedelta(days=days - 1)
+        end_day = datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else today
+        filtered = db.query(TimeEntry).filter(func.date(TimeEntry.start_time) >= start_day, func.date(TimeEntry.start_time) <= end_day).subquery()
         # Tempo por categoria
         category_stats = (
             db.query(
@@ -76,7 +77,7 @@ class TimeEntryRepository:
                 func.date(TimeEntry.start_time).label("day"),
                 func.coalesce(func.sum(TimeEntry.duration_seconds), 0).label("total_seconds"),
             )
-            .filter(func.date(TimeEntry.start_time) >= start_day)
+            .filter(func.date(TimeEntry.start_time) >= start_day, func.date(TimeEntry.start_time) <= end_day)
             .group_by(func.date(TimeEntry.start_time))
             .order_by(func.date(TimeEntry.start_time))
             .all()
@@ -87,5 +88,6 @@ class TimeEntryRepository:
             "task_stats": task_stats,
             "day_stats": day_stats,
             "start_day": start_day,
+            "end_day": end_day,
             "total_seconds": db.query(func.coalesce(func.sum(TimeEntry.duration_seconds), 0)).scalar()
         }

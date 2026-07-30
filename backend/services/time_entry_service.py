@@ -32,9 +32,9 @@ class TimeEntryService:
         return entry
 
     @staticmethod
-    def get_dashboard_stats(db: Session, period: str = "week"):
-        days = {"week": 7, "month": 30, "year": 365}.get(period, 7)
-        stats = TimeEntryRepository.get_stats(db, days)
+    def get_dashboard_stats(db: Session, period: str = "week", start_date: str = None, end_date: str = None):
+        days = {"week": 7, "month": 31, "year": 366, "total": 3650}.get(period, 7)
+        stats = TimeEntryRepository.get_stats(db, days, start_date, end_date)
         
         time_by_category = [
             {"category": row.category, "total_seconds": row.total_seconds}
@@ -54,7 +54,8 @@ class TimeEntryService:
         # Garante que o gráfico tenha todos os dias do período selecionado.
         day_map = {str(row.day): row.total_seconds for row in stats["day_stats"]}
         time_by_day = []
-        for i in range(days):
+        range_days = (stats["end_day"] - stats["start_day"]).days + 1
+        for i in range(range_days):
             day = stats["start_day"] + timedelta(days=i)
             day_str = str(day)
             time_by_day.append({
