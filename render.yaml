@@ -1,0 +1,14 @@
+services:
+  # Backend FastAPI
+  - type: web
+    name: time-trackerigena-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt psycopg2-binary
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: DATABASE_URL
+        sync: false # O usuário definirá o link do banco de dados Neon no painel do Render
+      - key: FRONTEND_URL
+        sync: false # URL do frontend Vercel (ex: https://time-trackerigena.vercel.app)

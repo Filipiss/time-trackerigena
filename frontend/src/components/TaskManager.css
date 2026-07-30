@@ -1,0 +1,435 @@
+/* ============================================
+   TASK MANAGER — Estilos da tela de Gerenciamento
+   ============================================ */
+
+.task-manager {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.task-manager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-manager-title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Formulário de Criação */
+.task-form {
+  padding: var(--space-6);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.task-form-title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+  letter-spacing: 0.02em;
+}
+
+.task-form-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: var(--space-4);
+  align-items: flex-end;
+}
+
+.task-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.task-form-label {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Input Wrapper para Taxa Horária */
+.rate-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.currency-symbol {
+  position: absolute;
+  left: var(--space-3);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  pointer-events: none;
+}
+
+.rate-input {
+  padding-left: var(--space-7) !important;
+}
+
+/* Toggle de Categoria */
+.category-toggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-1);
+  gap: var(--space-1);
+  height: 43px;
+  align-items: center;
+}
+
+.category-toggle-btn {
+  flex: 1;
+  padding: var(--space-2) 0;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  transition: all var(--transition-fast);
+}
+
+.category-toggle-btn:hover:not(.active-loco):not(.active-freelas) {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.category-toggle-btn.active-loco {
+  background: var(--color-loco-soft);
+  color: var(--color-loco);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.category-toggle-btn.active-freelas {
+  background: var(--color-freelas-soft);
+  color: var(--color-freelas);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* Color Picker */
+.color-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.color-picker {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 44px;
+  height: 43px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.color-picker::-webkit-color-swatch {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.color-picker::-moz-color-swatch {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+/* Listagem de Seções */
+.task-list-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+}
+
+.task-list-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.task-list-category-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.task-list-category-name {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: var(--text-xs);
+  letter-spacing: 0.05em;
+}
+
+.task-list-count {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* Grid e Cards de Tasks */
+.task-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.task-card {
+  display: flex;
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-default);
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-card);
+  transition: all var(--transition-base);
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-highlight);
+  box-shadow: var(--shadow-glow-primary);
+}
+
+/* Estilo para tarefas que já foram cobradas */
+.task-card-billed {
+  border-color: rgba(16, 185, 129, 0.2);
+  background: rgba(16, 185, 129, 0.02);
+}
+
+.task-card-billed:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+}
+
+.task-card-billed .task-card-name {
+  color: var(--text-secondary);
+  text-decoration: line-through;
+  text-decoration-color: var(--text-muted);
+}
+
+.task-card-color {
+  width: 5px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  box-shadow: 2px 0 8px currentColor;
+}
+
+.task-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex-grow: 1;
+  padding-left: var(--space-2);
+  max-width: calc(100% - 110px);
+}
+
+.task-card-name {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+
+.task-card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.task-hourly-rate-badge {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.billed-badge {
+  animation: fadeIn 0.3s ease;
+}
+
+.task-card-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+/* Botão de alternar cobrado (💵 / 💶) */
+.btn-billed-toggle {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: all var(--transition-fast);
+}
+
+.btn-billed-toggle:hover {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.4);
+  transform: scale(1.1);
+}
+
+.btn-billed-toggle.active {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: var(--color-success);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.btn-billed-toggle.active:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.btn-billed-toggle.active:hover::after {
+  content: '✕';
+  position: absolute;
+  font-size: 0.6rem;
+  color: white;
+  background: var(--color-danger);
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: -2px;
+  right: -2px;
+}
+
+/* Modo Edição Inline */
+.task-card-edit {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-highlight);
+  background: rgba(15, 15, 42, 0.85);
+  gap: var(--space-3);
+  box-shadow: var(--shadow-lg);
+  animation: slideDown 0.2s ease forwards;
+}
+
+.edit-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.edit-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.edit-rate-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.currency-prefix {
+  position: absolute;
+  left: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.edit-rate-input {
+  padding-left: var(--space-6) !important;
+  height: 38px;
+}
+
+.task-card-edit .color-picker {
+  height: 38px;
+  width: 44px;
+}
+
+.edit-actions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.btn-sm {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+}
+
+.btn-icon.btn-sm {
+  width: 32px;
+  height: 32px;
+}
+
+/* Confirmação de Exclusão */
+.delete-confirm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-md);
+  animation: slideDown 0.15s ease forwards;
+}
+
+.delete-confirm-text {
+  font-size: var(--text-xs);
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+/* Responsivo */
+@media (max-width: 992px) {
+  .task-form-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+}
+
+@media (max-width: 576px) {
+  .task-form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .task-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+\ n . f o r m s - g r i d   {   d i s p l a y :   g r i d ;   g r i d - t e m p l a t e - c o l u m n s :   1 f r   1 f r ;   g a p :   1 r e m ;   m a r g i n - b o t t o m :   2 r e m ;   } \ n . c a t e g o r y - t a b s   {   d i s p l a y :   f l e x ;   g a p :   1 r e m ;   m a r g i n - b o t t o m :   1 . 5 r e m ;   b o r d e r - b o t t o m :   1 p x   s o l i d   v a r ( - - b o r d e r - s u b t l e ) ;   p a d d i n g - b o t t o m :   0 . 5 r e m ;   } \ n . t a b - b t n   {   b a c k g r o u n d :   n o n e ;   b o r d e r :   n o n e ;   c o l o r :   v a r ( - - t e x t - s e c o n d a r y ) ;   f o n t - s i z e :   1 r e m ;   f o n t - w e i g h t :   6 0 0 ;   c u r s o r :   p o i n t e r ;   p a d d i n g :   0 . 5 r e m   1 r e m ;   t r a n s i t i o n :   a l l   0 . 2 s ;   } \ n . t a b - b t n : h o v e r   {   c o l o r :   v a r ( - - t e x t - p r i m a r y ) ;   } \ n . t a b - b t n . a c t i v e - l o c o   {   c o l o r :   v a r ( - - c o l o r - l o c o ) ;   b o r d e r - b o t t o m :   2 p x   s o l i d   v a r ( - - c o l o r - l o c o ) ;   } \ n . t a b - b t n . a c t i v e - f r e e l a s   {   c o l o r :   v a r ( - - c o l o r - f r e e l a s ) ;   b o r d e r - b o t t o m :   2 p x   s o l i d   v a r ( - - c o l o r - f r e e l a s ) ;   } \ n . p r o j e c t - b l o c k   {   m a r g i n - b o t t o m :   1 . 5 r e m ;   p a d d i n g :   1 . 5 r e m ;   } \ n . p r o j e c t - t i t l e   {   m a r g i n - t o p :   0 ;   f o n t - s i z e :   1 . 2 r e m ;   c o l o r :   v a r ( - - t e x t - p r i m a r y ) ;   b o r d e r - b o t t o m :   1 p x   s o l i d   r g b a ( 2 5 5 , 2 5 5 , 2 5 5 , 0 . 1 ) ;   p a d d i n g - b o t t o m :   0 . 5 r e m ;   m a r g i n - b o t t o m :   1 r e m ;   } \ n @ m e d i a   ( m a x - w i d t h :   7 6 8 p x )   {   . f o r m s - g r i d   {   g r i d - t e m p l a t e - c o l u m n s :   1 f r ;   }   }  
+ \ n . p r o j e c t s - g r i d   {   d i s p l a y :   g r i d ;   g r i d - t e m p l a t e - c o l u m n s :   r e p e a t ( a u t o - f i l l ,   m i n m a x ( 3 2 0 p x ,   1 f r ) ) ;   g a p :   1 . 5 r e m ;   } \ n . p r o j e c t - f o l d e r   {   d i s p l a y :   f l e x ;   f l e x - d i r e c t i o n :   c o l u m n ;   } \ n . p r o j e c t - f o l d e r - t a b   {   b a c k g r o u n d :   r g b a ( 2 5 5 , 2 5 5 , 2 5 5 , 0 . 0 8 ) ;   b o r d e r :   1 p x   s o l i d   v a r ( - - b o r d e r - s u b t l e ) ;   b o r d e r - b o t t o m :   n o n e ;   b o r d e r - r a d i u s :   1 0 p x   1 0 p x   0   0 ;   p a d d i n g :   0 . 5 r e m   1 r e m ;   d i s p l a y :   f l e x ;   j u s t i f y - c o n t e n t :   s p a c e - b e t w e e n ;   a l i g n - i t e m s :   c e n t e r ;   w i d t h :   m a x - c o n t e n t ;   m i n - w i d t h :   6 0 % ;   c u r s o r :   p o i n t e r ;   t r a n s i t i o n :   a l l   0 . 2 s ;   } \ n . p r o j e c t - f o l d e r - t a b : h o v e r   {   b a c k g r o u n d :   r g b a ( 2 5 5 , 2 5 5 , 2 5 5 , 0 . 1 2 ) ;   c o l o r :   v a r ( - - c o l o r - p r i m a r y ) ;   } \ n . p r o j e c t - f o l d e r - t a b   s p a n   {   f o n t - w e i g h t :   6 0 0 ;   f o n t - s i z e :   1 . 1 r e m ;   } \ n . p r o j e c t - f o l d e r - b o d y   {   b o r d e r - r a d i u s :   0   1 0 p x   1 0 p x   1 0 p x ;   p a d d i n g :   1 r e m ;   f l e x - g r o w :   1 ;   } \ n . t a s k - c a r d s - l i s t   {   d i s p l a y :   f l e x ;   f l e x - d i r e c t i o n :   c o l u m n ;   g a p :   0 . 5 r e m ;   }  
+ 
