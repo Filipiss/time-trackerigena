@@ -15,7 +15,7 @@ class TimeEntryRepository:
         if task_id is not None:
             query = query.filter(TimeEntry.task_id == task_id)
         if category:
-            query = query.filter(Project.category == category)
+            query = query.filter(func.lower(Project.category) == category.lower())
         if start_date:
             query = query.filter(func.date(TimeEntry.start_time) >= start_date)
         if end_date:

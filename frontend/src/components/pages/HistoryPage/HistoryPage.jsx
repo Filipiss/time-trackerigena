@@ -4,7 +4,7 @@ import Spinner from '../../atoms/Spinner/Spinner';
 import BillingTable from '../../organisms/BillingTable/BillingTable';
 import HistoryTable from '../../organisms/HistoryTable/HistoryTable';
 import TabButton from '../../molecules/TabButton/TabButton';
-import { deleteTimeEntry, fetchTimeEntries } from '../../../api';
+import { deleteTimeEntry, fetchCategories, fetchTimeEntries } from '../../../api';
 import { convertCurrency, fetchExchangeRates } from '../../../utils/currency';
 import './HistoryPage.css';
 
@@ -53,6 +53,7 @@ const DISPLAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
 export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [monthFilter, setMonthFilter] = useState(new Date().toISOString().substring(0, 7));
   const [deletingId, setDeletingId] = useState(null);
@@ -70,6 +71,24 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
       }, 0);
     }
   }, [initialTab, initialTabKey]);
+
+  useEffect(() => {
+    let active = true;
+    const loadCategories = async () => {
+      try {
+        const data = await fetchCategories();
+        if (active) {
+          setCategories(data || []);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar categorias:', error);
+      }
+    };
+    void loadCategories();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const fetchRates = async () => {
@@ -199,8 +218,21 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
         <div className="history-filters">
           <Input type="month" value={monthFilter} onChange={(event) => setMonthFilter(event.target.value)} className="filter-month-input" />
           <TabButton className={`filter-btn ${categoryFilter === 'all' ? 'active' : ''}`} isActive={categoryFilter === 'all'} onClick={() => setCategoryFilter('all')}>Todos</TabButton>
-          <TabButton className={`filter-btn filter-btn-loco ${categoryFilter === 'loco' ? 'active-loco' : ''}`} isActive={categoryFilter === 'loco'} onClick={() => setCategoryFilter('loco')}>🏢 Loco</TabButton>
-          <TabButton className={`filter-btn filter-btn-freelas ${categoryFilter === 'freelas' ? 'active-freelas' : ''}`} isActive={categoryFilter === 'freelas'} onClick={() => setCategoryFilter('freelas')}>💼 Freelas</TabButton>
+          {categories.map((category) => {
+            const key = category.name.toLowerCase();
+            return (
+              <TabButton
+                key={category.id}
+                className={`filter-btn ${categoryFilter === key ? 'active' : ''}`}
+                isActive={categoryFilter === key}
+                dotColor={`var(--color-${key})`}
+                onClick={() => setCategoryFilter(key)}
+                style={categoryFilter === key ? { borderColor: `var(--color-${key})`, color: `var(--color-${key})` } : undefined}
+              >
+                {category.name}
+              </TabButton>
+            );
+          })}
         </div>
       </div>
 
@@ -214,7 +246,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
             <div className="empty-state-text">
               {categoryFilter === 'all'
                 ? 'Você ainda não cronometrou nenhuma atividade. Vá para a aba Timer!'
-                : `Nenhum registro na categoria ${categoryFilter === 'loco' ? 'Loco' : 'Freelas'} ainda.`}
+                : `Nenhum registro na categoria ${categories.find((category) => category.name.toLowerCase() === categoryFilter)?.name || categoryFilter} ainda.`}
             </div>
           </div>
         </div>

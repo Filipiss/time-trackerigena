@@ -18,9 +18,6 @@ def list_time_entries():
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
     
-    if category and category not in ("Loco", "Freelas"):
-        return error_response("Categoria deve ser 'Loco' ou 'Freelas'", 400)
-    
     if limit < 1 or limit > 500:
         return error_response("Limite deve estar entre 1 e 500", 422)
 
