@@ -1,0 +1,142 @@
+﻿.values-section-card {
+  padding: var(--space-6);
+  background: var(--bg-card);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow-md);
+  margin-top: var(--space-4);
+}
+
+.values-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.values-header-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.values-header-title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.exchange-rate-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.exchange-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.exchange-rate-hint {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.no-values-message {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  padding: var(--space-6) 0;
+}
+
+.values-content {
+  overflow-x: auto;
+}
+
+.values-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: var(--text-sm);
+}
+
+.values-table th {
+  padding: var(--space-3) var(--space-4);
+  color: var(--text-secondary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-default);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.values-table td {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.values-row {
+  transition: background-color var(--transition-fast);
+}
+
+.values-row:hover {
+  background-color: rgba(255, 255, 255, 0.01);
+}
+
+.values-sec-details {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.value-eur-highlight,
+.overall-eur-total {
+  color: var(--color-warning);
+  font-weight: 700;
+  font-size: var(--text-base);
+}
+
+.totals-label-cell {
+  text-align: right;
+  font-weight: 700;
+}
+
+@media (max-width: 880px) {
+  .values-section-card {
+    padding: var(--space-5);
+  }
+
+  .values-table th,
+  .values-table td {
+    padding: var(--space-3);
+  }
+}
+
+@media (max-width: 767px) {
+  .values-section-card {
+    padding: var(--space-4);
+  }
+
+  .exchange-rate-hint {
+    white-space: normal;
+  }
+
+  .values-table {
+    min-width: 700px;
+    font-size: var(--text-xs);
+  }
+}

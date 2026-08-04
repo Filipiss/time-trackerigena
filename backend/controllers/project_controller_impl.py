@@ -3,12 +3,13 @@ from marshmallow import ValidationError
 from utils.database import get_db_session
 from utils.responses import success_response, error_response
 from services.project_service import ProjectService
-from schemas.project_schema import ProjectSchema, ProjectUpdateSchema
+from schemas.project_schema import ProjectSchema, ProjectUpdateSchema, ProjectDeadlineHistorySchema
 from routes.project_routes import project_bp
 
 project_schema = ProjectSchema()
 projects_schema = ProjectSchema(many=True)
 project_update_schema = ProjectUpdateSchema()
+project_deadline_history_schema = ProjectDeadlineHistorySchema(many=True)
 
 @project_bp.route("/", methods=["GET"])
 def list_projects():
@@ -38,7 +39,7 @@ def create_project():
 @project_bp.route("/<int:project_id>", methods=["PUT"])
 def update_project(project_id):
     try:
-        data = project_update_schema.load(request.json)
+        data = project_update_schema.load(request.json, partial=True)
     except ValidationError as err:
         return error_response(err.messages, 422)
 
@@ -48,6 +49,18 @@ def update_project(project_id):
         if not project:
             return error_response("Projeto não encontrado", 404)
         return success_response(project_schema.dump(project))
+    finally:
+        db.close()
+
+@project_bp.route("/<int:project_id>/deadline-history", methods=["GET"])
+def get_project_deadline_history(project_id):
+    db = get_db_session()
+    try:
+        project = ProjectService.get_project(db, project_id)
+        if not project:
+            return error_response("Projeto não encontrado", 404)
+        history = ProjectService.get_deadline_history(db, project_id)
+        return success_response(project_deadline_history_schema.dump(history))
     finally:
         db.close()
 

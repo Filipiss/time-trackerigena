@@ -1,0 +1,147 @@
+﻿.time-history {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.time-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.time-history-title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  margin: 0;
+}
+
+.history-filters {
+  display: flex;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-1);
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+
+.filter-month-input {
+  min-width: 155px;
+}
+
+.filter-btn {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.filter-btn:hover:not(.active):not(.active-loco):not(.active-freelas) {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.filter-btn.active {
+  background: var(--gradient-primary);
+  color: var(--text-white);
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.2);
+}
+
+.filter-btn-loco.active-loco {
+  background: var(--gradient-loco);
+  color: var(--text-white);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+
+.filter-btn-freelas.active-freelas {
+  background: var(--gradient-freelas);
+  color: #1a1a2e;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+}
+
+.history-content-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.horizontal-tabs-scroll {
+  overflow-x: auto;
+}
+
+.horizontal-tabs-container {
+  display: flex;
+  gap: var(--space-2);
+  min-width: min-content;
+}
+
+.horizontal-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.horizontal-tab-btn .tab-button-badge {
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+}
+
+.horizontal-tab-btn.active {
+  background: rgba(6, 182, 212, 0.08);
+  border-color: rgba(6, 182, 212, 0.35);
+  color: var(--color-info);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.12);
+}
+
+.faturamento-tab.active {
+  border-color: rgba(139, 92, 246, 0.35);
+  color: #c4b5fd;
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.16);
+}
+
+.empty-card {
+  padding: var(--space-4);
+}
+
+.no-tab-selected-message {
+  text-align: center;
+  color: var(--text-muted);
+  margin-top: var(--space-6);
+}
+
+@media (max-width: 1024px) {
+  .horizontal-tabs-container {
+    flex-wrap: nowrap;
+  }
+}
+
+@media (max-width: 880px) {
+  .history-filters {
+    width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .filter-month-input,
+  .filter-btn {
+    width: 100%;
+  }
+
+  .horizontal-tab-btn {
+    padding-inline: var(--space-3);
+  }
+}

@@ -17,6 +17,8 @@ class TimeEntrySchema(Schema):
     task_category = fields.Str(dump_only=True, load_default=None)
     task_color = fields.Str(dump_only=True, load_default=None)
     task_hourly_rate = fields.Float(dump_only=True, load_default=0.0)
+    task_currency = fields.Str(dump_only=True, load_default="EUR")
+    task_budgeted_hours = fields.Float(dump_only=True, load_default=None, allow_none=True)
     project_name = fields.Str(dump_only=True, load_default=None)
 
 

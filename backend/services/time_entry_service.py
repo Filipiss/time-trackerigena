@@ -13,6 +13,8 @@ class TimeEntryService:
             entry.task_category = entry.task.project.category if (entry.task and entry.task.project) else None
             entry.task_color = entry.task.color if entry.task else None
             entry.task_hourly_rate = entry.task.hourly_rate if entry.task else 0.0
+            entry.task_currency = (entry.task.currency or "EUR") if entry.task else "EUR"
+            entry.task_budgeted_hours = entry.task.budgeted_hours if entry.task else None
             entry.project_name = entry.task.project.name if (entry.task and entry.task.project) else None
         return entries
 
@@ -28,13 +30,15 @@ class TimeEntryService:
         entry.task_category = task.project.category if task.project else None
         entry.task_color = task.color
         entry.task_hourly_rate = task.hourly_rate
+        entry.task_currency = task.currency or "EUR"
+        entry.task_budgeted_hours = task.budgeted_hours
         entry.project_name = task.project.name if task.project else None
         return entry
 
     @staticmethod
-    def get_dashboard_stats(db: Session, period: str = "week", start_date: str = None, end_date: str = None):
+    def get_dashboard_stats(db: Session, period: str = "week", start_date: str = None, end_date: str = None, category: str = None):
         days = {"week": 7, "month": 31, "year": 366, "total": 3650}.get(period, 7)
-        stats = TimeEntryRepository.get_stats(db, days, start_date, end_date)
+        stats = TimeEntryRepository.get_stats(db, days, start_date, end_date, category)
         
         time_by_category = [
             {"category": row.category, "total_seconds": row.total_seconds}

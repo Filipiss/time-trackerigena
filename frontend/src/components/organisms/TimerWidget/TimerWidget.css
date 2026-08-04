@@ -1,8 +1,4 @@
-/* ============================================
-   TIMER — Componente Hero / Relógio principal
-   ============================================ */
-
-.timer-container {
+﻿.timer-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11,7 +7,6 @@
   animation: fadeIn 0.6s ease;
 }
 
-/* Display do timer */
 .timer-display-wrapper {
   position: relative;
   padding: var(--space-12) var(--space-16);
@@ -19,6 +14,7 @@
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border-subtle);
   transition: all var(--transition-slow);
+  max-width: 100%;
 }
 
 .timer-display-wrapper.running {
@@ -35,7 +31,6 @@
   opacity: 0.6;
 }
 
-/* Indicador de status (dot) */
 .timer-status-indicator {
   display: flex;
   align-items: center;
@@ -83,7 +78,6 @@
   color: var(--color-warning);
 }
 
-/* Task selecionada acima do timer */
 .timer-selected-task {
   text-align: center;
   margin-bottom: var(--space-2);
@@ -105,13 +99,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-}
-
-.timer-selected-task .task-color-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
+  flex-wrap: wrap;
 }
 
 .timer-no-task {
@@ -124,7 +112,6 @@
   border-radius: var(--radius-md);
 }
 
-/* Dígitos do timer */
 .timer-digits {
   font-family: var(--font-mono);
   font-size: 4rem;
@@ -137,6 +124,7 @@
   line-height: 1;
   user-select: none;
   transition: all var(--transition-base);
+  white-space: nowrap;
 }
 
 .timer-digits.paused {
@@ -154,7 +142,6 @@
   margin: 0 2px;
 }
 
-/* Controles do timer */
 .timer-controls {
   display: flex;
   align-items: center;
@@ -168,6 +155,7 @@
   align-items: center;
   justify-content: center;
   width: 56px;
+  min-width: 56px;
   height: 56px;
   border-radius: var(--radius-lg);
   font-size: 1.4rem;
@@ -264,15 +252,6 @@
   box-shadow: var(--shadow-glow-primary);
 }
 
-/* Tooltip dos botões */
-.timer-btn-tooltip {
-  font-size: var(--text-xs);
-  color: var(--text-muted);
-  margin-top: var(--space-1);
-  text-align: center;
-}
-
-/* Área de notas para salvar */
 .timer-save-area {
   width: 100%;
   max-width: 500px;
@@ -300,6 +279,7 @@
   display: flex;
   gap: var(--space-2);
   justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 .timer-save-area .save-duration {
@@ -312,18 +292,103 @@
   text-align: center;
 }
 
-@media (max-width: 640px) {
-  .timer-digits {
-    font-size: 2.5rem;
+@media (max-width: 1366px) {
+  .timer-container {
+    padding: var(--space-8);
   }
 
+  .timer-digits {
+    font-size: 3.7rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .timer-display-wrapper {
+    padding: var(--space-10) var(--space-12);
+  }
+
+  .timer-digits {
+    font-size: 3.35rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .timer-container {
+    padding: var(--space-6);
+    gap: var(--space-6);
+  }
+
+  .timer-digits {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 880px) {
   .timer-display-wrapper {
     padding: var(--space-8) var(--space-8);
   }
 
+  .timer-digits {
+    font-size: 2.65rem;
+  }
+
   .timer-btn {
-    width: 48px;
-    height: 48px;
+    width: 50px;
+    min-width: 50px;
+    height: 50px;
     font-size: 1.2rem;
+  }
+
+  .timer-btn-save {
+    min-width: 132px;
+    padding-inline: var(--space-4);
+  }
+}
+
+@media (max-width: 767px) {
+  .timer-container {
+    padding: var(--space-4) 0;
+  }
+
+  .timer-display-wrapper {
+    width: 100%;
+    padding: var(--space-7) var(--space-4);
+  }
+
+  .timer-status-indicator {
+    position: static;
+    justify-content: center;
+    margin-bottom: var(--space-4);
+  }
+
+  .timer-digits {
+    font-size: 2.2rem;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+
+  .timer-controls {
+    width: 100%;
+    gap: var(--space-2);
+  }
+
+  .timer-btn {
+    width: 46px;
+    min-width: 46px;
+    height: 46px;
+    font-size: 1.05rem;
+  }
+
+  .timer-btn-save {
+    flex: 1 1 100%;
+    min-height: 46px;
+  }
+
+  .timer-save-area .save-area-inner {
+    padding: var(--space-4);
+  }
+
+  .timer-save-area .save-area-actions > * {
+    flex: 1 1 100%;
   }
 }

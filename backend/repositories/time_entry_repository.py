@@ -37,11 +37,14 @@ class TimeEntryRepository:
         return total
 
     @staticmethod
-    def get_stats(db: Session, days: int = 7, start_date: str = None, end_date: str = None):
+    def get_stats(db: Session, days: int = 7, start_date: str = None, end_date: str = None, category: str = None):
         today = datetime.utcnow().date()
         start_day = datetime.strptime(start_date, "%Y-%m-%d").date() if start_date else today - timedelta(days=days - 1)
         end_day = datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else today
-        filtered = db.query(TimeEntry).filter(func.date(TimeEntry.start_time) >= start_day, func.date(TimeEntry.start_time) <= end_day).subquery()
+        base_query = db.query(TimeEntry).join(Task, Task.id == TimeEntry.task_id).join(Project, Project.id == Task.project_id).filter(func.date(TimeEntry.start_time) >= start_day, func.date(TimeEntry.start_time) <= end_day)
+        if category:
+            base_query = base_query.filter(Project.category == category)
+        filtered = base_query.subquery()
         # Tempo por categoria
         category_stats = (
             db.query(

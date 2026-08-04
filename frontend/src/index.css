@@ -1,6 +1,8 @@
-/* ============================================
-   TIME TRACKERÍGENA — Design System Global
+﻿/* ============================================
+   TIME TRACKERÃGENA â€” Design System Global
    ============================================ */
+
+/* Breakpoints: Desktop ≥1367px | Laptop ≤1366px | Tablet Extra ≤1200px | Tablet ≤1024px | Mobile Extra ≤880px | Mobile ≤767px */
 
 /* ---- CSS Custom Properties ---- */
 :root {
@@ -55,7 +57,7 @@
   --text-3xl: 1.875rem;
   --text-4xl: 2.25rem;
 
-  /* Espaçamento */
+  /* EspaÃ§amento */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -83,7 +85,7 @@
   --shadow-glow-warning: 0 0 20px rgba(245, 158, 11, 0.3);
   --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.3);
 
-  /* Transições */
+  /* TransiÃ§Ãµes */
   --transition-fast: 0.15s ease;
   --transition-base: 0.3s ease;
   --transition-slow: 0.5s ease;
@@ -113,7 +115,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Fundo com partículas sutis */
+/* Fundo com partÃ­culas sutis */
 body::before {
   content: '';
   position: fixed;
@@ -205,7 +207,7 @@ input, button, textarea, select {
   box-shadow: var(--shadow-md);
 }
 
-/* ---- Botões ---- */
+/* ---- BotÃµes ---- */
 button {
   cursor: pointer;
   border: none;
@@ -385,7 +387,7 @@ textarea.input {
   min-height: 80px;
 }
 
-/* ---- Animações Keyframes ---- */
+/* ---- AnimaÃ§Ãµes Keyframes ---- */
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
@@ -473,7 +475,7 @@ textarea.input {
   }
 }
 
-/* ---- Utilitários ---- */
+/* ---- UtilitÃ¡rios ---- */
 .fade-in {
   animation: fadeIn 0.4s ease forwards;
 }
@@ -539,3 +541,4 @@ textarea.input {
   justify-content: center;
   padding: var(--space-16);
 }
+

@@ -1,0 +1,119 @@
+﻿.calendar-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+  padding: var(--space-4);
+}
+
+.calendar-modal {
+  width: min(100%, 480px);
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: var(--space-6);
+  animation: slideUp 0.3s ease;
+}
+
+.calendar-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.calendar-modal-header h3 {
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+}
+
+.calendar-modal-project-name {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: var(--space-2) 0;
+}
+
+.modal-form-spacing {
+  margin-top: 10px;
+}
+
+.calendar-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.calendar-history-section {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.calendar-history-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.calendar-history-loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-3) 0;
+}
+
+.calendar-history-empty {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.calendar-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.calendar-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  gap: var(--space-3);
+}
+
+.calendar-history-date {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-align: right;
+}
+
+@media (max-width: 767px) {
+  .calendar-modal {
+    padding: var(--space-4);
+  }
+
+  .calendar-modal-actions > * {
+    flex: 1 1 100%;
+  }
+
+  .calendar-history-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .calendar-history-date {
+    text-align: left;
+  }
+}

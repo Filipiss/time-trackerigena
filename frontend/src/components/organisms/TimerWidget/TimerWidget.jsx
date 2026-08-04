@@ -1,8 +1,9 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { createTimeEntry } from '../api';
-import './Timer.css';
+﻿import { useCallback, useEffect, useRef, useState } from 'react';
+import ColorDot from '../../atoms/ColorDot/ColorDot';
+import Input from '../../atoms/Input/Input';
+import { createTimeEntry } from '../../../api';
+import './TimerWidget.css';
 
-// Formata milissegundos em HH:MM:SS
 function formatTime(ms) {
   const totalSeconds = Math.floor(ms / 1000);
   const hours = Math.floor(totalSeconds / 3600);
@@ -35,120 +36,115 @@ const TIMER_STATES = {
   PAUSED: 'paused',
 };
 
-export default function Timer({ selectedTask, onSaveSuccess }) {
-  const [timerState, setTimerState] = useState(() => {
-    return localStorage.getItem('tracker_timerState') || TIMER_STATES.STOPPED;
-  });
-  
-  const accumulatedRef = useRef(parseInt(localStorage.getItem('tracker_accumulated') || '0', 10));
+export default function TimerWidget({ selectedTask, onSaveSuccess }) {
+  const [timerState, setTimerState] = useState(() => localStorage.getItem('tracker_timerState') || TIMER_STATES.STOPPED);
+  const initialAccumulated = parseInt(localStorage.getItem('tracker_accumulated') || '0', 10);
+  const accumulatedRef = useRef(initialAccumulated);
   const startTimeRef = useRef(
-    localStorage.getItem('tracker_startTime') ? parseInt(localStorage.getItem('tracker_startTime'), 10) : null
+    localStorage.getItem('tracker_startTime') ? parseInt(localStorage.getItem('tracker_startTime'), 10) : null,
   );
+  const intervalRef = useRef(null);
 
-  const [elapsedTime, setElapsedTime] = useState(accumulatedRef.current);
-
+  const [elapsedTime, setElapsedTime] = useState(initialAccumulated);
   const [showSaveArea, setShowSaveArea] = useState(false);
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const intervalRef = useRef(null);
-
-  const persistState = (state, accumulated, start) => {
+  const persistState = useCallback((state, accumulated, start) => {
     localStorage.setItem('tracker_timerState', state);
     localStorage.setItem('tracker_accumulated', accumulated.toString());
-    if (start) localStorage.setItem('tracker_startTime', start.toString());
-    else localStorage.removeItem('tracker_startTime');
-  };
+    if (start) {
+      localStorage.setItem('tracker_startTime', start.toString());
+    } else {
+      localStorage.removeItem('tracker_startTime');
+    }
+  }, []);
 
   const tick = useCallback(() => {
     if (startTimeRef.current) {
       const now = Date.now();
-      const elapsed = accumulatedRef.current + (now - startTimeRef.current);
-      setElapsedTime(elapsed);
+      setElapsedTime(accumulatedRef.current + (now - startTimeRef.current));
     }
   }, []);
 
-  // Se o timer estiver RUNNING ao carregar, inicia o tick imediatamente para calcular o tempo offline
   useEffect(() => {
-    if (timerState === TIMER_STATES.RUNNING && startTimeRef.current) {
-      // Calcula o tempo que passou com a aba fechada e atualiza a tela instantaneamente
-      tick(); 
-      intervalRef.current = setInterval(tick, 50);
+    if (timerState !== TIMER_STATES.RUNNING || !startTimeRef.current || intervalRef.current) {
+      return undefined;
     }
+
+    tick();
+    intervalRef.current = setInterval(tick, 50);
+
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     };
-  }, []); // Roda só no mount
+  }, [tick, timerState]);
 
   const handleStart = useCallback(() => {
     if (timerState === TIMER_STATES.RUNNING) return;
-
     startTimeRef.current = Date.now();
-    const newState = TIMER_STATES.RUNNING;
-    setTimerState(newState);
-    
-    persistState(newState, accumulatedRef.current, startTimeRef.current);
-    
-    intervalRef.current = setInterval(tick, 50);
-  }, [timerState, tick]);
+    setTimerState(TIMER_STATES.RUNNING);
+    persistState(TIMER_STATES.RUNNING, accumulatedRef.current, startTimeRef.current);
+  }, [persistState, timerState]);
 
   const handlePause = useCallback(() => {
-    if (timerState !== TIMER_STATES.RUNNING) return;
+    if (timerState !== TIMER_STATES.RUNNING || !startTimeRef.current) return;
 
     accumulatedRef.current += Date.now() - startTimeRef.current;
     startTimeRef.current = null;
+    setElapsedTime(accumulatedRef.current);
 
-    clearInterval(intervalRef.current);
-    intervalRef.current = null;
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
 
-    const newState = TIMER_STATES.PAUSED;
-    setTimerState(newState);
-    
-    persistState(newState, accumulatedRef.current, startTimeRef.current);
-  }, [timerState]);
+    setTimerState(TIMER_STATES.PAUSED);
+    persistState(TIMER_STATES.PAUSED, accumulatedRef.current, startTimeRef.current);
+  }, [persistState, timerState]);
 
   const handleStop = useCallback(() => {
     if (timerState === TIMER_STATES.STOPPED) return;
 
     if (timerState === TIMER_STATES.RUNNING && startTimeRef.current) {
       accumulatedRef.current += Date.now() - startTimeRef.current;
-      setElapsedTime(accumulatedRef.current);
     }
 
-    clearInterval(intervalRef.current);
-    intervalRef.current = null;
-    startTimeRef.current = null;
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
 
-    const newState = TIMER_STATES.STOPPED;
-    setTimerState(newState);
-    
-    persistState(newState, accumulatedRef.current, startTimeRef.current);
-  }, [timerState]);
+    startTimeRef.current = null;
+    setElapsedTime(accumulatedRef.current);
+    setTimerState(TIMER_STATES.STOPPED);
+    persistState(TIMER_STATES.STOPPED, accumulatedRef.current, startTimeRef.current);
+  }, [persistState, timerState]);
 
   const handleRestart = useCallback(() => {
-    clearInterval(intervalRef.current);
-    intervalRef.current = null;
-    
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
     startTimeRef.current = Date.now();
     accumulatedRef.current = 0;
-    
     setElapsedTime(0);
-    const newState = TIMER_STATES.RUNNING;
-    setTimerState(newState);
+    setTimerState(TIMER_STATES.RUNNING);
     setShowSaveArea(false);
     setNotes('');
-
-    persistState(newState, accumulatedRef.current, startTimeRef.current);
-
-    intervalRef.current = setInterval(tick, 50);
-  }, [tick]);
+    persistState(TIMER_STATES.RUNNING, accumulatedRef.current, startTimeRef.current);
+  }, [persistState]);
 
   const handleSaveClick = useCallback(() => {
     if (timerState === TIMER_STATES.RUNNING) {
       handlePause();
     }
     setShowSaveArea(true);
-  }, [timerState, handlePause]);
+  }, [handlePause, timerState]);
 
   const handleSave = useCallback(async () => {
     if (!selectedTask || elapsedTime < 1000) return;
@@ -156,7 +152,6 @@ export default function Timer({ selectedTask, onSaveSuccess }) {
     setSaving(true);
     try {
       const durationSeconds = Math.floor(elapsedTime / 1000);
-
       await createTimeEntry({
         task_id: selectedTask.id,
         duration_seconds: durationSeconds,
@@ -164,26 +159,26 @@ export default function Timer({ selectedTask, onSaveSuccess }) {
         date: new Date().toISOString().split('T')[0],
       });
 
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+
       startTimeRef.current = null;
       accumulatedRef.current = 0;
       setElapsedTime(0);
-      
-      const newState = TIMER_STATES.STOPPED;
-      setTimerState(newState);
-      persistState(newState, 0, null);
-      
+      setTimerState(TIMER_STATES.STOPPED);
+      persistState(TIMER_STATES.STOPPED, 0, null);
       setShowSaveArea(false);
       setNotes('');
-      if (onSaveSuccess) onSaveSuccess();
+      onSaveSuccess?.();
     } catch (error) {
       console.error('Erro ao salvar time entry:', error);
-      alert('Erro ao salvar: ' + error.message);
+      window.alert(`Erro ao salvar: ${error.message}`);
     } finally {
       setSaving(false);
     }
-  }, [selectedTask, elapsedTime, notes]);
+  }, [elapsedTime, notes, onSaveSuccess, persistState, selectedTask]);
 
   const time = formatTime(elapsedTime);
   const canStart = timerState !== TIMER_STATES.RUNNING;
@@ -197,17 +192,13 @@ export default function Timer({ selectedTask, onSaveSuccess }) {
         <div className="timer-selected-task">
           <div className="task-label">Cronometrando</div>
           <div className="task-name">
-            <span
-              className="task-color-dot"
-              style={{ backgroundColor: selectedTask.color || '#06b6d4' }}
-            />
-            {selectedTask.project_name ? `[${selectedTask.project_name}] ` : ''}{selectedTask.name}
+            <ColorDot className="task-color-dot" color={selectedTask.color || '#06b6d4'} size="10px" />
+            {selectedTask.project_name ? `[${selectedTask.project_name}] ` : ''}
+            {selectedTask.name}
           </div>
         </div>
       ) : (
-        <div className="timer-no-task">
-          ⚡ Selecione uma task abaixo para começar a cronometrar
-        </div>
+        <div className="timer-no-task">⚡ Selecione uma task abaixo para começar a cronometrar</div>
       )}
 
       <div className={`timer-display-wrapper ${timerState}`}>
@@ -233,29 +224,40 @@ export default function Timer({ selectedTask, onSaveSuccess }) {
         <button className="timer-btn timer-btn-start" onClick={handleStart} disabled={!canStart} title="Iniciar">▶</button>
         <button className="timer-btn timer-btn-pause" onClick={handlePause} disabled={!canPause} title="Pausar">⏸</button>
         <button className="timer-btn timer-btn-stop" onClick={handleStop} disabled={!canStop} title="Parar">⏹</button>
-        <button className="timer-btn timer-btn-restart" onClick={handleRestart} disabled={timerState === TIMER_STATES.STOPPED && elapsedTime === 0} title="Reiniciar">🔄</button>
-        <button className="timer-btn timer-btn-save" onClick={handleSaveClick} disabled={!canSave} title="Salvar">💾 Salvar</button>
+        <button
+          className="timer-btn timer-btn-restart"
+          onClick={handleRestart}
+          disabled={timerState === TIMER_STATES.STOPPED && elapsedTime === 0}
+          title="Reiniciar"
+        >
+          🔄
+        </button>
+        <button className="timer-btn timer-btn-save" onClick={handleSaveClick} disabled={!canSave} title="Salvar">
+          💾 Salvar
+        </button>
       </div>
 
-      {showSaveArea && (
+      {showSaveArea ? (
         <div className="timer-save-area">
           <div className="save-area-inner">
             <div className="save-area-title">💾 Salvar Registro de Tempo</div>
             <div className="save-duration">⏱ Duração: {formatDurationHuman(elapsedTime)} ({time.formatted})</div>
-            <textarea
-              className="input"
+            <Input
+              as="textarea"
               placeholder="Notas sobre o que foi feito (opcional)..."
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={(event) => setNotes(event.target.value)}
               rows={3}
             />
             <div className="save-area-actions">
               <button className="btn btn-ghost" onClick={() => setShowSaveArea(false)}>Cancelar</button>
-              <button className="btn btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Salvando...' : 'Confirmar e Salvar'}</button>
+              <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
+                {saving ? 'Salvando...' : 'Confirmar e Salvar'}
+              </button>
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

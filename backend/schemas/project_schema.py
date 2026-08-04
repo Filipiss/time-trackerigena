@@ -9,6 +9,10 @@ class ProjectSchema(Schema):
     category = fields.Str(required=True)
     created_at = fields.DateTime(dump_only=True)
 
+    # Campos do calendário de deadlines
+    deadline = fields.Str(load_default=None, allow_none=True)
+    status = fields.Str(load_default="em_andamento", allow_none=True)
+    notes = fields.Str(load_default=None, allow_none=True)
 
 
 class ProjectUpdateSchema(Schema):
@@ -16,3 +20,16 @@ class ProjectUpdateSchema(Schema):
 
     name = fields.Str(load_default=None)
     category = fields.Str(load_default=None)
+    deadline = fields.Str(load_default=None, allow_none=True)
+    status = fields.Str(load_default=None, allow_none=True)
+    notes = fields.Str(load_default=None, allow_none=True)
+
+
+class ProjectDeadlineHistorySchema(Schema):
+    """Schema Marshmallow para histórico de alterações de deadline."""
+
+    id = fields.Int(dump_only=True)
+    project_id = fields.Int(dump_only=True)
+    old_deadline = fields.Str(dump_only=True, allow_none=True)
+    new_deadline = fields.Str(dump_only=True, allow_none=True)
+    changed_at = fields.DateTime(dump_only=True)

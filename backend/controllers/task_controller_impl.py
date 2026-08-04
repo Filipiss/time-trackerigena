@@ -44,7 +44,7 @@ def create_task():
 @task_bp.route("/<int:task_id>", methods=["PUT"])
 def update_task(task_id):
     try:
-        data = task_update_schema.load(request.json)
+        data = task_update_schema.load(request.json, partial=True)
     except ValidationError as err:
         return error_response(err.messages, 422)
 

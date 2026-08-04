@@ -18,6 +18,8 @@ class Task(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
     hourly_rate = Column(Float, default=0.0)
+    currency = Column(String(3), default="EUR")  # 'EUR', 'USD' ou 'BRL'
+    budgeted_hours = Column(Float, nullable=True)  # horas orçadas para a task
     is_billed = Column(Boolean, default=False)
 
     # Relacionamento com o projeto pai

@@ -110,6 +110,13 @@ export async function deleteProject(id) {
   });
 }
 
+/**
+ * Buscar o histórico de alterações de deadline de um projeto
+ */
+export async function fetchProjectDeadlineHistory(id) {
+  return request(`/api/projects/${id}/deadline-history`);
+}
+
 // ===================== TASKS =====================
 
 /**

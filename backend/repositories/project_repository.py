@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
 from models.project import Project
+from models.project import ProjectDeadlineHistory
+
 
 class ProjectRepository:
     @staticmethod
@@ -23,6 +25,15 @@ class ProjectRepository:
 
     @staticmethod
     def update(db: Session, project: Project, update_data: dict) -> Project:
+        # Registra a mudança de deadline no histórico antes de aplicar
+        if "deadline" in update_data and update_data["deadline"] != project.deadline:
+            history = ProjectDeadlineHistory(
+                project_id=project.id,
+                old_deadline=project.deadline,
+                new_deadline=update_data["deadline"],
+            )
+            db.add(history)
+
         for key, value in update_data.items():
             setattr(project, key, value)
         db.commit()
@@ -33,3 +44,12 @@ class ProjectRepository:
     def delete(db: Session, project: Project):
         db.delete(project)
         db.commit()
+
+    @staticmethod
+    def get_deadline_history(db: Session, project_id: int):
+        return (
+            db.query(ProjectDeadlineHistory)
+            .filter(ProjectDeadlineHistory.project_id == project_id)
+            .order_by(ProjectDeadlineHistory.changed_at.desc())
+            .all()
+        )

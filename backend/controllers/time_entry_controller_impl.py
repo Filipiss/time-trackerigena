@@ -54,7 +54,7 @@ def get_stats():
         return error_response("Período inválido", 422)
     db = get_db_session()
     try:
-        stats = TimeEntryService.get_dashboard_stats(db, period, request.args.get("start_date"), request.args.get("end_date"))
+        stats = TimeEntryService.get_dashboard_stats(db, period, request.args.get("start_date"), request.args.get("end_date"), request.args.get("category"))
         return success_response(stats_response_schema.dump(stats))
     finally:
         db.close()
