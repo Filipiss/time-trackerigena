@@ -4,16 +4,19 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { Clock, CheckSquare, LayoutDashboard, Calendar, ScrollText } from 'lucide-react';
 import './Sidebar.css';
 
+import { useNavigate } from 'react-router-dom';
+
 const NAV_ITEMS = [
-  { id: 'timer', icon: <Clock size={20} strokeWidth={1.5} />, label: 'Timer' },
-  { id: 'tasks', icon: <CheckSquare size={20} strokeWidth={1.5} />, label: 'Tasks' },
-  { id: 'dashboard', icon: <LayoutDashboard size={20} strokeWidth={1.5} />, label: 'Dashboard' },
-  { id: 'calendar', icon: <Calendar size={20} strokeWidth={1.5} />, label: 'Calendário' },
-  { id: 'history', icon: <ScrollText size={20} strokeWidth={1.5} />, label: 'Histórico' },
+  { id: '/', icon: <Clock size={20} strokeWidth={1.5} />, label: 'Timer', exact: true },
+  { id: '/tasks', icon: <CheckSquare size={20} strokeWidth={1.5} />, label: 'Tasks', exact: false },
+  { id: '/dashboard', icon: <LayoutDashboard size={20} strokeWidth={1.5} />, label: 'Dashboard', exact: false },
+  { id: '/calendar', icon: <Calendar size={20} strokeWidth={1.5} />, label: 'Calendário', exact: false },
+  { id: '/history', icon: <ScrollText size={20} strokeWidth={1.5} />, label: 'Histórico', exact: false },
 ];
 
-export default function Sidebar({ activeTab, onTabChange }) {
+export default function Sidebar() {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <aside className="app-sidebar glass-card-static">
@@ -24,7 +27,7 @@ export default function Sidebar({ activeTab, onTabChange }) {
 
       {/* Widget do usuário — visível só quando logado */}
       {user && (
-        <UserWidget onNavigateToProfile={() => onTabChange('profile')} />
+        <UserWidget onNavigateToProfile={() => navigate('/profile')} />
       )}
 
       <nav className="sidebar-nav">
@@ -33,8 +36,8 @@ export default function Sidebar({ activeTab, onTabChange }) {
             key={item.id}
             icon={item.icon}
             label={item.label}
-            isActive={activeTab === item.id}
-            onClick={() => onTabChange(item.id)}
+            to={item.id}
+            end={item.exact}
           />
         ))}
       </nav>

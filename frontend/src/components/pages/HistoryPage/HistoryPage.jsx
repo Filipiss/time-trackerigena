@@ -8,6 +8,7 @@ import EditModal from '../../organisms/EditModal/EditModal';
 import { deleteTimeEntry, fetchCategories, fetchTimeEntries, updateTimeEntry, updateTask } from '../../../api';
 import { convertCurrency, fetchExchangeRates } from '../../../utils/currency';
 import { Building2, Palmtree, Home, ScrollText, Clock, BarChart3 } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import './HistoryPage.css';
 
 function formatDuration(totalSeconds) {
@@ -52,7 +53,11 @@ const WEEKDAY_CONFIG = {
 
 const DISPLAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
 
-export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
+export default function HistoryPage({ refreshTrigger, onRefresh }) {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const initialTab = queryParams.get('tab');
+
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
@@ -66,15 +71,9 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
   const [editingItem, setEditingItem] = useState(null);
   const [editForm, setEditForm] = useState({ task_name: '', start_date: '', duration: '', hourly_rate: 0, notes: '' });
 
-  const initialTabKey = initialTab ?? null;
-
   useEffect(() => {
-    if (initialTab !== undefined) {
-      setTimeout(() => {
-        setActiveTab(initialTabKey);
-      }, 0);
-    }
-  }, [initialTab, initialTabKey]);
+    setActiveTab(initialTab || null);
+  }, [initialTab]);
 
   useEffect(() => {
     let active = true;

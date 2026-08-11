@@ -8,6 +8,8 @@ import TabButton from '../../molecules/TabButton/TabButton';
 import TaskCard from '../../molecules/TaskCard/TaskCard';
 import EditModal from '../../organisms/EditModal/EditModal';
 import { Pencil, Trash2, Folder, Sparkles, FolderOpen, Blocks } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../contexts/AuthContext';
 import {
   createCategory,
   createProject,
@@ -19,12 +21,15 @@ import {
   fetchProjects,
   fetchTasks,
   updateCategory,
+  updateProject,
   updateTask,
 } from '../../../api';
 import { CURRENCY_SYMBOLS } from '../../../utils/currency';
 import './TaskManagerBoard.css';
 
-export default function TaskManagerBoard({ onTaskChange, onNavigateToHistory }) {
+export default function TaskManagerBoard({ onTaskChange }) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -370,7 +375,7 @@ export default function TaskManagerBoard({ onTaskChange, onNavigateToHistory }) 
           const projectTasks = tasks.filter((task) => task.project_id === project.id);
           return (
             <div key={project.id} className="project-folder">
-              <div className="project-folder-tab" onClick={() => onNavigateToHistory?.('faturamento')} title="Ver Faturamento deste projeto">
+              <div className="project-folder-tab" onClick={() => navigate('/history?tab=faturamento')} title="Ver Faturamento deste projeto">
                 <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Folder size={16} strokeWidth={1.5} /> {project.name}</span>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <button

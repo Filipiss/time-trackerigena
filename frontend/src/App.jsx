@@ -1,4 +1,5 @@
 ﻿import { useCallback, useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import MainLayout from './components/templates/MainLayout/MainLayout';
 import CalendarPage from './components/pages/CalendarPage/CalendarPage';
@@ -11,9 +12,7 @@ import ActivatePage from './components/pages/ActivatePage/ActivatePage';
 import ResetPasswordModal from './components/organisms/ResetPasswordModal/ResetPasswordModal';
 import './App.css';
 
-function AppInner() {
-  const [activeTab, setActiveTab] = useState('timer');
-  const [historySubTab, setHistorySubTab] = useState(null);
+function AppRoutes() {
   const [selectedTask, setSelectedTask] = useState(() => {
     try {
       const saved = localStorage.getItem('tracker_selectedTask');
@@ -39,36 +38,18 @@ function AppInner() {
   const handleTaskChange = useCallback(() => { handleRefresh(); }, [handleRefresh]);
   const handleSaveSuccess = useCallback(() => { handleRefresh(); }, [handleRefresh]);
 
-  const handleTabChange = useCallback((nextTab) => {
-    setActiveTab(nextTab);
-    if (nextTab !== 'history') setHistorySubTab(null);
-  }, []);
-
-  const navigateToHistoryWithTab = useCallback((subTab) => {
-    setHistorySubTab(subTab);
-    setActiveTab('history');
-  }, []);
-
   return (
-    <MainLayout activeTab={activeTab} onTabChange={handleTabChange}>
-      {activeTab === 'timer' && (
-        <TimerPage
-          selectedTask={selectedTask}
-          onSelectTask={setSelectedTask}
-          refreshTrigger={refreshTrigger}
-          onSaveSuccess={handleSaveSuccess}
-        />
-      )}
-      {activeTab === 'tasks' && (
-        <TasksPage onTaskChange={handleTaskChange} onNavigateToHistory={navigateToHistoryWithTab} />
-      )}
-      {activeTab === 'dashboard' && <DashboardPage refreshTrigger={refreshTrigger} />}
-      {activeTab === 'calendar' && <CalendarPage />}
-      {activeTab === 'history' && (
-        <HistoryPage refreshTrigger={refreshTrigger} onRefresh={handleRefresh} initialTab={historySubTab} />
-      )}
-      {activeTab === 'profile' && <ProfilePage />}
-    </MainLayout>
+    <Routes>
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<TimerPage selectedTask={selectedTask} onSelectTask={setSelectedTask} refreshTrigger={refreshTrigger} onSaveSuccess={handleSaveSuccess} />} />
+        <Route path="/tasks" element={<TasksPage onTaskChange={handleTaskChange} />} />
+        <Route path="/dashboard" element={<DashboardPage refreshTrigger={refreshTrigger} />} />
+        <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/history" element={<HistoryPage refreshTrigger={refreshTrigger} onRefresh={handleRefresh} />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
   );
 }
 
@@ -86,29 +67,30 @@ export default function App() {
       url.searchParams.delete('reset_token');
       window.history.replaceState({}, '', url.toString());
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [resetToken]);
 
   function handleResetClose() {
-    // Fecha o modal e volta para a tela normal
     window.location.href = '/';
   }
 
   return (
-    <AuthProvider>
-      {isActivatePage ? (
-        <ActivatePage token={activationToken} />
-      ) : activeResetToken ? (
-        <>
-          <AppInner />
-          <ResetPasswordModal
-            token={activeResetToken}
-            onClose={handleResetClose}
-            onSwitchToLogin={handleResetClose}
-          />
-        </>
-      ) : (
-        <AppInner />
-      )}
-    </AuthProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        {isActivatePage ? (
+          <ActivatePage token={activationToken} />
+        ) : activeResetToken ? (
+          <>
+            <AppRoutes />
+            <ResetPasswordModal
+              token={activeResetToken}
+              onClose={handleResetClose}
+              onSwitchToLogin={handleResetClose}
+            />
+          </>
+        ) : (
+          <AppRoutes />
+        )}
+      </AuthProvider>
+    </BrowserRouter>
   );
 }

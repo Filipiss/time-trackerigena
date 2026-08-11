@@ -1,11 +1,12 @@
+import { Outlet } from 'react-router-dom';
 import AuthButtons from '../../molecules/AuthButtons/AuthButtons';
 import Sidebar from '../../organisms/Sidebar/Sidebar';
 import './MainLayout.css';
 
-export default function MainLayout({ activeTab, onTabChange, children }) {
+export default function MainLayout() {
   return (
     <div className="app-layout">
-      <Sidebar activeTab={activeTab} onTabChange={onTabChange} />
+      <Sidebar />
 
       <div className="app-content-wrapper">
         {/* Barra superior com botões de auth no canto direito */}
@@ -15,7 +16,9 @@ export default function MainLayout({ activeTab, onTabChange, children }) {
         </header>
 
         <main className="app-main">
-          <div className="content-container">{children}</div>
+          <div className="content-container">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
