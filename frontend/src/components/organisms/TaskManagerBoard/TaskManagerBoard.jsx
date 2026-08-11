@@ -339,11 +339,11 @@ export default function TaskManagerBoard({ onTaskChange }) {
             </div>
             <div className="task-form-field task-form-inline-field">
               <label className="task-form-label">Valor/Hora</label>
-              <Input type="number" step="0.01" value={newTaskHourlyRate} onChange={(event) => setNewTaskHourlyRate(event.target.value)} placeholder="Opcional" />
+              <Input type="number" step="0.01" value={newTaskHourlyRate} onChange={(event) => setNewTaskHourlyRate(event.target.value)} placeholder={`${CURRENCY_SYMBOLS[newTaskCurrency] || '$'}`} />
             </div>
             <div className="task-form-field task-form-inline-field">
               <label className="task-form-label">Horas Orçadas</label>
-              <Input type="number" step="0.5" min="0" value={newTaskBudgetedHours} onChange={(event) => setNewTaskBudgetedHours(event.target.value)} placeholder="Opcional" />
+              <Input type="number" step="0.5" min="0" value={newTaskBudgetedHours} onChange={(event) => setNewTaskBudgetedHours(event.target.value)} placeholder={`${CURRENCY_SYMBOLS[newTaskCurrency] || '$'}`} />
             </div>
             <div className="task-form-field task-color-field">
               <label className="task-form-label">Cor</label>
