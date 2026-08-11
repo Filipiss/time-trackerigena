@@ -27,8 +27,16 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
         }
         const [projectData, taskData] = await Promise.all([fetchProjects(), fetchTasks()]);
         if (!active) return;
-        setProjects(projectData || []);
-        setTasks(taskData || []);
+        const validProjects = projectData || [];
+        const validTasks = taskData || [];
+        setProjects(validProjects);
+        setTasks(validTasks);
+
+        // Se uma task estava selecionada, verifica se ela ainda existe no backend. 
+        // Se foi excluída, limpa a seleção.
+        if (selectedTask && !validTasks.some(t => String(t.id) === String(selectedTask.id))) {
+          onSelectTask(null);
+        }
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
       } finally {

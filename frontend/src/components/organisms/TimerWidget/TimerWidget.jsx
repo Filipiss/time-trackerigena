@@ -83,6 +83,8 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
     };
   }, [tick, timerState]);
 
+
+
   const handleStart = useCallback(() => {
     if (timerState === TIMER_STATES.RUNNING) return;
     startTimeRef.current = Date.now();
@@ -130,14 +132,21 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
       intervalRef.current = null;
     }
 
-    startTimeRef.current = Date.now();
+    startTimeRef.current = null;
     accumulatedRef.current = 0;
     setElapsedTime(0);
-    setTimerState(TIMER_STATES.RUNNING);
+    setTimerState(TIMER_STATES.STOPPED);
     setShowSaveArea(false);
     setNotes('');
-    persistState(TIMER_STATES.RUNNING, accumulatedRef.current, startTimeRef.current);
+    persistState(TIMER_STATES.STOPPED, 0, null);
   }, [persistState]);
+
+  // Se a task for deletada globalmente (selectedTask === null) e o timer tiver algo, reseta forçadamente
+  useEffect(() => {
+    if (!selectedTask && (timerState !== TIMER_STATES.STOPPED || elapsedTime > 0)) {
+      handleRestart();
+    }
+  }, [selectedTask, timerState, elapsedTime, handleRestart]);
 
   const handleSaveClick = useCallback(() => {
     if (timerState === TIMER_STATES.RUNNING) {
@@ -181,7 +190,7 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
   }, [elapsedTime, notes, onSaveSuccess, persistState, selectedTask]);
 
   const time = formatTime(elapsedTime);
-  const canStart = timerState !== TIMER_STATES.RUNNING;
+  const canStart = timerState !== TIMER_STATES.RUNNING && !!selectedTask;
   const canPause = timerState === TIMER_STATES.RUNNING;
   const canStop = timerState !== TIMER_STATES.STOPPED;
   const canSave = elapsedTime >= 1000 && selectedTask;
@@ -190,7 +199,7 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
     <div className="timer-container">
       {selectedTask ? (
         <div className="timer-selected-task">
-          <div className="task-label">Cronometrando</div>
+          <div className="task-label">CRONOMETRANDO</div>
           <div className="task-name">
             <ColorDot className="task-color-dot" color={selectedTask.color || '#06b6d4'} size="10px" />
             {selectedTask.project_name ? `[${selectedTask.project_name}] ` : ''}
@@ -198,7 +207,7 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
           </div>
         </div>
       ) : (
-        <div className="timer-no-task">⚡ Selecione uma task abaixo para começar a cronometrar</div>
+        <div className="timer-no-task">⚡ Para começar a cronometrar, selecione ou crie uma nova Task.</div>
       )}
 
       <div className={`timer-display-wrapper ${timerState}`}>

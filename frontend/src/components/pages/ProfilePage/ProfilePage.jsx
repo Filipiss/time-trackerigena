@@ -130,125 +130,132 @@ export default function ProfilePage() {
 
             <h1 className="profile-title">Meu Perfil</h1>
 
-            <div className="profile-grid">
-                {/* ── Card: Avatar + identidade ── */}
-                <section className="profile-card">
-                    <h2 className="card-heading">Foto e identidade</h2>
+            {!user ? (
+                <div className="profile-guest-notice">
+                    <p style={{ color: '#ccc' }}>O perfil não está disponível no Modo Visitante.</p>
+                    <p style={{ color: '#888', fontSize: '14px', marginTop: '8px' }}>Cadastre-se para personalizar sua experiência e salvar seus dados na nuvem!</p>
+                </div>
+            ) : (
+                <div className="profile-grid">
+                    {/* ── Card: Avatar + identidade ── */}
+                    <section className="profile-card">
+                        <h2 className="card-heading">Foto e identidade</h2>
 
-                    <div className="avatar-area">
-                        <button className="avatar-btn" onClick={() => fileRef.current?.click()} title="Trocar foto">
-                            {form.avatar_url ? (
-                                <img src={form.avatar_url} alt="avatar" className="avatar-img" />
-                            ) : (
-                                <div className="avatar-initials">{initials}</div>
-                            )}
-                            <div className="avatar-overlay">📷</div>
-                        </button>
-                        <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
-                        <p className="avatar-hint">Clique para trocar a foto</p>
-                    </div>
-
-                    <form onSubmit={handleSaveProfile} className="profile-form">
-                        <div className="field-group">
-                            <label>Username</label>
-                            <input value={user?.username || ''} readOnly className="field-readonly" />
+                        <div className="avatar-area">
+                            <button className="avatar-btn" onClick={() => fileRef.current?.click()} title="Trocar foto">
+                                {form.avatar_url ? (
+                                    <img src={form.avatar_url} alt="avatar" className="avatar-img" />
+                                ) : (
+                                    <div className="avatar-initials">{initials}</div>
+                                )}
+                                <div className="avatar-overlay">📷</div>
+                            </button>
+                            <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
+                            <p className="avatar-hint">Clique para trocar a foto</p>
                         </div>
 
-                        <div className="field-group">
-                            <label>Nome completo</label>
-                            <input
-                                value={form.full_name}
-                                onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
-                                placeholder="Seu nome completo"
-                            />
-                        </div>
+                        <form onSubmit={handleSaveProfile} className="profile-form">
+                            <div className="field-group">
+                                <label>Username</label>
+                                <input value={user?.username || ''} readOnly className="field-readonly" />
+                            </div>
 
-                        <div className="field-group">
-                            <label>E-mail</label>
-                            <input value={user?.email || ''} readOnly className="field-readonly" />
-                        </div>
+                            <div className="field-group">
+                                <label>Nome completo</label>
+                                <input
+                                    value={form.full_name}
+                                    onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
+                                    placeholder="Seu nome completo"
+                                />
+                            </div>
 
-                        <div className="field-group country-field">
-                            <label>País de origem</label>
-                            <input
-                                value={countrySearch}
-                                onChange={e => {
-                                    setCountrySearch(e.target.value);
-                                    setForm(f => ({ ...f, country: '' }));
-                                    setShowCountryDropdown(true);
-                                }}
-                                onFocus={() => setShowCountryDropdown(true)}
-                                onBlur={() => setTimeout(() => setShowCountryDropdown(false), 180)}
-                                placeholder="Buscar país…"
-                                autoComplete="off"
-                            />
-                            {showCountryDropdown && filteredCountries.length > 0 && (
-                                <ul className="country-dropdown">
-                                    {filteredCountries.slice(0, 8).map(c => (
-                                        <li key={c} onMouseDown={() => {
-                                            setForm(f => ({ ...f, country: c }));
-                                            setCountrySearch(c);
-                                            setShowCountryDropdown(false);
-                                        }}>{c}</li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
+                            <div className="field-group">
+                                <label>E-mail</label>
+                                <input value={user?.email || ''} readOnly className="field-readonly" />
+                            </div>
 
-                        <button type="submit" className="btn-save" disabled={saving}>
-                            {saving ? 'Salvando…' : 'Salvar perfil'}
-                        </button>
-                    </form>
-                </section>
-
-                {/* ── Card: Trocar senha ── */}
-                <section className="profile-card">
-                    <h2 className="card-heading">Alterar senha</h2>
-
-                    {pwdError && <div className="pwd-error">{pwdError}</div>}
-
-                    <form onSubmit={handleChangePassword} className="profile-form">
-                        <div className="field-group">
-                            <label>Senha atual</label>
-                            <input type="password" value={pwdForm.current}
-                                onChange={e => setPwdForm(f => ({ ...f, current: e.target.value }))}
-                                placeholder="Senha atual" autoComplete="current-password" />
-                        </div>
-
-                        <div className="field-group">
-                            <label>Nova senha</label>
-                            <input type="password" value={pwdForm.next}
-                                onChange={e => setPwdForm(f => ({ ...f, next: e.target.value }))}
-                                placeholder="Nova senha segura" autoComplete="new-password" />
-                            {pwdForm.next && (
-                                <>
-                                    <div className="strength-bar-wrap">
-                                        <div className="strength-bar" style={{ width: `${strength.score * 20}%`, background: strengthColor }} />
-                                    </div>
-                                    <ul className="rules-list">
-                                        {pwdRules.map(r => (
-                                            <li key={r.label} className={r.ok ? 'rule-ok' : 'rule-fail'}>
-                                                <span>{r.ok ? '✓' : '○'}</span> {r.label}
-                                            </li>
+                            <div className="field-group country-field">
+                                <label>País de origem</label>
+                                <input
+                                    value={countrySearch}
+                                    onChange={e => {
+                                        setCountrySearch(e.target.value);
+                                        setForm(f => ({ ...f, country: '' }));
+                                        setShowCountryDropdown(true);
+                                    }}
+                                    onFocus={() => setShowCountryDropdown(true)}
+                                    onBlur={() => setTimeout(() => setShowCountryDropdown(false), 180)}
+                                    placeholder="Buscar país…"
+                                    autoComplete="off"
+                                />
+                                {showCountryDropdown && filteredCountries.length > 0 && (
+                                    <ul className="country-dropdown">
+                                        {filteredCountries.slice(0, 8).map(c => (
+                                            <li key={c} onMouseDown={() => {
+                                                setForm(f => ({ ...f, country: c }));
+                                                setCountrySearch(c);
+                                                setShowCountryDropdown(false);
+                                            }}>{c}</li>
                                         ))}
                                     </ul>
-                                </>
-                            )}
-                        </div>
+                                )}
+                            </div>
 
-                        <div className="field-group">
-                            <label>Confirmar nova senha</label>
-                            <input type="password" value={pwdForm.confirm}
-                                onChange={e => setPwdForm(f => ({ ...f, confirm: e.target.value }))}
-                                placeholder="Repita a nova senha" autoComplete="new-password" />
-                        </div>
+                            <button type="submit" className="btn-save" disabled={saving}>
+                                {saving ? 'Salvando…' : 'Salvar perfil'}
+                            </button>
+                        </form>
+                    </section>
 
-                        <button type="submit" className="btn-save" disabled={pwdSaving}>
-                            {pwdSaving ? 'Alterando…' : 'Alterar senha'}
-                        </button>
-                    </form>
-                </section>
-            </div>
+                    {/* ── Card: Trocar senha ── */}
+                    <section className="profile-card">
+                        <h2 className="card-heading">Alterar senha</h2>
+
+                        {pwdError && <div className="pwd-error">{pwdError}</div>}
+
+                        <form onSubmit={handleChangePassword} className="profile-form">
+                            <div className="field-group">
+                                <label>Senha atual</label>
+                                <input type="password" value={pwdForm.current}
+                                    onChange={e => setPwdForm(f => ({ ...f, current: e.target.value }))}
+                                    placeholder="Senha atual" autoComplete="current-password" />
+                            </div>
+
+                            <div className="field-group">
+                                <label>Nova senha</label>
+                                <input type="password" value={pwdForm.next}
+                                    onChange={e => setPwdForm(f => ({ ...f, next: e.target.value }))}
+                                    placeholder="Nova senha segura" autoComplete="new-password" />
+                                {pwdForm.next && (
+                                    <>
+                                        <div className="strength-bar-wrap">
+                                            <div className="strength-bar" style={{ width: `${strength.score * 20}%`, background: strengthColor }} />
+                                        </div>
+                                        <ul className="rules-list">
+                                            {pwdRules.map(r => (
+                                                <li key={r.label} className={r.ok ? 'rule-ok' : 'rule-fail'}>
+                                                    <span>{r.ok ? '✓' : '○'}</span> {r.label}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </>
+                                )}
+                            </div>
+
+                            <div className="field-group">
+                                <label>Confirmar nova senha</label>
+                                <input type="password" value={pwdForm.confirm}
+                                    onChange={e => setPwdForm(f => ({ ...f, confirm: e.target.value }))}
+                                    placeholder="Repita a nova senha" autoComplete="new-password" />
+                            </div>
+
+                            <button type="submit" className="btn-save" disabled={pwdSaving}>
+                                {pwdSaving ? 'Alterando…' : 'Alterar senha'}
+                            </button>
+                        </form>
+                    </section>
+                </div>
+            )}
         </div>
     );
 }

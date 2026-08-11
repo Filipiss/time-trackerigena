@@ -15,6 +15,7 @@ export default function AuthButtons() {
     return (
         <>
             <div className="auth-buttons">
+                <span className="guest-indicator">Modo Visitante</span>
                 <button
                     id="btn-login"
                     className="auth-btn auth-btn--ghost"

@@ -1,3 +1,5 @@
+import { handleGuestRequest } from './utils/guestMock';
+
 // Serviço de API — comunicação com o backend Flask com tradução de categorias
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -7,10 +9,16 @@ function getToken() {
   return localStorage.getItem('auth_token');
 }
 
+
 /**
  * Helper para fazer requisições com tratamento de erro
  */
 async function request(endpoint, options = {}, requiresAuth = true) {
+  // Se a rota requer auth e não há token, intercepta para o Guest Mode (sessionStorage)
+  if (requiresAuth && !getToken()) {
+    return handleGuestRequest(endpoint, options);
+  }
+
   const url = `${API_URL}${endpoint}`;
 
   const headers = {
