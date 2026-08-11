@@ -165,10 +165,11 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
 
   const handleEditClick = (item) => {
     setEditingItem(item);
+    const isFaturamento = activeTab === 'faturamento';
     setEditForm({
       task_name: item.task_name || item.name || '',
       start_date: item.start_time ? item.start_time.slice(0, 10) : (item.start_date ? item.start_date.slice(0, 10) : ''),
-      duration: formatDuration(item.duration_seconds || item.totalSeconds || 0),
+      duration: isFaturamento ? ((item.duration_seconds || item.totalSeconds || 0) / 3600).toFixed(2) : formatDuration(item.duration_seconds || item.totalSeconds || 0),
       hourly_rate: item.task_hourly_rate || item.hourlyRate || 0,
       notes: item.notes ? (Array.isArray(item.notes) ? item.notes.join(' | ') : item.notes) : '',
     });
@@ -178,8 +179,15 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
     try {
       if (!editingItem) return;
       const isGroup = Array.isArray(editingItem.ids);
-      const parts = editForm.duration.split(':');
-      const newDurationSec = (parseInt(parts[0] || '0', 10) * 3600) + (parseInt(parts[1] || '0', 10) * 60) + parseInt(parts[2] || '0', 10);
+      const isFaturamento = activeTab === 'faturamento';
+
+      let newDurationSec;
+      if (isFaturamento) {
+        newDurationSec = Math.round(parseFloat(editForm.duration) * 3600);
+      } else {
+        const parts = editForm.duration.split(':');
+        newDurationSec = (parseInt(parts[0] || '0', 10) * 3600) + (parseInt(parts[1] || '0', 10) * 60) + parseInt(parts[2] || '0', 10);
+      }
 
       if (editingItem.task_id) {
         await updateTask(editingItem.task_id, {
@@ -393,13 +401,20 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
             </div>
           </>
         )}
+        {activeTab !== 'faturamento' && (
+          <div className="edit-modal-field">
+            <label className="edit-modal-label">Data (Resumo)</label>
+            <Input type="date" value={editForm.start_date} onChange={e => setEditForm({ ...editForm, start_date: e.target.value })} />
+          </div>
+        )}
         <div className="edit-modal-field">
-          <label className="edit-modal-label">Data (Resumo)</label>
-          <Input type="date" value={editForm.start_date} onChange={e => setEditForm({ ...editForm, start_date: e.target.value })} />
-        </div>
-        <div className="edit-modal-field">
-          <label className="edit-modal-label">Duração (HH:MM:SS)</label>
-          <Input value={editForm.duration} onChange={e => setEditForm({ ...editForm, duration: e.target.value })} />
+          <label className="edit-modal-label">{activeTab === 'faturamento' ? 'Horas Trabalhadas (Decimal)' : 'Duração (HH:MM:SS)'}</label>
+          <Input
+            value={editForm.duration}
+            onChange={e => setEditForm({ ...editForm, duration: e.target.value })}
+            type={activeTab === 'faturamento' ? 'number' : 'text'}
+            step={activeTab === 'faturamento' ? '0.01' : undefined}
+          />
         </div>
         {!Array.isArray(editingItem?.ids) && (
           <div className="edit-modal-field">
