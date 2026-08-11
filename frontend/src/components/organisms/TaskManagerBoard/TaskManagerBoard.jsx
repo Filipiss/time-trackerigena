@@ -7,7 +7,7 @@ import CurrencySelect from '../../molecules/CurrencySelect/CurrencySelect';
 import TabButton from '../../molecules/TabButton/TabButton';
 import TaskCard from '../../molecules/TaskCard/TaskCard';
 import EditModal from '../../organisms/EditModal/EditModal';
-import { Pencil, Trash2, Folder, Sparkles, FolderOpen, Blocks } from 'lucide-react';
+import { Pencil, Trash2, Folder, Sparkles, FolderOpen, Blocks, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import {
@@ -49,9 +49,9 @@ export default function TaskManagerBoard({ onTaskChange }) {
 
   const [editingProject, setEditingProject] = useState(null);
   const [editProjectForm, setEditProjectForm] = useState({ name: '' });
-
   const [editingTask, setEditingTask] = useState(null);
-  const [editTaskForm, setEditTaskForm] = useState({ name: '', hourly_rate: '', budgeted_hours: '' });
+  const [editTaskForm, setEditTaskForm] = useState({ name: '', hourly_rate: 0, budgeted_hours: '' });
+  const [isBudgetFocused, setIsBudgetFocused] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -351,16 +351,21 @@ export default function TaskManagerBoard({ onTaskChange }) {
             </div>
             <div className="task-form-field task-form-inline-field">
               <label className="task-form-label">Horas Orçadas</label>
-              <Input
-                type="number"
-                step="0.5"
-                min="0"
-                value={newTaskBudgetedHours}
-                onChange={(event) => setNewTaskBudgetedHours(event.target.value)}
-                placeholder="🕒"
-                onFocus={(e) => e.target.placeholder = ''}
-                onBlur={(e) => e.target.placeholder = '🕒'}
-              />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <Input
+                  type="number"
+                  step="0.5"
+                  min="0"
+                  value={newTaskBudgetedHours}
+                  onChange={(event) => setNewTaskBudgetedHours(event.target.value)}
+                  placeholder=""
+                  onFocus={() => setIsBudgetFocused(true)}
+                  onBlur={() => setIsBudgetFocused(false)}
+                />
+                {!newTaskBudgetedHours && !isBudgetFocused && (
+                  <Clock size={16} strokeWidth={1.5} style={{ position: 'absolute', left: 'var(--space-3)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
+                )}
+              </div>
             </div>
             <div className="task-form-field task-color-field">
               <label className="task-form-label">Cor</label>
