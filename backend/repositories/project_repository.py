@@ -35,6 +35,7 @@ class ProjectRepository:
                 new_deadline=update_data["deadline"],
             )
             db.add(history)
+            update_data["deadline_notified"] = False  # Reset notification state on new deadline
 
         for key, value in update_data.items():
             setattr(project, key, value)

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 from utils.database import Base
@@ -25,10 +25,37 @@ class Task(Base):
     # Relacionamento com o projeto pai
     project = relationship("Project", back_populates="tasks")
 
-    # Relacionamento com entradas de tempo
+    # Detalhes de rastreamento / histórico
     time_entries = relationship(
         "TimeEntry", back_populates="task", cascade="all, delete-orphan"
     )
 
+    # Campos de Calendário (Prazos)
+    deadline = Column(String(10), nullable=True)  # formato YYYY-MM-DD
+    status = Column(String(30), default="em_andamento")
+    notes = Column(Text, nullable=True)
+    deadline_notified = Column(Boolean, default=False)
+
+    deadline_history = relationship(
+        "TaskDeadlineHistory", back_populates="task", cascade="all, delete-orphan"
+    )
+
     def __repr__(self):
         return f"<Task(id={self.id}, name='{self.name}', project_id={self.project_id})>"
+
+
+class TaskDeadlineHistory(Base):
+    """Registra alterações de deadline de uma task (auditoria de mudanças de prazo)."""
+
+    __tablename__ = "task_deadline_history"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    task_id = Column(Integer, ForeignKey("tasks.id"), nullable=False)
+    old_deadline = Column(String(10), nullable=True)
+    new_deadline = Column(String(10), nullable=True)
+    changed_at = Column(DateTime, default=datetime.utcnow)
+
+    task = relationship("Task", back_populates="deadline_history")
+
+    def __repr__(self):
+        return f"<TaskDeadlineHistory(task_id={self.task_id}, {self.old_deadline} -> {self.new_deadline})>"

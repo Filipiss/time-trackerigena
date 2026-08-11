@@ -77,6 +77,7 @@ finally:
 
 
 mail = Mail()
+from utils.notifier import start_notifier
 
 
 def create_app():
@@ -121,6 +122,8 @@ def create_app():
     def root():
         """Endpoint raiz para verificação de saúde da API."""
         return jsonify({"app": "Time Trackerígena", "status": "running (Flask)"}), 200
+
+    start_notifier(app)
 
     return app
 

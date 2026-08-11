@@ -55,3 +55,30 @@ def send_reset_password_email(app, recipient_email: str, username: str, token: s
             """,
         )
         mail.send(msg)
+
+
+def send_deadline_notification_email(app, recipient_email: str, username: str, event_name: str, event_type: str = "Projeto"):
+    """Envia e-mail de alerta de deadline."""
+    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+    
+    with app.app_context():
+        msg = Message(
+            subject=f"⚠️ Prazo Esgotando: {event_name} — Time Trackerígena",
+            recipients=[recipient_email],
+            html=f"""
+            <div style="font-family:sans-serif;max-width:500px;margin:auto;padding:32px;background:#0f0f14;color:#e0e0e0;border-radius:12px">
+              <h1 style="color:#ef4444;margin-bottom:8px">O Prazo Chegou!</h1>
+              <p>Olá, <strong>{username}</strong>!</p>
+              <p>ETs vieram te avisar que chegou o dia da sua deadline 🛸👽🖖</p>
+              <div style="background:rgba(255,255,255,0.05);padding:16px;border-left:4px solid #ef4444;margin:20px 0;border-radius:4px">
+                <p style="margin:0;font-size:12px;text-transform:uppercase;color:#888">{event_type}</p>
+                <p style="margin:4px 0 0 0;font-size:18px;font-weight:bold;color:#fff">{event_name}</p>
+              </div>
+              <a href="{frontend_url}/calendar"
+                 style="display:inline-block;background:#ef4444;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;margin:16px 0">
+                Ver no Calendário
+              </a>
+            </div>
+            """,
+        )
+        mail.send(msg)

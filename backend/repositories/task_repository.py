@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models.task import Task
+from models.task import Task, TaskDeadlineHistory
 from models.project import Project
 
 class TaskRepository:
@@ -28,6 +28,15 @@ class TaskRepository:
 
     @staticmethod
     def update(db: Session, task: Task, update_data: dict) -> Task:
+        if "deadline" in update_data and update_data["deadline"] != task.deadline:
+            history = TaskDeadlineHistory(
+                task_id=task.id,
+                old_deadline=task.deadline,
+                new_deadline=update_data["deadline"],
+            )
+            db.add(history)
+            update_data["deadline_notified"] = False  # Reset notification state on new deadline
+
         for key, value in update_data.items():
             setattr(task, key, value)
         db.commit()
@@ -38,3 +47,12 @@ class TaskRepository:
     def delete(db: Session, task: Task):
         db.delete(task)
         db.commit()
+
+    @staticmethod
+    def get_deadline_history(db: Session, task_id: int):
+        return (
+            db.query(TaskDeadlineHistory)
+            .filter(TaskDeadlineHistory.task_id == task_id)
+            .order_by(TaskDeadlineHistory.changed_at.desc())
+            .all()
+        )

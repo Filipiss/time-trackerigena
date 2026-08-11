@@ -5,12 +5,13 @@ from utils.database import get_db_session
 from utils.responses import success_response, error_response
 from services.task_service import TaskService
 from services.project_service import ProjectService
-from schemas.task_schema import TaskSchema, TaskUpdateSchema
+from schemas.task_schema import TaskSchema, TaskUpdateSchema, TaskDeadlineHistorySchema
 from routes.task_routes import task_bp
 
 task_schema = TaskSchema()
 tasks_schema = TaskSchema(many=True)
 task_update_schema = TaskUpdateSchema()
+task_deadline_history_schema = TaskDeadlineHistorySchema(many=True)
 
 
 @task_bp.route("/", methods=["GET"])
@@ -76,6 +77,24 @@ def update_task(task_id):
         return success_response(task_schema.dump(task))
     except ValueError as e:
         return error_response(str(e), 404)
+    finally:
+        db.close()
+
+
+@task_bp.route("/<int:task_id>/deadline-history", methods=["GET"])
+@jwt_required()
+def get_task_deadline_history(task_id):
+    user_id = int(get_jwt_identity())
+    db = get_db_session()
+    try:
+        task = TaskService.get_task(db, task_id)
+        if not task:
+            return error_response("Tarefa não encontrada", 404)
+        project = ProjectService.get_project(db, task.project_id)
+        if not project or project.user_id != user_id:
+            return error_response("Tarefa não encontrada", 404)
+        history = TaskService.get_deadline_history(db, task_id)
+        return success_response(task_deadline_history_schema.dump(history))
     finally:
         db.close()
 

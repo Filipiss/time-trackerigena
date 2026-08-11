@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 from utils.database import Base
@@ -24,6 +24,7 @@ class Project(Base):
     deadline = Column(String(10), nullable=True)  # formato YYYY-MM-DD
     status = Column(String(30), default="em_andamento")
     notes = Column(Text, nullable=True)
+    deadline_notified = Column(Boolean, default=False)
 
     # Relacionamento com tarefas
     tasks = relationship("Task", back_populates="project", cascade="all, delete-orphan")

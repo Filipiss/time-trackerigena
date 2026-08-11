@@ -13,14 +13,14 @@ export default function CalendarBoard({
   monthGrid,
   currentMonthIndex,
   todayISO,
-  projectsByDate,
+  eventsByDate,
   statusConfig,
   weekdayLabels,
   onPrevMonth,
   onNextMonth,
   onToday,
   onCreateDeadline,
-  onEditProject,
+  onEditEvent,
 }) {
   const legendItems = Object.entries(statusConfig).map(([key, config]) => ({ key, ...config }));
   const monthLabel = monthDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
@@ -28,7 +28,7 @@ export default function CalendarBoard({
   return (
     <div className="calendar-page fade-in">
       <div className="calendar-header">
-        <h2 className="calendar-title gradient-text">📅 Calendário de Deadlines</h2>
+        <h2 className="calendar-title gradient-text">📅 Calendário de Compromissos</h2>
 
         <div className="calendar-nav">
           <button className="btn btn-ghost calendar-nav-btn" onClick={onPrevMonth} title="Mês anterior">‹</button>
@@ -53,7 +53,7 @@ export default function CalendarBoard({
               const iso = toISODate(cellDate);
               const isCurrentMonth = cellDate.getMonth() === currentMonthIndex;
               const isToday = iso === todayISO;
-              const dayProjects = projectsByDate[iso] || [];
+              const dayEvents = eventsByDate[iso] || [];
 
               return (
                 <div key={iso} className={`calendar-day-cell ${isCurrentMonth ? '' : 'other-month'} ${isToday ? 'today' : ''}`}>
@@ -62,18 +62,18 @@ export default function CalendarBoard({
                     <button className="calendar-add-btn" onClick={() => onCreateDeadline(iso)} title="Adicionar deadline neste dia">+</button>
                   </div>
                   <div className="calendar-day-projects">
-                    {dayProjects.map((project) => {
-                      const config = statusConfig[project.status] || statusConfig.em_andamento;
+                    {dayEvents.map((event) => {
+                      const config = statusConfig[event.status] || statusConfig.em_andamento;
                       return (
                         <button
-                          key={project.id}
+                          key={`${event.eventType}-${event.id}`}
                           className="calendar-project-chip"
                           style={{ borderLeftColor: config.color, background: `${config.color}22` }}
-                          onClick={() => onEditProject(project)}
-                          title={project.notes || project.name}
+                          onClick={() => onEditEvent(event)}
+                          title={`${event.eventType.toUpperCase()}: ${event.notes || event.name}`}
                         >
                           <span className="chip-dot" style={{ backgroundColor: config.color }} />
-                          <span className="chip-name truncate">{project.name}</span>
+                          <span className="chip-name truncate">{event.name}</span>
                         </button>
                       );
                     })}

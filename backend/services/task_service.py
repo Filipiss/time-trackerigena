@@ -55,3 +55,7 @@ class TaskService:
             return False
         TaskRepository.delete(db, task)
         return True
+
+    @staticmethod
+    def get_deadline_history(db: Session, task_id: int):
+        return TaskRepository.get_deadline_history(db, task_id)

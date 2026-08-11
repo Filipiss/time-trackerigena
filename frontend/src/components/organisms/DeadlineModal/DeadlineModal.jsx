@@ -20,10 +20,14 @@ function formatDateTimeBR(isoDateTime) {
 
 export default function DeadlineModal({
   open,
-  editingProjectId,
+  editingEventId,
+  editingType,
   projects,
+  tasks,
   formProjectId,
   setFormProjectId,
+  formTaskId,
+  setFormTaskId,
   formDeadline,
   setFormDeadline,
   formStatus,
@@ -40,32 +44,51 @@ export default function DeadlineModal({
 }) {
   if (!open) return null;
 
+  const projectTasks = tasks.filter((t) => String(t.project_id) === String(formProjectId));
+
   return (
     <div className="calendar-modal-overlay" onClick={onClose}>
       <div className="calendar-modal glass-card-static" onClick={(event) => event.stopPropagation()}>
         <div className="calendar-modal-header">
-          <h3>{editingProjectId ? '✏️ Editar Deadline' : '📌 Novo Deadline'}</h3>
+          <h3>{editingEventId ? '✏️ Editar Compromisso' : '📌 Novo Compromisso'}</h3>
           <button className="btn-icon" onClick={onClose}>✕</button>
         </div>
 
         <div className="calendar-modal-body">
-          {!editingProjectId ? (
-            <div className="task-form-field">
-              <label className="task-form-label">Projeto</label>
-              <Select value={formProjectId} onChange={(event) => setFormProjectId(event.target.value)}>
-                <option value="">Selecione um projeto...</option>
-                {projects.map((project) => (
-                  <option key={project.id} value={project.id}>
-                    [{project.category}] {project.name}{project.deadline ? ` (já tem deadline: ${formatDateBR(project.deadline)})` : ''}
-                  </option>
-                ))}
-              </Select>
-            </div>
+          {!editingEventId ? (
+            <>
+              <div className="task-form-field">
+                <label className="task-form-label">Projeto</label>
+                <Select value={formProjectId} onChange={(event) => setFormProjectId(event.target.value)}>
+                  <option value="">Selecione um projeto...</option>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      [{project.category}] {project.name}{project.deadline ? ` (já tem deadline: ${formatDateBR(project.deadline)})` : ''}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+
+              {formProjectId && (
+                <div className="task-form-field modal-form-spacing">
+                  <label className="task-form-label">Tarefa (Opcional)</label>
+                  <Select value={formTaskId} onChange={(event) => setFormTaskId(event.target.value)}>
+                    <option value="">Nenhuma task (Aplicar ao Projeto)</option>
+                    {projectTasks.map((task) => (
+                      <option key={task.id} value={task.id}>
+                        {task.name}{task.deadline ? ` (já tem deadline: ${formatDateBR(task.deadline)})` : ''}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+              )}
+            </>
           ) : null}
 
-          {editingProjectId ? (
+          {editingEventId ? (
             <div className="calendar-modal-project-name">
-              📁 {projects.find((project) => String(project.id) === String(editingProjectId))?.name}
+              📁 {projects.find((project) => String(project.id) === String(formProjectId))?.name}
+              {editingType === 'task' && ` > 📋 ${tasks.find((task) => String(task.id) === String(editingEventId))?.name}`}
             </div>
           ) : null}
 
@@ -85,10 +108,10 @@ export default function DeadlineModal({
 
           <div className="task-form-field modal-form-spacing">
             <label className="task-form-label">Observações</label>
-            <Input as="textarea" rows={3} value={formNotes} onChange={(event) => setFormNotes(event.target.value)} placeholder="Observações sobre o projeto/deadline..." />
+            <Input as="textarea" rows={3} value={formNotes} onChange={(event) => setFormNotes(event.target.value)} placeholder="Observações sobre o compromisso/deadline..." />
           </div>
 
-          {editingProjectId ? (
+          {editingEventId ? (
             <div className="calendar-history-section">
               <div className="calendar-history-title">🕓 Histórico de Alterações de Prazo</div>
               {loadingHistory ? (
@@ -110,9 +133,9 @@ export default function DeadlineModal({
         </div>
 
         <div className="calendar-modal-actions">
-          {editingProjectId ? (
+          {editingEventId ? (
             <button className="btn btn-ghost" onClick={onRemoveDeadline} disabled={saving} style={{ color: 'var(--color-danger)' }}>
-              Remover Deadline
+              Remover Compromisso
             </button>
           ) : null}
           <button className="btn btn-ghost" onClick={onClose}>Cancelar</button>

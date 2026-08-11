@@ -2,15 +2,15 @@ import { useEffect, useMemo, useState } from 'react';
 import Spinner from '../../atoms/Spinner/Spinner';
 import CalendarBoard from '../../organisms/CalendarBoard/CalendarBoard';
 import DeadlineModal from '../../organisms/DeadlineModal/DeadlineModal';
-import { fetchProjectDeadlineHistory, fetchProjects, updateProject } from '../../../api';
+import { fetchProjectDeadlineHistory, fetchTaskDeadlineHistory, fetchProjects, fetchTasks, updateProject, updateTask } from '../../../api';
 import './CalendarPage.css';
 
 const STATUS_CONFIG = {
-  em_andamento: { label: 'Em Andamento', color: '#8b5cf6' },
-  urgente: { label: 'Urgente', color: '#ef4444' },
-  em_revisao: { label: 'Em Revisão', color: '#f59e0b' },
   aguardando_cliente: { label: 'Aguardando Cliente', color: '#3b82f6' },
-  completo: { label: 'Completo', color: '#10b981' },
+  em_andamento: { label: 'Em Andamento', color: '#8b5cf6' },
+  em_revisao: { label: 'Em Revisão', color: '#f59e0b' },
+  deadline: { label: 'Deadline', color: '#ef4444' },
+  completo: { label: 'Entregue', color: '#10b981' },
 };
 
 const WEEKDAY_LABELS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -41,17 +41,20 @@ function buildMonthGrid(monthDate) {
 
 export default function CalendarPage() {
   const [projects, setProjects] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [monthDate, setMonthDate] = useState(() => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
   });
-  const [editingProjectId, setEditingProjectId] = useState(null);
+  const [editingEventId, setEditingEventId] = useState(null); // replaces editingProjectId
+  const [editingType, setEditingType] = useState(null); // 'project' | 'task'
   const [creatingForDate, setCreatingForDate] = useState(null);
   const [formDeadline, setFormDeadline] = useState('');
   const [formStatus, setFormStatus] = useState('em_andamento');
   const [formNotes, setFormNotes] = useState('');
   const [formProjectId, setFormProjectId] = useState('');
+  const [formTaskId, setFormTaskId] = useState('');
   const [saving, setSaving] = useState(false);
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
@@ -59,43 +62,47 @@ export default function CalendarPage() {
   useEffect(() => {
     let active = true;
 
-    const loadProjects = async () => {
+    const loadData = async () => {
       try {
+        if (active) setLoading(true);
+        const [projectsData, tasksData] = await Promise.all([
+          fetchProjects(),
+          fetchTasks()
+        ]);
         if (active) {
-          setLoading(true);
-        }
-        const data = await fetchProjects();
-        if (active) {
-          setProjects(data || []);
+          setProjects(projectsData || []);
+          setTasks(tasksData || []);
         }
       } catch (error) {
-        console.error('Erro ao carregar projetos:', error);
+        console.error('Erro ao carregar dados do calendário:', error);
       } finally {
-        if (active) {
-          setLoading(false);
-        }
+        if (active) setLoading(false);
       }
     };
 
-    void loadProjects();
+    void loadData();
 
     return () => {
       active = false;
     };
   }, []);
 
-  const projectsByDate = useMemo(() => {
+  const eventsByDate = useMemo(() => {
     const map = {};
-    projects.forEach((project) => {
-      if (project.deadline) {
-        if (!map[project.deadline]) {
-          map[project.deadline] = [];
-        }
-        map[project.deadline].push(project);
+    projects.forEach((item) => {
+      if (item.deadline) {
+        if (!map[item.deadline]) map[item.deadline] = [];
+        map[item.deadline].push({ ...item, eventType: 'project' });
+      }
+    });
+    tasks.forEach((item) => {
+      if (item.deadline) {
+        if (!map[item.deadline]) map[item.deadline] = [];
+        map[item.deadline].push({ ...item, eventType: 'task' });
       }
     });
     return map;
-  }, [projects]);
+  }, [projects, tasks]);
 
   const projectsWithoutDeadline = useMemo(() => projects.filter((project) => !project.deadline), [projects]);
   const monthGrid = useMemo(() => buildMonthGrid(monthDate), [monthDate]);
@@ -104,24 +111,30 @@ export default function CalendarPage() {
 
   const openCreateModal = (isoDate) => {
     setCreatingForDate(isoDate);
-    setEditingProjectId(null);
-    setFormProjectId(projectsWithoutDeadline[0]?.id || '');
+    setEditingEventId(null);
+    setEditingType(null);
+    setFormProjectId(projectsWithoutDeadline[0]?.id || projects[0]?.id || '');
+    setFormTaskId('');
     setFormDeadline(isoDate);
     setFormStatus('em_andamento');
     setFormNotes('');
     setHistory([]);
   };
 
-  const openEditModal = async (project) => {
-    setEditingProjectId(project.id);
+  const openEditModal = async (event) => {
+    setEditingEventId(event.id);
+    setEditingType(event.eventType);
     setCreatingForDate(null);
-    setFormProjectId(project.id);
-    setFormDeadline(project.deadline || '');
-    setFormStatus(project.status || 'em_andamento');
-    setFormNotes(project.notes || '');
+    setFormProjectId(event.eventType === 'task' ? event.project_id : event.id);
+    setFormTaskId(event.eventType === 'task' ? event.id : '');
+    setFormDeadline(event.deadline || '');
+    setFormStatus(event.status || 'em_andamento');
+    setFormNotes(event.notes || '');
     setLoadingHistory(true);
     try {
-      const data = await fetchProjectDeadlineHistory(project.id);
+      const data = event.eventType === 'task'
+        ? await fetchTaskDeadlineHistory(event.id)
+        : await fetchProjectDeadlineHistory(event.id);
       setHistory(data || []);
     } catch (error) {
       console.error('Erro ao carregar histórico:', error);
@@ -132,7 +145,8 @@ export default function CalendarPage() {
   };
 
   const closeModal = () => {
-    setEditingProjectId(null);
+    setEditingEventId(null);
+    setEditingType(null);
     setCreatingForDate(null);
     setHistory([]);
   };
@@ -144,12 +158,23 @@ export default function CalendarPage() {
     }
     setSaving(true);
     try {
-      const updated = await updateProject(formProjectId, {
-        deadline: formDeadline || null,
-        status: formStatus,
-        notes: formNotes.trim() || null,
-      });
-      setProjects((previous) => previous.map((project) => (project.id === updated.id ? { ...project, ...updated } : project)));
+      if (formTaskId) {
+        // Saving task deadline
+        const updated = await updateTask(formTaskId, {
+          deadline: formDeadline || null,
+          status: formStatus,
+          notes: formNotes.trim() || null,
+        });
+        setTasks((prev) => prev.map((t) => (t.id === updated.id ? { ...t, ...updated } : t)));
+      } else {
+        // Saving project deadline
+        const updated = await updateProject(formProjectId, {
+          deadline: formDeadline || null,
+          status: formStatus,
+          notes: formNotes.trim() || null,
+        });
+        setProjects((prev) => prev.map((p) => (p.id === updated.id ? { ...p, ...updated } : p)));
+      }
       closeModal();
     } catch (error) {
       window.alert(`Erro ao salvar: ${error.message}`);
@@ -159,11 +184,16 @@ export default function CalendarPage() {
   };
 
   const handleRemoveDeadline = async () => {
-    if (!editingProjectId) return;
+    if (!editingEventId) return;
     setSaving(true);
     try {
-      const updated = await updateProject(editingProjectId, { deadline: null });
-      setProjects((previous) => previous.map((project) => (project.id === updated.id ? { ...project, ...updated } : project)));
+      if (editingType === 'task') {
+        const updated = await updateTask(editingEventId, { deadline: null });
+        setTasks((prev) => prev.map((t) => (t.id === updated.id ? { ...t, ...updated } : t)));
+      } else {
+        const updated = await updateProject(editingEventId, { deadline: null });
+        setProjects((prev) => prev.map((p) => (p.id === updated.id ? { ...p, ...updated } : p)));
+      }
       closeModal();
     } catch (error) {
       window.alert(`Erro ao remover deadline: ${error.message}`);
@@ -183,7 +213,7 @@ export default function CalendarPage() {
         monthGrid={monthGrid}
         currentMonthIndex={currentMonthIndex}
         todayISO={todayISO}
-        projectsByDate={projectsByDate}
+        eventsByDate={eventsByDate}
         statusConfig={STATUS_CONFIG}
         weekdayLabels={WEEKDAY_LABELS}
         onPrevMonth={() => setMonthDate((date) => new Date(date.getFullYear(), date.getMonth() - 1, 1))}
@@ -193,14 +223,22 @@ export default function CalendarPage() {
           setMonthDate(new Date(now.getFullYear(), now.getMonth(), 1));
         }}
         onCreateDeadline={openCreateModal}
-        onEditProject={openEditModal}
+        onEditEvent={openEditModal}
       />
       <DeadlineModal
-        open={editingProjectId !== null || creatingForDate !== null}
-        editingProjectId={editingProjectId}
+        open={editingEventId !== null || creatingForDate !== null}
+        editingEventId={editingEventId}
+        editingType={editingType}
         projects={projects}
+        tasks={tasks}
         formProjectId={formProjectId}
-        setFormProjectId={setFormProjectId}
+        setFormProjectId={(pid) => {
+          setFormProjectId(pid);
+          // Auto-reset task when changing project
+          setFormTaskId('');
+        }}
+        formTaskId={formTaskId}
+        setFormTaskId={setFormTaskId}
         formDeadline={formDeadline}
         setFormDeadline={setFormDeadline}
         formStatus={formStatus}

@@ -225,6 +225,10 @@ export async function deleteTask(id) {
   return request(`/api/tasks/${id}`, { method: 'DELETE' });
 }
 
+export async function fetchTaskDeadlineHistory(id) {
+  return request(`/api/tasks/${id}/deadline-history`);
+}
+
 // ===================== TIME ENTRIES =====================
 
 export async function fetchTimeEntries(filters = {}) {
