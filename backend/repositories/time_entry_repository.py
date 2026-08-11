@@ -48,6 +48,15 @@ class TimeEntryRepository:
         db.commit()
 
     @staticmethod
+    def update(db: Session, entry: TimeEntry, update_data: dict) -> TimeEntry:
+        for key, value in update_data.items():
+            if hasattr(entry, key):
+                setattr(entry, key, value)
+        db.commit()
+        db.refresh(entry)
+        return entry
+
+    @staticmethod
     def get_stats(db: Session, days: int = 7, start_date: str = None, end_date: str = None, category: str = None, user_id: int = None):
         today = datetime.utcnow().date()
         start_day = datetime.strptime(start_date, "%Y-%m-%d").date() if start_date else today - timedelta(days=days - 1)

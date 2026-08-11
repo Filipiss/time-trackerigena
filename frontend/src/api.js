@@ -186,6 +186,13 @@ export async function deleteProjectAttachment(attachmentId) {
   return request(`/api/projects/attachments/${attachmentId}`, { method: 'DELETE' });
 }
 
+export async function updateProjectAttachment(projectId, attachmentId, data) {
+  return request(`/api/projects/${projectId}/attachments/${attachmentId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
+}
+
 // ===================== TASKS =====================
 
 export async function fetchTasks(category = null) {

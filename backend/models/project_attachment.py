@@ -12,6 +12,7 @@ class ProjectAttachment(Base):
     file_name = Column(String(255), nullable=False)
     file_url = Column(String(512), nullable=False)
     file_size = Column(Integer, nullable=True) # in bytes
+    color = Column(String(7), nullable=True) # hex color code
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     project = relationship("Project", back_populates="attachments")
@@ -23,5 +24,6 @@ class ProjectAttachment(Base):
             'file_name': self.file_name,
             'file_url': self.file_url,
             'file_size': self.file_size,
+            'color': self.color,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }

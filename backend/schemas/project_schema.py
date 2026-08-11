@@ -40,4 +40,5 @@ class ProjectAttachmentSchema(Schema):
     file_name = fields.Str(required=True)
     file_url = fields.Str(required=True)
     file_size = fields.Int(allow_none=True)
+    color = fields.Str(allow_none=True)
     created_at = fields.DateTime(dump_only=True)

@@ -7,7 +7,7 @@ import CurrencySelect from '../../molecules/CurrencySelect/CurrencySelect';
 import TabButton from '../../molecules/TabButton/TabButton';
 import TaskCard from '../../molecules/TaskCard/TaskCard';
 import EditModal from '../../organisms/EditModal/EditModal';
-import { Pencil, Trash2, Folder, Sparkles, FolderOpen, Blocks, Clock, ChevronDown, ChevronRight, Paperclip, Loader, X, Download, Briefcase } from 'lucide-react';
+import { Pencil, Trash2, Folder, Sparkles, FolderOpen, Blocks, Clock, ChevronDown, ChevronRight, Paperclip, Loader, X, Download, Briefcase, Copy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../utils/supabaseClient';
@@ -27,6 +27,7 @@ import {
   fetchProjectAttachments,
   addProjectAttachment,
   deleteProjectAttachment,
+  updateProjectAttachment,
 } from '../../../api';
 import { CURRENCY_SYMBOLS } from '../../../utils/currency';
 import './TaskManagerBoard.css';
@@ -330,6 +331,18 @@ export default function TaskManagerBoard({ onTaskChange }) {
     }
   };
 
+  const handleUpdateAttachmentColor = async (projectId, attachment, newColor) => {
+    try {
+      const updated = await updateProjectAttachment(projectId, attachment.id, { color: newColor });
+      setAttachmentsByProject(prev => ({
+        ...prev,
+        [projectId]: (prev[projectId] || []).map(a => a.id === attachment.id ? updated : a)
+      }));
+    } catch (e) {
+      console.error(`Erro ao atualizar cor do anexo: ${e.message}`);
+    }
+  };
+
   const categoryProjects = useMemo(
     () => projects.filter((project) => project.category === activeTab),
     [activeTab, projects],
@@ -412,11 +425,11 @@ export default function TaskManagerBoard({ onTaskChange }) {
         <form className="task-form glass-card-static" onSubmit={handleCreateProject}>
           <div className="task-form-title"><FolderOpen size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> Novo Projeto</div>
           <div className="task-form-field">
-            <label className="task-form-label">Nome do Projeto</label>
+            <label className="task-form-label">💼 Nome do Projeto</label>
             <Input value={newProjectName} onChange={(event) => setNewProjectName(event.target.value)} required />
           </div>
           <div className="task-form-field task-form-spacing" style={{ marginBottom: 'var(--space-6)' }}>
-            <label className="task-form-label">Categoria</label>
+            <label className="task-form-label">🏷️ Categoria</label>
             <Select value={newProjectCategory} onChange={(event) => setNewProjectCategory(event.target.value)} required>
               {categories.map((category) => (
                 <option key={category.id} value={category.name}>{category.name}</option>
@@ -429,7 +442,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
         <form className="task-form glass-card-static" onSubmit={handleCreateTask}>
           <div className="task-form-title"><Sparkles size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> Nova Task</div>
           <div className="task-form-field">
-            <label className="task-form-label">Nome da Task</label>
+            <label className="task-form-label">✨ Nome da Task</label>
             <Input value={newTaskName} onChange={(event) => setNewTaskName(event.target.value)} required />
           </div>
           <div className="task-form-field task-form-spacing">
@@ -502,19 +515,22 @@ export default function TaskManagerBoard({ onTaskChange }) {
           const projectTasks = tasks.filter((task) => task.project_id === project.id);
           return (
             <div key={project.id} className="project-folder">
-              <div className="project-folder-tab" onClick={() => navigate('/history?tab=faturamento')} title="Ver Faturamento deste projeto">
+              <div
+                className="project-folder-tab"
+                onClick={() => {
+                  setCollapsedProjects(prev => {
+                    const next = new Set(prev);
+                    if (next.has(project.id)) next.delete(project.id);
+                    else next.add(project.id);
+                    return next;
+                  });
+                }}
+                style={{ cursor: 'pointer' }}
+                title={collapsedProjects.has(project.id) ? "Expandir projeto" : "Minimizar projeto"}
+              >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <button
                     className="btn-icon"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCollapsedProjects(prev => {
-                        const next = new Set(prev);
-                        if (next.has(project.id)) next.delete(project.id);
-                        else next.add(project.id);
-                        return next;
-                      });
-                    }}
                     title={collapsedProjects.has(project.id) ? "Expandir projeto" : "Minimizar projeto"}
                   >
                     {collapsedProjects.has(project.id) ? <ChevronRight size={18} strokeWidth={1.5} /> : <ChevronDown size={18} strokeWidth={1.5} />}
@@ -556,23 +572,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
               {!collapsedProjects.has(project.id) && (
                 <div className="project-folder-body glass-card">
 
-                  {attachmentsByProject[project.id] && attachmentsByProject[project.id].length > 0 && (
-                    <div className="attachments-list" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px', padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-md)' }}>
-                      {attachmentsByProject[project.id].map(att => (
-                        <div key={att.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 8px', background: 'var(--layer-2)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', fontSize: '0.85rem' }}>
-                          <span className="truncate" style={{ maxWidth: '150px' }} title={att.file_name}>{att.file_name}</span>
-                          <a href={att.file_url} target="_blank" rel="noreferrer" className="btn-icon" style={{ padding: '4px' }} title="Baixar">
-                            <Download size={14} style={{ color: 'var(--color-primary)' }} strokeWidth={1.5} />
-                          </a>
-                          <button type="button" onClick={() => handleDeleteAttachment(project.id, att)} className="btn-icon" style={{ padding: '4px' }} title="Excluir">
-                            <X size={14} style={{ color: 'var(--color-danger)' }} strokeWidth={1.5} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="task-cards-list">
+                  <div className="task-cards-list" style={{ marginBottom: (attachmentsByProject[project.id] && attachmentsByProject[project.id].length > 0) ? 'var(--space-6)' : 0 }}>
                     {projectTasks.map((task) => (
                       <TaskCard
                         key={task.id}
@@ -586,6 +586,44 @@ export default function TaskManagerBoard({ onTaskChange }) {
                     ))}
                     {projectTasks.length === 0 ? <span className="empty-msg task-list-empty">Sem tasks neste projeto.</span> : null}
                   </div>
+
+                  {attachmentsByProject[project.id] && attachmentsByProject[project.id].length > 0 && (
+                    <div className="attachments-section">
+                      <div style={{ padding: 'var(--space-2) var(--space-4)', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--text-secondary)', borderTop: '1px solid var(--border-subtle)', paddingTop: 'var(--space-4)', marginBottom: 'var(--space-3)' }}>
+                        <FolderOpen size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} />
+                        Arquivos do projeto
+                      </div>
+                      <div className="attachments-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 'var(--space-3)', padding: '0 var(--space-2)' }}>
+                        {attachmentsByProject[project.id].map(att => (
+                          <div key={att.id} style={{ position: 'relative', overflow: 'hidden', paddingLeft: '14px', display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: 'var(--space-2) var(--space-3) var(--space-2) 18px', fontSize: 'var(--text-xs)' }}>
+                            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', backgroundColor: att.color || 'var(--border-subtle)' }} />
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <label title="Vincular cor da task" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                                <input
+                                  type="color"
+                                  style={{ width: '16px', height: '16px', padding: 0, border: 'none', cursor: 'pointer', background: 'transparent' }}
+                                  value={att.color || '#4a5568'}
+                                  onChange={(e) => handleUpdateAttachmentColor(project.id, att, e.target.value)}
+                                />
+                              </label>
+                            </div>
+
+                            <span className="truncate" style={{ flex: 1, fontWeight: 500, color: 'var(--text-primary)' }} title={att.file_name}>{att.file_name}</span>
+
+                            <div style={{ display: 'flex', gap: '4px' }}>
+                              <a href={att.file_url} target="_blank" rel="noreferrer" className="btn-icon" style={{ padding: '6px' }} title="Baixar">
+                                <Download size={14} style={{ color: 'var(--color-primary)' }} strokeWidth={1.5} />
+                              </a>
+                              <button type="button" onClick={() => handleDeleteAttachment(project.id, att)} className="btn-icon" style={{ padding: '6px' }} title="Excluir">
+                                <X size={14} style={{ color: 'var(--color-danger)' }} strokeWidth={1.5} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -602,7 +640,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
 
       <EditModal isOpen={!!editingTask} title="Editar Tarefa" onClose={() => setEditingTask(null)} onSave={handleSaveTask}>
         <div className="edit-modal-field">
-          <label className="edit-modal-label">Nome da Tarefa</label>
+          <label className="edit-modal-label">✨ Nome da Tarefa</label>
           <Input value={editTaskForm.name} onChange={e => setEditTaskForm({ ...editTaskForm, name: e.target.value })} required />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', alignItems: 'end' }}>
@@ -616,7 +654,12 @@ export default function TaskManagerBoard({ onTaskChange }) {
           </div>
           <div className="edit-modal-field">
             <label className="edit-modal-label">Cor</label>
-            <input type="color" className="color-picker" value={editTaskForm.color || '#10b981'} onChange={e => setEditTaskForm({ ...editTaskForm, color: e.target.value })} style={{ width: '42px', height: '42px', padding: '0', cursor: 'pointer', borderRadius: '4px' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <input type="color" className="color-picker" value={editTaskForm.color || '#10b981'} onChange={e => setEditTaskForm({ ...editTaskForm, color: e.target.value })} style={{ width: '42px', height: '42px', padding: '0', cursor: 'pointer', borderRadius: '4px' }} />
+              <button type="button" onClick={() => navigator.clipboard.writeText(editTaskForm.color || '#10b981')} className="btn-icon" style={{ padding: '6px', opacity: 0.7 }} title="Copiar código HEX">
+                <Copy size={16} strokeWidth={1.5} />
+              </button>
+            </div>
           </div>
         </div>
       </EditModal>

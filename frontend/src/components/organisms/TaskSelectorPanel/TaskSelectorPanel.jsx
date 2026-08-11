@@ -109,7 +109,7 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
       ) : (
         <>
           <div className="selector-filter-group">
-            <div className="selector-filter-label">Categoria</div>
+            <div className="selector-filter-label">💼 Categoria</div>
             <div className="selector-tabs-scroll">
               <div className="selector-tabs">
                 {categories.map((category) => (
@@ -157,7 +157,7 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
           </div>
 
           <div className="selector-filter-group">
-            <div className="selector-filter-label">Task</div>
+            <div className="selector-filter-label">✨ Task</div>
             {tasksInProject.length === 0 ? (
               <div className="task-selector-empty selector-inline-empty">
                 <p>Nenhuma task neste projeto. Crie tasks na aba Tasks!</p>

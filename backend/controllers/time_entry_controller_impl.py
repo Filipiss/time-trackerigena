@@ -95,3 +95,21 @@ def delete_time_entry(entry_id):
         return "", 204
     finally:
         db.close()
+
+@time_entry_bp.route("/<int:entry_id>", methods=["PUT"])
+@jwt_required()
+def update_time_entry(entry_id):
+    user_id = int(get_jwt_identity())
+    try:
+        data = request.json
+    except ValidationError as err:
+        return error_response(err.messages, 422)
+
+    db = get_db_session()
+    try:
+        entry = TimeEntryService.update_entry(db, entry_id, data, user_id=user_id)
+        return success_response(time_entry_schema.dump(entry))
+    except ValueError as e:
+        return error_response(str(e), 404)
+    finally:
+        db.close()

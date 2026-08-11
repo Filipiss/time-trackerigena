@@ -47,6 +47,32 @@ class TimeEntryService:
                 return False
         TimeEntryRepository.delete(db, entry)
         return True
+    @staticmethod
+    def update_entry(db: Session, entry_id: int, data: dict, user_id: int = None) -> TimeEntry:
+        entry = TimeEntryRepository.get_by_id(db, entry_id)
+        if not entry:
+            raise ValueError("Registro não encontrado")
+            
+        if user_id is not None:
+            task = entry.task
+            if not task or not task.project or task.project.user_id != user_id:
+                raise ValueError("Registro não encontrado")
+                
+        # If task_id changed, we update the relationship
+        if "task_id" in data and data["task_id"] != entry.task_id:
+            task = TaskRepository.get_by_id(db, data["task_id"])
+            if not task or (user_id and task.project.user_id != user_id):
+                raise ValueError("Nova Tarefa não encontrada")
+                
+        updated_entry = TimeEntryRepository.update(db, entry, data)
+        updated_entry.task_name = updated_entry.task.name
+        updated_entry.task_category = updated_entry.task.project.category if updated_entry.task.project else None
+        updated_entry.task_color = updated_entry.task.color
+        updated_entry.task_hourly_rate = updated_entry.task.hourly_rate
+        updated_entry.task_currency = updated_entry.task.currency or "EUR"
+        updated_entry.task_budgeted_hours = updated_entry.task.budgeted_hours
+        updated_entry.project_name = updated_entry.task.project.name if updated_entry.task.project else None
+        return updated_entry
 
     @staticmethod
     def get_dashboard_stats(db: Session, period: str = "week", start_date: str = None, end_date: str = None, category: str = None, user_id: int = None):

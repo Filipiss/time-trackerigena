@@ -132,12 +132,37 @@ def add_attachment(project_id):
             project_id=project_id,
             file_name=data["file_name"],
             file_url=data["file_url"],
-            file_size=data.get("file_size")
+            file_size=data.get("file_size"),
+            color=data.get("color")
         )
         db.add(attachment)
         db.commit()
         db.refresh(attachment)
         return success_response(project_attachment_schema.dump(attachment), 201)
+    finally:
+        db.close()
+
+@project_bp.route("/<int:project_id>/attachments/<int:attachment_id>", methods=["PATCH"])
+@jwt_required()
+def update_attachment(project_id, attachment_id):
+    user_id = int(get_jwt_identity())
+    db = get_db_session()
+    try:
+        project = ProjectService.get_project(db, project_id)
+        if not project or project.user_id != user_id:
+            return error_response("Projeto não encontrado", 404)
+        
+        attachment = db.query(ProjectAttachment).filter(ProjectAttachment.id == attachment_id, ProjectAttachment.project_id == project_id).first()
+        if not attachment:
+            return error_response("Anexo não encontrado", 404)
+            
+        data = request.json
+        if "color" in data:
+            attachment.color = data["color"]
+            
+        db.commit()
+        db.refresh(attachment)
+        return success_response(project_attachment_schema.dump(attachment))    
     finally:
         db.close()
 
