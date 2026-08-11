@@ -44,7 +44,7 @@ export default function Sidebar({ activeTab, onTabChange }) {
           <span className="sidebar-status-dot running" />
           <span className="status-text">Online</span>
         </div>
-        <div className="footer-version">v1.0.0</div>
+        <div className="footer-version">BETA v1.0.0</div>
       </div>
     </aside>
   );
