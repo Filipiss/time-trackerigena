@@ -12,7 +12,7 @@ export default function NavItem({ icon, label, isActive, onClick, to, end = fals
 
   if (to != null) {
     return (
-      <NavLink to={to} end={end} className={({ isActive: navActive }) => `nav-item btn ${navActive ? 'active' : ''}`}>
+      <NavLink to={to} end={end} className={({ isActive: navActive }) => `nav-item ${navActive ? 'active' : ''}`}>
         {content}
       </NavLink>
     );
