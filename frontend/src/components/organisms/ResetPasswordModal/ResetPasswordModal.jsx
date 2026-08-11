@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { apiResetPassword } from '../../../api';
 import { validate_password_strength_js } from '../../../utils/passwordStrength';
+import { Eye, EyeOff, CheckCircle, Check, Circle } from 'lucide-react';
 
 export default function ResetPasswordModal({ token, onClose, onSwitchToLogin }) {
     const [form, setForm] = useState({ password: '', confirm: '' });
@@ -44,7 +45,9 @@ export default function ResetPasswordModal({ token, onClose, onSwitchToLogin }) 
 
                 {success ? (
                     <div className="modal-success">
-                        <span className="success-icon">✅</span>
+                        <span className="success-icon" style={{ color: 'var(--color-success)', display: 'flex', justifyContent: 'center' }}>
+                            <CheckCircle size={48} strokeWidth={1.5} />
+                        </span>
                         <h2>Senha redefinida!</h2>
                         <p>Sua nova senha foi salva. Faça login para continuar.</p>
                         <button className="btn-primary" onClick={onSwitchToLogin}>Ir para o login</button>
@@ -72,7 +75,7 @@ export default function ResetPasswordModal({ token, onClose, onSwitchToLogin }) 
                                     />
                                     <button type="button" className="password-toggle"
                                         onClick={() => setShowPassword(v => !v)} tabIndex={-1}>
-                                        {showPassword ? '🙈' : '👁️'}
+                                        {showPassword ? <EyeOff size={18} strokeWidth={1.5} /> : <Eye size={18} strokeWidth={1.5} />}
                                     </button>
                                 </div>
                                 {form.password && (
@@ -84,7 +87,9 @@ export default function ResetPasswordModal({ token, onClose, onSwitchToLogin }) 
                                         <ul className="rules-list">
                                             {rules.map(r => (
                                                 <li key={r.label} className={r.ok ? 'rule-ok' : 'rule-fail'}>
-                                                    <span>{r.ok ? '✓' : '○'}</span> {r.label}
+                                                    <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                                        {r.ok ? <Check size={14} strokeWidth={2} /> : <Circle size={14} strokeWidth={1.5} />}
+                                                    </span> {r.label}
                                                 </li>
                                             ))}
                                         </ul>

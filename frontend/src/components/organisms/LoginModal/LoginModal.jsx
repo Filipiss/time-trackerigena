@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../../../contexts/AuthContext';
+import { Eye, EyeOff } from 'lucide-react';
 import './LoginModal.css';
 
 export default function LoginModal({ onClose, onSwitchToRegister, onForgotPassword }) {
@@ -69,7 +70,7 @@ export default function LoginModal({ onClose, onSwitchToRegister, onForgotPasswo
                                 tabIndex={-1}
                                 aria-label={showPassword ? 'Ocultar senha' : 'Exibir senha'}
                             >
-                                {showPassword ? '🙈' : '👁️'}
+                                {showPassword ? <EyeOff size={18} strokeWidth={1.5} /> : <Eye size={18} strokeWidth={1.5} />}
                             </button>
                         </div>
                         {onForgotPassword && (

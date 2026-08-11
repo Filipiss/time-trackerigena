@@ -3,6 +3,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { apiUpdateProfile } from '../../../api';
 import { validate_password_strength_js } from '../../../utils/passwordStrength';
 import { apiChangePassword } from '../../../api';
+import { Check, Circle, Camera } from 'lucide-react';
 import './ProfilePage.css';
 
 const COUNTRIES = [
@@ -148,7 +149,7 @@ export default function ProfilePage() {
                                 ) : (
                                     <div className="avatar-initials">{initials}</div>
                                 )}
-                                <div className="avatar-overlay">📷</div>
+                                <div className="avatar-overlay"><Camera size={20} strokeWidth={1.5} /></div>
                             </button>
                             <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
                             <p className="avatar-hint">Clique para trocar a foto</p>
@@ -234,7 +235,9 @@ export default function ProfilePage() {
                                         <ul className="rules-list">
                                             {pwdRules.map(r => (
                                                 <li key={r.label} className={r.ok ? 'rule-ok' : 'rule-fail'}>
-                                                    <span>{r.ok ? '✓' : '○'}</span> {r.label}
+                                                    <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                                        {r.ok ? <Check size={14} strokeWidth={2} /> : <Circle size={14} strokeWidth={1.5} />}
+                                                    </span> {r.label}
                                                 </li>
                                             ))}
                                         </ul>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { validate_password_strength_js } from '../../../utils/passwordStrength';
+import { CheckCircle, Check, Circle } from 'lucide-react';
 import './RegisterModal.css';
 
 export default function RegisterModal({ onClose, onSwitchToLogin }) {
@@ -75,7 +76,9 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
         <div className="modal-overlay">
             <div className="modal-box">
                 <div className="modal-success">
-                    <span className="success-icon">✅</span>
+                    <span className="success-icon" style={{ color: 'var(--color-success)', display: 'flex', justifyContent: 'center' }}>
+                        <CheckCircle size={48} strokeWidth={1.5} />
+                    </span>
                     <h2>Cadastro realizado!</h2>
                     <p>Verifique seu e-mail para ativar a conta antes de fazer login.</p>
                     <button className="btn-primary" onClick={onSwitchToLogin}>Ir para o Login</button>
@@ -121,7 +124,9 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
                                 <ul className="rules-list">
                                     {rules.map(r => (
                                         <li key={r.label} className={r.ok ? 'rule-ok' : 'rule-fail'}>
-                                            <span>{r.ok ? '✓' : '○'}</span> {r.label}
+                                            <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                                {r.ok ? <Check size={14} strokeWidth={2} /> : <Circle size={14} strokeWidth={1.5} />}
+                                            </span> {r.label}
                                         </li>
                                     ))}
                                 </ul>
