@@ -12,6 +12,7 @@ export default function TaskCard({
   currencySymbol,
   onToggleBilled,
   onDelete,
+  onEdit,
 }) {
   if (variant === 'manager') {
     return (
@@ -23,24 +24,28 @@ export default function TaskCard({
             <span className="task-hourly-rate-badge font-mono">
               {currencySymbol} {(task.hourly_rate || 0).toFixed(2)}/h
             </span>
-            {task.budgeted_hours != null ? (
-              <Badge className="badge task-budget-badge"><Target size={12} style={{ marginRight: '4px' }} /> {task.budgeted_hours}h orçadas</Badge>
-            ) : null}
+            <Badge className="badge task-budget-badge">
+              {task.budgeted_hours != null ? (
+                <><Target size={12} style={{ marginRight: '4px' }} /> {task.budgeted_hours}h orçadas</>
+              ) : (
+                <><CircleDashed size={12} style={{ marginRight: '4px' }} /> não orçadas</>
+              )}
+            </Badge>
             {task.is_billed ? <Badge className="badge badge-success billed-badge"><CheckCircle2 size={12} style={{ marginRight: '4px' }} /> Cobrado</Badge> : null}
           </div>
         </div>
         <div className="task-card-actions">
-          <button className="btn-icon" onClick={() => onEdit?.(task)} title="Editar Task">
+          <button className="btn-icon" onClick={(e) => { e.stopPropagation(); onEdit?.(task); }} title="Editar Task">
             <Pencil size={16} strokeWidth={1.5} />
           </button>
           <button
             className={`btn-icon ${task.is_billed ? 'active' : ''}`}
-            onClick={() => onToggleBilled?.(task)}
+            onClick={(e) => { e.stopPropagation(); onToggleBilled?.(task); }}
             title={task.is_billed ? 'Desmarcar como Cobrado' : 'Marcar como Cobrado'}
           >
             <Banknote size={16} strokeWidth={1.5} color="var(--color-success)" />
           </button>
-          <button className="btn-icon" onClick={() => onDelete?.(task.id)} style={{ color: 'var(--color-danger)' }} title="Excluir Task">
+          <button className="btn-icon" onClick={(e) => { e.stopPropagation(); onDelete?.(task.id); }} style={{ color: 'var(--color-danger)' }} title="Excluir Task">
             <Trash2 size={16} strokeWidth={1.5} />
           </button>
         </div>

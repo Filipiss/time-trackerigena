@@ -7,9 +7,10 @@ import CurrencySelect from '../../molecules/CurrencySelect/CurrencySelect';
 import TabButton from '../../molecules/TabButton/TabButton';
 import TaskCard from '../../molecules/TaskCard/TaskCard';
 import EditModal from '../../organisms/EditModal/EditModal';
-import { Pencil, Trash2, Folder, Sparkles, FolderOpen, Blocks, Clock } from 'lucide-react';
+import { Pencil, Trash2, Folder, Sparkles, FolderOpen, Blocks, Clock, ChevronDown, ChevronRight, Paperclip, Loader, X, Download, Briefcase } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
+import { supabase } from '../../../utils/supabaseClient';
 import {
   createCategory,
   createProject,
@@ -23,6 +24,9 @@ import {
   updateCategory,
   updateProject,
   updateTask,
+  fetchProjectAttachments,
+  addProjectAttachment,
+  deleteProjectAttachment,
 } from '../../../api';
 import { CURRENCY_SYMBOLS } from '../../../utils/currency';
 import './TaskManagerBoard.css';
@@ -47,10 +51,17 @@ export default function TaskManagerBoard({ onTaskChange }) {
   const [creatingTask, setCreatingTask] = useState(false);
   const [activeTab, setActiveTab] = useState('loco');
 
+  const [selectedCategoryToManage, setSelectedCategoryToManage] = useState('');
+  const [isCategoryNameFocused, setIsCategoryNameFocused] = useState(false);
+  const [collapsedProjects, setCollapsedProjects] = useState(new Set());
+
+  const [attachmentsByProject, setAttachmentsByProject] = useState({});
+  const [uploadingToProject, setUploadingToProject] = useState(null);
+
   const [editingProject, setEditingProject] = useState(null);
   const [editProjectForm, setEditProjectForm] = useState({ name: '' });
   const [editingTask, setEditingTask] = useState(null);
-  const [editTaskForm, setEditTaskForm] = useState({ name: '', hourly_rate: 0, budgeted_hours: '' });
+  const [editTaskForm, setEditTaskForm] = useState({ name: '', hourly_rate: 0, budgeted_hours: '', color: '#10b981' });
   const [isBudgetFocused, setIsBudgetFocused] = useState(false);
 
   useEffect(() => {
@@ -73,6 +84,17 @@ export default function TaskManagerBoard({ onTaskChange }) {
         setProjects(safeProjects);
         setTasks(safeTasks);
         setCategories(safeCategories);
+
+        const attachMap = {};
+        await Promise.all(safeProjects.map(async p => {
+          try {
+            attachMap[p.id] = await fetchProjectAttachments(p.id) || [];
+          } catch (e) {
+            attachMap[p.id] = [];
+          }
+        }));
+        setAttachmentsByProject(attachMap);
+
         setActiveTab((current) => {
           const normalizedCurrent = current?.toLowerCase();
           return safeCategories.some((category) => category.name.toLowerCase() === normalizedCurrent)
@@ -170,7 +192,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
       const task = await createTask({
         name: newTaskName.trim(),
         project_id: parseInt(newTaskProjectId, 10),
-        color: newTaskColor,
+        color: '#10b981',
         hourly_rate: parseFloat(newTaskHourlyRate) || 0,
         currency: newTaskCurrency,
         budgeted_hours: newTaskBudgetedHours.trim() === '' ? null : parseFloat(newTaskBudgetedHours),
@@ -242,7 +264,8 @@ export default function TaskManagerBoard({ onTaskChange }) {
     setEditTaskForm({
       name: task.name,
       hourly_rate: task.hourly_rate || 0,
-      budgeted_hours: task.budgeted_hours !== null && task.budgeted_hours !== undefined ? task.budgeted_hours : ''
+      budgeted_hours: task.budgeted_hours !== null && task.budgeted_hours !== undefined ? task.budgeted_hours : '',
+      color: task.color || '#10b981'
     });
   };
 
@@ -251,6 +274,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
       if (!editingTask || !editTaskForm.name.trim()) return;
       const updated = await updateTask(editingTask.id, {
         name: editTaskForm.name.trim(),
+        color: editTaskForm.color,
         hourly_rate: parseFloat(editTaskForm.hourly_rate) || 0,
         budgeted_hours: editTaskForm.budgeted_hours === '' ? null : parseFloat(editTaskForm.budgeted_hours)
       });
@@ -259,6 +283,50 @@ export default function TaskManagerBoard({ onTaskChange }) {
       onTaskChange?.();
     } catch (error) {
       window.alert(`Erro ao salvar task: ${error.message}`);
+    }
+  };
+
+  const handleFileUpload = async (projectId, file) => {
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      window.alert(`O arquivo excedeu 10MB!`);
+      return;
+    }
+    setUploadingToProject(projectId);
+    try {
+      const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      const { data, error } = await supabase.storage.from('project-attachments').upload(fileName, file);
+      if (error) throw error;
+
+      const { data: publicData } = supabase.storage.from('project-attachments').getPublicUrl(fileName);
+
+      const created = await addProjectAttachment(projectId, {
+        file_name: file.name,
+        file_url: publicData.publicUrl,
+        file_size: file.size
+      });
+      setAttachmentsByProject(prev => ({
+        ...prev,
+        [projectId]: [...(prev[projectId] || []), created]
+      }));
+    } catch (e) {
+      window.alert(`Erro no upload: ${e.message}`);
+    } finally {
+      setUploadingToProject(null);
+    }
+  };
+
+  const handleDeleteAttachment = async (projectId, attachment) => {
+    if (!window.confirm(`Tem certeza que deseja apagar o anexo ${attachment.file_name}?`)) return;
+    try {
+      await deleteProjectAttachment(attachment.id);
+      setAttachmentsByProject(prev => ({
+        ...prev,
+        [projectId]: (prev[projectId] || []).filter(a => a.id !== attachment.id)
+      }));
+      // Note: Opcionalmente deletaríamos fisicamente do Supabase, mas no plano grátis podemos acumular.
+    } catch (e) {
+      window.alert(`Erro ao deletar anexo: ${e.message}`);
     }
   };
 
@@ -279,25 +347,66 @@ export default function TaskManagerBoard({ onTaskChange }) {
 
       <div className="forms-grid">
         <form className="task-form glass-card-static" onSubmit={handleCreateCategory}>
-          <div className="task-form-title">Nova Categoria</div>
+          <div className="task-form-title"><Briefcase size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> Nova Categoria</div>
           <div className="task-form-field">
             <label className="task-form-label">Nome</label>
-            <Input value={newCategoryName} onChange={(event) => setNewCategoryName(event.target.value)} required />
+            <Input
+              value={newCategoryName}
+              onChange={(event) => setNewCategoryName(event.target.value)}
+              required
+              placeholder="Ex.: Trabalho, Freelance, Pessoal..."
+              onFocus={(e) => { e.target.placeholder = ''; setIsCategoryNameFocused(true); }}
+              onBlur={(e) => { e.target.placeholder = 'Ex.: Trabalho, Freelance, Pessoal...'; setIsCategoryNameFocused(false); }}
+            />
+          </div>
+          <div className="task-form-field task-form-spacing" style={{ marginBottom: 'var(--space-6)' }}>
+            <label className="task-form-label">Gerenciar Categoria</label>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <Select
+                value={selectedCategoryToManage}
+                onChange={(e) => setSelectedCategoryToManage(e.target.value)}
+                style={{ flex: 1 }}
+              >
+                <option value="">Selecionar categoria...</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </Select>
+
+              {selectedCategoryToManage && categories.find((c) => String(c.id) === selectedCategoryToManage) && (
+                <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
+                  <button
+                    type="button"
+                    className="btn btn-icon"
+                    style={{ background: 'rgba(255,255,255,0.05)', padding: '8px' }}
+                    onClick={() => {
+                      const cat = categories.find((c) => String(c.id) === selectedCategoryToManage);
+                      if (cat) handleEditCategory(cat);
+                    }}
+                    title="Editar categoria"
+                  >
+                    <Pencil size={16} strokeWidth={1.5} style={{ color: 'var(--color-info)' }} />
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-icon"
+                    style={{ background: 'rgba(255,255,255,0.05)', padding: '8px' }}
+                    onClick={() => {
+                      const cat = categories.find((c) => String(c.id) === selectedCategoryToManage);
+                      if (cat) {
+                        handleDeleteCategory(cat);
+                        setSelectedCategoryToManage('');
+                      }
+                    }}
+                    title="Excluir categoria"
+                  >
+                    <Trash2 size={16} strokeWidth={1.5} style={{ color: 'var(--color-danger)' }} />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
           <button type="submit" className="btn btn-primary task-form-submit">+ Criar Categoria</button>
-          <div className="category-badges-grid">
-            {categories.map((category) => (
-              <Badge key={category.id} className="badge category-admin-badge">
-                <span className="truncate">{category.name}</span>
-                <button type="button" className="btn-icon" onClick={() => handleEditCategory(category)} title="Editar categoria">
-                  <Pencil size={14} strokeWidth={1.5} />
-                </button>
-                <button type="button" className="btn-icon" onClick={() => handleDeleteCategory(category)} title="Excluir categoria" style={{ color: 'var(--color-danger)' }}>
-                  <Trash2 size={14} strokeWidth={1.5} />
-                </button>
-              </Badge>
-            ))}
-          </div>
         </form>
 
         <form className="task-form glass-card-static" onSubmit={handleCreateProject}>
@@ -306,7 +415,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
             <label className="task-form-label">Nome do Projeto</label>
             <Input value={newProjectName} onChange={(event) => setNewProjectName(event.target.value)} required />
           </div>
-          <div className="task-form-field task-form-spacing">
+          <div className="task-form-field task-form-spacing" style={{ marginBottom: 'var(--space-6)' }}>
             <label className="task-form-label">Categoria</label>
             <Select value={newProjectCategory} onChange={(event) => setNewProjectCategory(event.target.value)} required>
               {categories.map((category) => (
@@ -332,7 +441,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
               ))}
             </Select>
           </div>
-          <div className="task-form-inline-row">
+          <div className="task-form-inline-row" style={{ marginBottom: 'var(--space-6)' }}>
             <div className="task-form-field task-form-currency-field">
               <label className="task-form-label">Moeda</label>
               <CurrencySelect value={newTaskCurrency} onChange={(event) => setNewTaskCurrency(event.target.value)} />
@@ -367,10 +476,6 @@ export default function TaskManagerBoard({ onTaskChange }) {
                 )}
               </div>
             </div>
-            <div className="task-form-field task-color-field">
-              <label className="task-form-label">Cor</label>
-              <input type="color" className="color-picker" value={newTaskColor} onChange={(event) => setNewTaskColor(event.target.value)} />
-            </div>
           </div>
           <button type="submit" className="btn btn-primary task-form-submit" disabled={creatingTask}>+ Criar Task</button>
         </form>
@@ -398,8 +503,33 @@ export default function TaskManagerBoard({ onTaskChange }) {
           return (
             <div key={project.id} className="project-folder">
               <div className="project-folder-tab" onClick={() => navigate('/history?tab=faturamento')} title="Ver Faturamento deste projeto">
-                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Folder size={16} strokeWidth={1.5} /> {project.name}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button
+                    className="btn-icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCollapsedProjects(prev => {
+                        const next = new Set(prev);
+                        if (next.has(project.id)) next.delete(project.id);
+                        else next.add(project.id);
+                        return next;
+                      });
+                    }}
+                    title={collapsedProjects.has(project.id) ? "Expandir projeto" : "Minimizar projeto"}
+                  >
+                    {collapsedProjects.has(project.id) ? <ChevronRight size={18} strokeWidth={1.5} /> : <ChevronDown size={18} strokeWidth={1.5} />}
+                  </button>
+                  <Folder size={16} strokeWidth={1.5} /> {project.name}
+                </span>
                 <div style={{ display: 'flex', gap: '4px' }}>
+                  <label className="btn-icon" title="Anexar arquivo na nuvem" onClick={e => e.stopPropagation()} style={{ cursor: 'pointer', opacity: uploadingToProject === project.id ? 0.5 : 1 }}>
+                    {uploadingToProject === project.id ? <Loader size={16} strokeWidth={1.5} className="spin-animation" /> : <Paperclip size={16} strokeWidth={1.5} />}
+                    <input type="file" hidden accept=".svg,.png,.jpg,.jpeg,.gif,.pdf,.zip,.rar,.doc,.docx,.xls,.xlsx,.json,.fig" onChange={(e) => {
+                      const file = e.target.files[0];
+                      e.target.value = null; // reseta pra conseguir mandar o mesmo
+                      handleFileUpload(project.id, file);
+                    }} disabled={uploadingToProject === project.id} />
+                  </label>
                   <button
                     className="btn-icon"
                     onClick={(event) => {
@@ -423,22 +553,41 @@ export default function TaskManagerBoard({ onTaskChange }) {
                   </button>
                 </div>
               </div>
-              <div className="project-folder-body glass-card">
-                <div className="task-cards-list">
-                  {projectTasks.map((task) => (
-                    <TaskCard
-                      key={task.id}
-                      variant="manager"
-                      task={task}
-                      currencySymbol={CURRENCY_SYMBOLS[task.currency || 'EUR']}
-                      onToggleBilled={toggleBilled}
-                      onDelete={handleDeleteTask}
-                      onEdit={handleEditTaskClick}
-                    />
-                  ))}
-                  {projectTasks.length === 0 ? <span className="empty-msg task-list-empty">Sem tasks neste projeto.</span> : null}
+              {!collapsedProjects.has(project.id) && (
+                <div className="project-folder-body glass-card">
+
+                  {attachmentsByProject[project.id] && attachmentsByProject[project.id].length > 0 && (
+                    <div className="attachments-list" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px', padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-md)' }}>
+                      {attachmentsByProject[project.id].map(att => (
+                        <div key={att.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 8px', background: 'var(--layer-2)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', fontSize: '0.85rem' }}>
+                          <span className="truncate" style={{ maxWidth: '150px' }} title={att.file_name}>{att.file_name}</span>
+                          <a href={att.file_url} target="_blank" rel="noreferrer" className="btn-icon" style={{ padding: '4px' }} title="Baixar">
+                            <Download size={14} style={{ color: 'var(--color-primary)' }} strokeWidth={1.5} />
+                          </a>
+                          <button type="button" onClick={() => handleDeleteAttachment(project.id, att)} className="btn-icon" style={{ padding: '4px' }} title="Excluir">
+                            <X size={14} style={{ color: 'var(--color-danger)' }} strokeWidth={1.5} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="task-cards-list">
+                    {projectTasks.map((task) => (
+                      <TaskCard
+                        key={task.id}
+                        variant="manager"
+                        task={task}
+                        currencySymbol={CURRENCY_SYMBOLS[task.currency || 'EUR']}
+                        onToggleBilled={toggleBilled}
+                        onDelete={handleDeleteTask}
+                        onEdit={handleEditTaskClick}
+                      />
+                    ))}
+                    {projectTasks.length === 0 ? <span className="empty-msg task-list-empty">Sem tasks neste projeto.</span> : null}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           );
         })}
@@ -456,16 +605,22 @@ export default function TaskManagerBoard({ onTaskChange }) {
           <label className="edit-modal-label">Nome da Tarefa</label>
           <Input value={editTaskForm.name} onChange={e => setEditTaskForm({ ...editTaskForm, name: e.target.value })} required />
         </div>
-        <div className="edit-modal-field">
-          <label className="edit-modal-label">Valor / Hora</label>
-          <Input type="number" step="0.01" value={editTaskForm.hourly_rate} onChange={e => setEditTaskForm({ ...editTaskForm, hourly_rate: e.target.value })} />
-        </div>
-        <div className="edit-modal-field">
-          <label className="edit-modal-label">Horas Orçadas (Opicional)</label>
-          <Input type="number" step="0.1" value={editTaskForm.budgeted_hours} onChange={e => setEditTaskForm({ ...editTaskForm, budgeted_hours: e.target.value })} />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', alignItems: 'end' }}>
+          <div className="edit-modal-field">
+            <label className="edit-modal-label">Valor / Hora</label>
+            <Input type="number" step="0.01" value={editTaskForm.hourly_rate} onChange={e => setEditTaskForm({ ...editTaskForm, hourly_rate: e.target.value })} />
+          </div>
+          <div className="edit-modal-field">
+            <label className="edit-modal-label">Horas Orçadas</label>
+            <Input type="number" step="0.1" value={editTaskForm.budgeted_hours} onChange={e => setEditTaskForm({ ...editTaskForm, budgeted_hours: e.target.value })} />
+          </div>
+          <div className="edit-modal-field">
+            <label className="edit-modal-label">Cor</label>
+            <input type="color" className="color-picker" value={editTaskForm.color || '#10b981'} onChange={e => setEditTaskForm({ ...editTaskForm, color: e.target.value })} style={{ width: '42px', height: '42px', padding: '0', cursor: 'pointer', borderRadius: '4px' }} />
+          </div>
         </div>
       </EditModal>
 
-    </div>
+    </div >
   );
 }

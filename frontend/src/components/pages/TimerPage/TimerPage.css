@@ -9,6 +9,7 @@
 .selector-section {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 @media (max-width: 1366px) {

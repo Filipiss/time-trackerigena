@@ -11,6 +11,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-width: 0;
 }
 
 /* Topbar com botões de auth */
@@ -34,11 +35,13 @@
 .app-main {
   flex-grow: 1;
   padding: var(--space-8);
+  min-width: 0;
 }
 
 .content-container {
   max-width: 1200px;
   margin: 0 auto;
+  min-width: 0;
 }
 
 @media (max-width: 1366px) {

@@ -33,3 +33,11 @@ class ProjectDeadlineHistorySchema(Schema):
     old_deadline = fields.Str(dump_only=True, allow_none=True)
     new_deadline = fields.Str(dump_only=True, allow_none=True)
     changed_at = fields.DateTime(dump_only=True)
+
+class ProjectAttachmentSchema(Schema):
+    id = fields.Int(dump_only=True)
+    project_id = fields.Int(dump_only=True)
+    file_name = fields.Str(required=True)
+    file_url = fields.Str(required=True)
+    file_size = fields.Int(allow_none=True)
+    created_at = fields.DateTime(dump_only=True)

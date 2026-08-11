@@ -187,7 +187,6 @@
   }
 
   .nav-label {
-    display: block;
-    font-size: 0.7rem;
+    display: none;
   }
 }

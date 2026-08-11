@@ -16,8 +16,8 @@ export default function EditModal({ title, isOpen, onClose, onSave, children }) 
                     {children}
                 </div>
                 <div className="edit-modal-footer">
-                    <Button variant="secondary" onClick={onClose}>Cancelar</Button>
-                    <Button variant="primary" onClick={onSave}>Salvar Alterações</Button>
+                    <Button className="btn btn-ghost" onClick={onClose}>Cancelar</Button>
+                    <Button className="btn btn-primary" onClick={onSave}>Salvar</Button>
                 </div>
             </div>
         </div>

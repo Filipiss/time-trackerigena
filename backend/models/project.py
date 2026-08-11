@@ -31,6 +31,9 @@ class Project(Base):
     deadline_history = relationship(
         "ProjectDeadlineHistory", back_populates="project", cascade="all, delete-orphan"
     )
+    attachments = relationship(
+        "ProjectAttachment", back_populates="project", cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<Project(id={self.id}, name='{self.name}', category='{self.category}', user_id={self.user_id})>"

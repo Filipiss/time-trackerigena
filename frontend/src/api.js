@@ -171,6 +171,21 @@ export async function fetchProjectDeadlineHistory(id) {
   return request(`/api/projects/${id}/deadline-history`);
 }
 
+export async function fetchProjectAttachments(id) {
+  return request(`/api/projects/${id}/attachments`);
+}
+
+export async function addProjectAttachment(id, data) {
+  return request(`/api/projects/${id}/attachments`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteProjectAttachment(attachmentId) {
+  return request(`/api/projects/attachments/${attachmentId}`, { method: 'DELETE' });
+}
+
 // ===================== TASKS =====================
 
 export async function fetchTasks(category = null) {
