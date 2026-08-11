@@ -4,13 +4,14 @@ from models.project import Project
 
 class TaskRepository:
     @staticmethod
-    def list_all(db: Session, category: str = None, project_id: int = None):
+    def list_all(db: Session, category: str = None, project_id: int = None, user_id: int = None):
         query = db.query(Task).join(Project, Project.id == Task.project_id)
         if category:
             query = query.filter(Project.category == category)
         if project_id is not None:
             query = query.filter(Task.project_id == project_id)
-        
+        if user_id is not None:
+            query = query.filter(Project.user_id == user_id)
         return query.order_by(Task.created_at.desc()).all()
 
     @staticmethod

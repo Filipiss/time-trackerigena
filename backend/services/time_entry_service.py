@@ -6,8 +6,8 @@ from repositories.task_repository import TaskRepository
 
 class TimeEntryService:
     @staticmethod
-    def get_all_entries(db: Session, task_id: int = None, category: str = None, limit: int = 50, start_date: str = None, end_date: str = None):
-        entries = TimeEntryRepository.list_all(db, task_id, category, limit, start_date, end_date)
+    def get_all_entries(db: Session, task_id: int = None, category: str = None, limit: int = 50, start_date: str = None, end_date: str = None, user_id: int = None):
+        entries = TimeEntryRepository.list_all(db, task_id, category, limit, start_date, end_date, user_id=user_id)
         for entry in entries:
             entry.task_name = entry.task.name if entry.task else None
             entry.task_category = entry.task.project.category if (entry.task and entry.task.project) else None
@@ -36,9 +36,22 @@ class TimeEntryService:
         return entry
 
     @staticmethod
-    def get_dashboard_stats(db: Session, period: str = "week", start_date: str = None, end_date: str = None, category: str = None):
+    def delete_entry(db: Session, entry_id: int, user_id: int = None) -> bool:
+        entry = TimeEntryRepository.get_by_id(db, entry_id)
+        if not entry:
+            return False
+        if user_id is not None:
+            # Verifica ownership via task->project
+            task = entry.task
+            if not task or not task.project or task.project.user_id != user_id:
+                return False
+        TimeEntryRepository.delete(db, entry)
+        return True
+
+    @staticmethod
+    def get_dashboard_stats(db: Session, period: str = "week", start_date: str = None, end_date: str = None, category: str = None, user_id: int = None):
         days = {"week": 7, "month": 31, "year": 366, "total": 3650}.get(period, 7)
-        stats = TimeEntryRepository.get_stats(db, days, start_date, end_date, category)
+        stats = TimeEntryRepository.get_stats(db, days, start_date, end_date, category, user_id=user_id)
         
         time_by_category = [
             {"category": row.category, "total_seconds": row.total_seconds}

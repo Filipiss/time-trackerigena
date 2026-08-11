@@ -1,4 +1,6 @@
 import NavItem from '../../molecules/NavItem/NavItem';
+import UserWidget from '../../molecules/UserWidget/UserWidget';
+import { useAuth } from '../../../contexts/AuthContext';
 import './Sidebar.css';
 
 const NAV_ITEMS = [
@@ -10,12 +12,19 @@ const NAV_ITEMS = [
 ];
 
 export default function Sidebar({ activeTab, onTabChange }) {
+  const { user } = useAuth();
+
   return (
     <aside className="app-sidebar glass-card-static">
       <div className="sidebar-brand">
         <span className="brand-logo">👽</span>
         <h1 className="brand-title gradient-text">Time Trackerígena</h1>
       </div>
+
+      {/* Widget do usuário — visível só quando logado */}
+      {user && (
+        <UserWidget onNavigateToProfile={() => onTabChange('profile')} />
+      )}
 
       <nav className="sidebar-nav">
         {NAV_ITEMS.map((item) => (

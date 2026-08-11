@@ -1,13 +1,17 @@
 ﻿import { useCallback, useEffect, useState } from 'react';
+import { AuthProvider } from './contexts/AuthContext';
 import MainLayout from './components/templates/MainLayout/MainLayout';
 import CalendarPage from './components/pages/CalendarPage/CalendarPage';
 import DashboardPage from './components/pages/DashboardPage/DashboardPage';
 import HistoryPage from './components/pages/HistoryPage/HistoryPage';
 import TasksPage from './components/pages/TasksPage/TasksPage';
 import TimerPage from './components/pages/TimerPage/TimerPage';
+import ProfilePage from './components/pages/ProfilePage/ProfilePage';
+import ActivatePage from './components/pages/ActivatePage/ActivatePage';
+import ResetPasswordModal from './components/organisms/ResetPasswordModal/ResetPasswordModal';
 import './App.css';
 
-export default function App() {
+function AppInner() {
   const [activeTab, setActiveTab] = useState('timer');
   const [historySubTab, setHistorySubTab] = useState(null);
   const [selectedTask, setSelectedTask] = useState(() => {
@@ -32,19 +36,12 @@ export default function App() {
     setRefreshTrigger((previous) => previous + 1);
   }, []);
 
-  const handleTaskChange = useCallback(() => {
-    handleRefresh();
-  }, [handleRefresh]);
-
-  const handleSaveSuccess = useCallback(() => {
-    handleRefresh();
-  }, [handleRefresh]);
+  const handleTaskChange = useCallback(() => { handleRefresh(); }, [handleRefresh]);
+  const handleSaveSuccess = useCallback(() => { handleRefresh(); }, [handleRefresh]);
 
   const handleTabChange = useCallback((nextTab) => {
     setActiveTab(nextTab);
-    if (nextTab !== 'history') {
-      setHistorySubTab(null);
-    }
+    if (nextTab !== 'history') setHistorySubTab(null);
   }, []);
 
   const navigateToHistoryWithTab = useCallback((subTab) => {
@@ -54,24 +51,64 @@ export default function App() {
 
   return (
     <MainLayout activeTab={activeTab} onTabChange={handleTabChange}>
-      {activeTab === 'timer' ? (
+      {activeTab === 'timer' && (
         <TimerPage
           selectedTask={selectedTask}
           onSelectTask={setSelectedTask}
           refreshTrigger={refreshTrigger}
           onSaveSuccess={handleSaveSuccess}
         />
-      ) : null}
-
-      {activeTab === 'tasks' ? (
+      )}
+      {activeTab === 'tasks' && (
         <TasksPage onTaskChange={handleTaskChange} onNavigateToHistory={navigateToHistoryWithTab} />
-      ) : null}
-
-      {activeTab === 'dashboard' ? <DashboardPage refreshTrigger={refreshTrigger} /> : null}
-      {activeTab === 'calendar' ? <CalendarPage /> : null}
-      {activeTab === 'history' ? (
+      )}
+      {activeTab === 'dashboard' && <DashboardPage refreshTrigger={refreshTrigger} />}
+      {activeTab === 'calendar' && <CalendarPage />}
+      {activeTab === 'history' && (
         <HistoryPage refreshTrigger={refreshTrigger} onRefresh={handleRefresh} initialTab={historySubTab} />
-      ) : null}
+      )}
+      {activeTab === 'profile' && <ProfilePage />}
     </MainLayout>
+  );
+}
+
+export default function App() {
+  const params = new URLSearchParams(window.location.search);
+  const activationToken = params.get('token');
+  const resetToken = params.get('reset_token');
+  const isActivatePage = window.location.pathname === '/activate' && activationToken;
+
+  // Limpa o token da URL após detectá-lo (sem recarregar)
+  const [activeResetToken] = useState(resetToken);
+  useEffect(() => {
+    if (resetToken) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('reset_token');
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function handleResetClose() {
+    // Fecha o modal e volta para a tela normal
+    window.location.href = '/';
+  }
+
+  return (
+    <AuthProvider>
+      {isActivatePage ? (
+        <ActivatePage token={activationToken} />
+      ) : activeResetToken ? (
+        <>
+          <AppInner />
+          <ResetPasswordModal
+            token={activeResetToken}
+            onClose={handleResetClose}
+            onSwitchToLogin={handleResetClose}
+          />
+        </>
+      ) : (
+        <AppInner />
+      )}
+    </AuthProvider>
   );
 }

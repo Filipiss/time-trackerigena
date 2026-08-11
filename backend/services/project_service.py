@@ -4,8 +4,8 @@ from repositories.project_repository import ProjectRepository
 
 class ProjectService:
     @staticmethod
-    def get_all_projects(db: Session, category: str = None):
-        return ProjectRepository.list_all(db, category)
+    def get_all_projects(db: Session, category: str = None, user_id: int = None):
+        return ProjectRepository.list_all(db, category, user_id=user_id)
 
     @staticmethod
     def get_project(db: Session, project_id: int) -> Project:

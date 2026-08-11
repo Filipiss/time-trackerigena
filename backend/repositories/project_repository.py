@@ -5,10 +5,12 @@ from models.project import ProjectDeadlineHistory
 
 class ProjectRepository:
     @staticmethod
-    def list_all(db: Session, category: str = None):
+    def list_all(db: Session, category: str = None, user_id: int = None):
         query = db.query(Project)
         if category:
             query = query.filter(Project.category == category)
+        if user_id is not None:
+            query = query.filter(Project.user_id == user_id)
         return query.order_by(Project.created_at.desc()).all()
 
     @staticmethod

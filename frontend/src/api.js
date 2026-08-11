@@ -1,32 +1,39 @@
-// Serviço de API — comunicação com o backend FastAPI com tradução de categorias
+// Serviço de API — comunicação com o backend Flask com tradução de categorias
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+// ===================== AUTH HELPER =====================
+
+function getToken() {
+  return localStorage.getItem('auth_token');
+}
 
 /**
  * Helper para fazer requisições com tratamento de erro
  */
-async function request(endpoint, options = {}) {
+async function request(endpoint, options = {}, requiresAuth = true) {
   const url = `${API_URL}${endpoint}`;
 
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers,
   };
+
+  if (requiresAuth) {
+    const token = getToken();
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const config = { ...options, headers };
 
   try {
     const response = await fetch(url, config);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.detail || `HTTP Error: ${response.status}`);
+      throw new Error(errorData.error || errorData.detail || `HTTP Error: ${response.status}`);
     }
 
-    // Retorna null para 204 No Content
-    if (response.status === 204) {
-      return null;
-    }
+    if (response.status === 204) return null;
 
     return await response.json();
   } catch (error) {
@@ -37,6 +44,62 @@ async function request(endpoint, options = {}) {
   }
 }
 
+// ===================== AUTH =====================
+
+export async function apiRegister(username, email, password, phone) {
+  return request('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ username, email, password, phone }),
+  }, false);
+}
+
+export async function apiLogin(identifier, password) {
+  return request('/api/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ identifier, password }),
+  }, false);
+}
+
+export async function apiActivate(token) {
+  return request(`/api/auth/activate?token=${token}`, {}, false);
+}
+
+export async function apiGetProfile(token) {
+  return request('/api/auth/me', {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  }, false);
+}
+
+export async function apiUpdateProfile(data) {
+  return request('/api/users/profile', {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function apiChangePassword(currentPassword, newPassword) {
+  return request('/api/users/change-password', {
+    method: 'PUT',
+    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+  });
+}
+
+export async function apiForgotPassword(identifier) {
+  return request('/api/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ identifier }),
+  }, false);
+}
+
+export async function apiResetPassword(token, newPassword) {
+  return request('/api/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify({ token, new_password: newPassword }),
+  }, false);
+}
+
+// ===================== CATEGORIES =====================
+
 export const fetchCategories = () => request('/api/categories');
 export const createCategory = (name) => request('/api/categories', { method: 'POST', body: JSON.stringify({ name }) });
 export const updateCategory = (id, name) => request(`/api/categories/${id}`, { method: 'PUT', body: JSON.stringify({ name }) });
@@ -44,9 +107,6 @@ export const deleteCategory = (id) => request(`/api/categories/${id}`, { method:
 
 // ===================== PROJECTS =====================
 
-/**
- * Buscar todos os projetos, opcionalmente filtrados por categoria
- */
 export async function fetchProjects(category = null) {
   let paramCategory = category;
   if (category === 'loco') paramCategory = 'Loco';
@@ -61,9 +121,6 @@ export async function fetchProjects(category = null) {
   }));
 }
 
-/**
- * Criar um novo projeto
- */
 export async function createProject(data) {
   const payload = {
     ...data,
@@ -81,9 +138,6 @@ export async function createProject(data) {
   };
 }
 
-/**
- * Atualizar um projeto existente
- */
 export async function updateProject(id, data) {
   const payload = { ...data };
   if (data.category) {
@@ -101,27 +155,16 @@ export async function updateProject(id, data) {
   };
 }
 
-/**
- * Deletar um projeto
- */
 export async function deleteProject(id) {
-  return request(`/api/projects/${id}`, {
-    method: 'DELETE',
-  });
+  return request(`/api/projects/${id}`, { method: 'DELETE' });
 }
 
-/**
- * Buscar o histórico de alterações de deadline de um projeto
- */
 export async function fetchProjectDeadlineHistory(id) {
   return request(`/api/projects/${id}/deadline-history`);
 }
 
 // ===================== TASKS =====================
 
-/**
- * Buscar todas as tasks, opcionalmente filtradas por categoria
- */
 export async function fetchTasks(category = null) {
   let paramCategory = category;
   if (category === 'loco') paramCategory = 'Loco';
@@ -136,9 +179,6 @@ export async function fetchTasks(category = null) {
   }));
 }
 
-/**
- * Criar uma nova task
- */
 export async function createTask(data) {
   const payload = {
     ...data,
@@ -156,9 +196,6 @@ export async function createTask(data) {
   };
 }
 
-/**
- * Atualizar uma task existente
- */
 export async function updateTask(id, data) {
   const payload = { ...data };
   if (data.category) {
@@ -176,20 +213,12 @@ export async function updateTask(id, data) {
   };
 }
 
-/**
- * Deletar uma task
- */
 export async function deleteTask(id) {
-  return request(`/api/tasks/${id}`, {
-    method: 'DELETE',
-  });
+  return request(`/api/tasks/${id}`, { method: 'DELETE' });
 }
 
 // ===================== TIME ENTRIES =====================
 
-/**
- * Buscar time entries com filtros opcionais
- */
 export async function fetchTimeEntries(filters = {}) {
   const params = new URLSearchParams();
 
@@ -214,12 +243,7 @@ export async function fetchTimeEntries(filters = {}) {
   }));
 }
 
-/**
- * Criar um novo time entry
- */
 export async function createTimeEntry(data) {
-  // start_time e end_time precisam ser enviados
-  // se o frontend não mandar start_time, usamos o horário atual - duração
   const now = new Date();
   const durationSeconds = data.duration_seconds || 0;
   const startTime = data.start_time || new Date(now.getTime() - durationSeconds * 1000).toISOString();
@@ -244,24 +268,16 @@ export async function createTimeEntry(data) {
   };
 }
 
-/**
- * Deletar um time entry
- */
 export async function deleteTimeEntry(id) {
-  return request(`/api/time-entries/${id}`, {
-    method: 'DELETE',
-  });
+  return request(`/api/time-entries/${id}`, { method: 'DELETE' });
 }
 
 // ===================== STATS =====================
 
-/**
- * Buscar estatísticas para o dashboard
- */
 export async function fetchStats(filters = {}) {
   const params = new URLSearchParams(filters);
   const stats = await request(`/api/time-entries/stats?${params}`);
-  
+
   return {
     ...stats,
     time_by_category: (stats.time_by_category || []).map(c => ({

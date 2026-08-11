@@ -135,11 +135,15 @@ export default function TaskManagerBoard({ onTaskChange, onNavigateToHistory }) 
   };
 
   const handleDeleteCategory = async (category) => {
-    if (!window.confirm(`Excluir a categoria "${category.name}"? Ela precisa estar sem projetos.`)) return;
+    if (!window.confirm('Excluindo uma categoria, todos os projetos e tarefas associados a ela serão perdidos, deseja continuar?')) return;
     try {
       await deleteCategory(category.id);
+      const categoryProjectIds = projects.filter((p) => p.category === category.name.toLowerCase()).map((p) => p.id);
+      setProjects((previous) => previous.filter((p) => !categoryProjectIds.includes(p.id)));
+      setTasks((previous) => previous.filter((t) => !categoryProjectIds.includes(t.project_id)));
       setCategories((previous) => previous.filter((item) => item.id !== category.id));
       setActiveTab((current) => (current === category.name.toLowerCase() ? '' : current));
+      onTaskChange?.();
     } catch (error) {
       window.alert(`Erro: ${error.message}`);
     }
@@ -182,7 +186,7 @@ export default function TaskManagerBoard({ onTaskChange, onNavigateToHistory }) 
   };
 
   const handleDeleteProject = async (id) => {
-    if (!window.confirm('Isso apagará o projeto e todas as tasks/tempos associados. Continuar?')) return;
+    if (!window.confirm('Excluindo um projeto, todas as tarefas e registros de tempo associados a ele serão perdidos, deseja continuar?')) return;
     try {
       await deleteProject(id);
       setProjects((previous) => previous.filter((project) => project.id !== id));
@@ -270,12 +274,13 @@ export default function TaskManagerBoard({ onTaskChange, onNavigateToHistory }) 
             </Select>
           </div>
           <div className="task-form-inline-row">
+            <div className="task-form-field task-form-currency-field">
+              <label className="task-form-label">Moeda</label>
+              <CurrencySelect value={newTaskCurrency} onChange={(event) => setNewTaskCurrency(event.target.value)} />
+            </div>
             <div className="task-form-field task-form-inline-field">
               <label className="task-form-label">Valor/Hora</label>
-              <div className="task-rate-row">
-                <CurrencySelect value={newTaskCurrency} onChange={(event) => setNewTaskCurrency(event.target.value)} />
-                <Input type="number" step="0.01" value={newTaskHourlyRate} onChange={(event) => setNewTaskHourlyRate(event.target.value)} placeholder="Opcional" />
-              </div>
+              <Input type="number" step="0.01" value={newTaskHourlyRate} onChange={(event) => setNewTaskHourlyRate(event.target.value)} placeholder="Opcional" />
             </div>
             <div className="task-form-field task-form-inline-field">
               <label className="task-form-label">Horas Orçadas</label>

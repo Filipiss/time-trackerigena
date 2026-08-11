@@ -9,9 +9,11 @@ from models.project import Project
 
 class TimeEntryRepository:
     @staticmethod
-    def list_all(db: Session, task_id: int = None, category: str = None, limit: int = 50, start_date: str = None, end_date: str = None):
+    def list_all(db: Session, task_id: int = None, category: str = None, limit: int = 50, start_date: str = None, end_date: str = None, user_id: int = None):
         query = db.query(TimeEntry).join(Task, Task.id == TimeEntry.task_id).join(Project, Project.id == Task.project_id)
-        
+
+        if user_id is not None:
+            query = query.filter(Project.user_id == user_id)
         if task_id is not None:
             query = query.filter(TimeEntry.task_id == task_id)
         if category:
@@ -20,7 +22,7 @@ class TimeEntryRepository:
             query = query.filter(func.date(TimeEntry.start_time) >= start_date)
         if end_date:
             query = query.filter(func.date(TimeEntry.start_time) <= end_date)
-            
+
         return query.order_by(TimeEntry.created_at.desc()).limit(limit).all()
 
     @staticmethod
@@ -37,11 +39,22 @@ class TimeEntryRepository:
         return total
 
     @staticmethod
-    def get_stats(db: Session, days: int = 7, start_date: str = None, end_date: str = None, category: str = None):
+    def get_by_id(db: Session, entry_id: int) -> TimeEntry:
+        return db.query(TimeEntry).filter(TimeEntry.id == entry_id).first()
+
+    @staticmethod
+    def delete(db: Session, entry: TimeEntry):
+        db.delete(entry)
+        db.commit()
+
+    @staticmethod
+    def get_stats(db: Session, days: int = 7, start_date: str = None, end_date: str = None, category: str = None, user_id: int = None):
         today = datetime.utcnow().date()
         start_day = datetime.strptime(start_date, "%Y-%m-%d").date() if start_date else today - timedelta(days=days - 1)
         end_day = datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else today
         base_query = db.query(TimeEntry).join(Task, Task.id == TimeEntry.task_id).join(Project, Project.id == Task.project_id).filter(func.date(TimeEntry.start_time) >= start_day, func.date(TimeEntry.start_time) <= end_day)
+        if user_id is not None:
+            base_query = base_query.filter(Project.user_id == user_id)
         if category:
             base_query = base_query.filter(Project.category == category)
         filtered = base_query.subquery()

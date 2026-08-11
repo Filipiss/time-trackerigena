@@ -2,6 +2,8 @@ import os
 
 from flask import Flask, jsonify
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
+from flask_mail import Mail
 from dotenv import load_dotenv
 from sqlalchemy import inspect, text
 
@@ -12,24 +14,22 @@ from routes.project_routes import project_bp
 from routes.task_routes import task_bp
 from routes.time_entry_routes import time_entry_bp
 from routes.category_routes import category_bp
+from routes.auth_routes import auth_bp
+from routes.user_routes import user_bp
+
 from models.category import Category
 from models.project import Project
 from models.task import Task
+from models.user import User  # noqa: F401 — necessário para create_all detectar a tabela
 
 load_dotenv()
 
-# Cria todas as tabelas no banco de dados, se não existirem
+# Cria todas as tabelas no banco de dados, se não existirem (incluindo 'users')
 Base.metadata.create_all(bind=engine)
 
 
 def _run_lightweight_migrations():
-    """Adiciona colunas novas em tabelas já existentes (sem Alembic).
-
-    `create_all` só cria tabelas que não existem; não altera tabelas já
-    criadas em bancos antigos. Este helper cobre os campos adicionados
-    depois do lançamento inicial (calendário de deadlines, moeda e
-    horas orçadas das tasks).
-    """
+    """Adiciona colunas novas em tabelas já existentes (sem Alembic)."""
     inspector = inspect(engine)
 
     columns_to_add = {
@@ -37,6 +37,7 @@ def _run_lightweight_migrations():
             ("deadline", "VARCHAR(10)"),
             ("status", "VARCHAR(30)"),
             ("notes", "TEXT"),
+            ("user_id", "INTEGER"),  # FK para users — adicionada gradualmente
         ],
         "tasks": [
             ("currency", "VARCHAR(3)"),
@@ -75,13 +76,31 @@ finally:
     db.close()
 
 
+mail = Mail()
+
+
 def create_app():
     app = Flask(__name__)
     app.url_map.strict_slashes = False
 
-    # Configuração de CORS
+    # ── JWT ──────────────────────────────────────────────────────────────────
+    app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "dev-insecure-key-change-in-prod")
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 60 * 60 * 24 * 7  # 7 dias
+    JWTManager(app)
+
+    # ── Flask-Mail ────────────────────────────────────────────────────────────
+    app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+    app.config["MAIL_PORT"] = int(os.getenv("MAIL_PORT", 587))
+    app.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS", "True").lower() == "true"
+    app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME", "")
+    app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD", "")
+    app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER", "")
+    mail.init_app(app)
+
+    # ── CORS ──────────────────────────────────────────────────────────────────
     origins = [
         "http://localhost:5173",
+        "http://localhost:5174",
         "http://localhost:3000",
     ]
     frontend_url = os.getenv("FRONTEND_URL")
@@ -90,7 +109,9 @@ def create_app():
 
     CORS(app, origins=origins, supports_credentials=True)
 
-    # Registra os blueprints (routers)
+    # ── Blueprints ────────────────────────────────────────────────────────────
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(user_bp)
     app.register_blueprint(project_bp)
     app.register_blueprint(task_bp)
     app.register_blueprint(time_entry_bp)

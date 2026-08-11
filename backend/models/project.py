@@ -15,6 +15,7 @@ class Project(Base):
     __tablename__ = "projects"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # nullable para migração gradual
     name = Column(String(100), nullable=False)
     category = Column(String(20), nullable=False)  # 'Loco' ou 'Freelas'
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -31,7 +32,7 @@ class Project(Base):
     )
 
     def __repr__(self):
-        return f"<Project(id={self.id}, name='{self.name}', category='{self.category}')>"
+        return f"<Project(id={self.id}, name='{self.name}', category='{self.category}', user_id={self.user_id})>"
 
 
 class ProjectDeadlineHistory(Base):

@@ -74,8 +74,9 @@ def delete_category(category_id):
     try:
         category = db.get(Category, category_id)
         if not category: return error_response("Categoria não encontrada", 404)
-        if db.query(Project).filter(Project.category == category.name).first():
-            return error_response("Mova ou exclua os projetos desta categoria antes de removê-la", 409)
+        # Cascade: exclui todos os projetos da categoria (tasks/time_entries são removidos pelo SQLAlchemy cascade)
+        for project in db.query(Project).filter(Project.category == category.name).all():
+            db.delete(project)
         db.delete(category); db.commit()
         return "", 204
     finally:
