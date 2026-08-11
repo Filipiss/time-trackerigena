@@ -73,6 +73,11 @@ export default function BillingTable({
                       {hasBudget ? `${taskProfit >= 0 ? '+' : ''}${taskProfit.toFixed(2)}h` : '—'}
                     </td>
                     <td className="font-mono value-eur-highlight">{CURRENCY_SYMBOLS[targetCurrency]} {totalConverted.toFixed(2)}</td>
+                    <td>
+                      <button className="btn-icon" onClick={() => onEdit?.(item)} title="Editar Horas e Valor/Hora">
+                        <Pencil size={16} strokeWidth={1.5} />
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
