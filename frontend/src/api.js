@@ -280,6 +280,17 @@ export async function deleteTimeEntry(id) {
   return request(`/api/time-entries/${id}`, { method: 'DELETE' });
 }
 
+export async function updateTimeEntry(id, data) {
+  const response = await request(`/api/time-entries/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+  return {
+    ...response,
+    task_category: response.task_category ? response.task_category.toLowerCase() : response.task_category
+  };
+}
+
 // ===================== STATS =====================
 
 export async function fetchStats(filters = {}) {

@@ -36,8 +36,8 @@ export default function BillingTable({
           <table className="values-table">
             <thead>
               <tr>
+                <th>Projeto</th>
                 <th>Tarefa</th>
-                <th>Categoria</th>
                 <th>Horas Trabalhadas</th>
                 <th>Valor/Hora</th>
                 <th>Lucro da Task</th>
@@ -54,13 +54,13 @@ export default function BillingTable({
 
                 return (
                   <tr key={index} className="values-row">
+                    <td>{item.projectName || 'Sem Projeto'}</td>
                     <td>
                       <div className="task-cell">
                         <span className="task-color-dot" style={{ backgroundColor: item.color }} />
                         <span className="task-name-text">{item.name}</span>
                       </div>
                     </td>
-                    <td><span className={`badge badge-${item.category}`}>{item.category}</span></td>
                     <td className="font-mono">
                       {hours.toFixed(2)}h
                       <span className="values-sec-details"> ({formatDurationShort(item.totalSeconds)})</span>

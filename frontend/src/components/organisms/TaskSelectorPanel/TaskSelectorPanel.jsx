@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Spinner from '../../atoms/Spinner/Spinner';
 import TabButton from '../../molecules/TabButton/TabButton';
 import TaskCard from '../../molecules/TaskCard/TaskCard';
+import { Filter, Folder } from 'lucide-react';
 import { fetchProjects, fetchTasks } from '../../../api';
 import './TaskSelectorPanel.css';
 
@@ -98,7 +99,7 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
   return (
     <div className="task-selector glass-card-static task-selector-shell">
       <div className="task-selector-header">
-        <h3 className="task-selector-title">📋 Filtro de Cronometragem</h3>
+        <h3 className="task-selector-title"><Filter size={18} strokeWidth={1.5} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} /> Filtro de Cronometragem</h3>
       </div>
 
       {projects.length === 0 ? (
@@ -147,7 +148,7 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
                       isActive={effectiveProjectId === project.id}
                       onClick={() => setActiveProjectId(project.id)}
                     >
-                      📁 {project.name}
+                      <Folder size={14} style={{ marginRight: '6px' }} strokeWidth={1.5} /> {project.name}
                     </TabButton>
                   ))}
                 </div>

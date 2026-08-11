@@ -7,7 +7,7 @@ import StatCard from '../../molecules/StatCard/StatCard';
 import { fetchCategories, fetchStats } from '../../../api';
 import './DashboardOverview.css';
 
-const COLORS = ['#06b6d4', '#8b5cf6', '#10b981', '#f59e0b', '#ec4899', '#6366f1'];
+const COLORS = ['#a3e635', '#bbf7d0', '#84cc16', '#a1a1aa', '#71717a', '#d4d4d8'];
 const formatTime = (seconds = 0) => `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
 const initialFilters = { type: '', year: '', month: '', week: '', day: '', category: '' };
 
@@ -163,7 +163,7 @@ export default function DashboardOverview({ refreshTrigger }) {
                 <XAxis dataKey="label" />
                 <YAxis unit="h" />
                 <Tooltip />
-                <Area dataKey="hours" stroke="#06b6d4" fill="#06b6d4" fillOpacity={0.25} />
+                <Area dataKey="hours" stroke="#a3e635" fill="#a3e635" fillOpacity={0.25} />
               </AreaChart>
             </ResponsiveContainer>
           </div>

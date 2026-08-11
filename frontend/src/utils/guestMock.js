@@ -153,12 +153,28 @@ const MockDB = {
             let task_name = 'Unknown', task_category = '', project_name = '';
             if (t) {
                 task_name = t.name;
-                task_category = t.category;
                 const p = projects.find(proj => String(proj.id) === String(t.project_id));
-                if (p) project_name = p.name;
+                if (p) {
+                    project_name = p.name;
+                    task_category = p.category;
+                }
             }
-            return { ...e, task_name, task_category, project_name };
+            return {
+                ...e,
+                task_name,
+                task_category,
+                project_name,
+                task_color: t?.color || 'var(--color-info)',
+                task_hourly_rate: t?.hourly_rate || 0,
+                task_currency: t?.currency || 'EUR',
+                task_budgeted_hours: t?.budgeted_hours,
+            };
         });
+
+        if (params.has('category')) {
+            const filterCat = params.get('category').toLowerCase();
+            entries = entries.filter(e => (e.task_category || '').toLowerCase() === filterCat);
+        }
 
         // sort descending by start_time
         entries.sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime());
@@ -174,6 +190,17 @@ const MockDB = {
         const t = tasks.find(tsk => String(tsk.id) === String(data.task_id));
         return { ...newEntry, task_category: t ? t.category : '' };
     },
+    updateTimeEntry: (id, data) => {
+        const entries = getStore(GUEST_E);
+        const index = entries.findIndex(e => String(e.id) === String(id));
+        if (index === -1) throw new Error('Not found');
+        entries[index] = { ...entries[index], ...data };
+        setStore(GUEST_E, entries);
+
+        const tasks = getStore(GUEST_T);
+        const t = tasks.find(tsk => String(tsk.id) === String(entries[index].task_id));
+        return { ...entries[index], task_category: t ? t.category : '' };
+    },
     deleteTimeEntry: (id) => {
         const entries = getStore(GUEST_E);
         setStore(GUEST_E, entries.filter(e => String(e.id) !== String(id)));
@@ -186,23 +213,30 @@ const MockDB = {
         let totalTime = 0;
         const catMap = {};
         const taskMap = {};
+        const dayMap = {};
 
         entries.forEach(e => {
             totalTime += e.duration_seconds;
-            const cat = e.task_category || 'Uncategorized';
+            const cat = e.task_category || 'sem-categoria';
             catMap[cat] = (catMap[cat] || 0) + e.duration_seconds;
 
             if (e.task_name) {
                 if (!taskMap[e.task_name]) taskMap[e.task_name] = { category: cat, duration: 0 };
                 taskMap[e.task_name].duration += e.duration_seconds;
             }
+
+            const dayLabel = new Date(e.start_time).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+            dayMap[dayLabel] = (dayMap[dayLabel] || 0) + e.duration_seconds;
         });
 
-        const time_by_category = Object.entries(catMap).map(([category, duration_seconds]) => ({ category, duration_seconds }));
-        const time_by_task = Object.entries(taskMap).map(([task_name, val]) => ({ task_name, category: val.category, duration_seconds: val.duration }));
-        const time_by_day = []; // Optional simplification for guest mode
+        const time_by_category = Object.entries(catMap).map(([category, duration_seconds]) => ({ category, total_seconds: duration_seconds }));
+        const time_by_task = Object.entries(taskMap).map(([task_name, val]) => ({ task_name, category: val.category, total_seconds: val.duration }));
+        const time_by_day = Object.entries(dayMap).map(([label, total_seconds]) => ({ label, total_seconds }));
 
-        return { total_time: totalTime, time_by_category, time_by_task, time_by_day };
+        // sort time by day purely ascending based on Date logic if needed, but for simplicity returning the map entries
+        time_by_day.sort((a, b) => new Date(a.label).getTime() - new Date(b.label).getTime());
+
+        return { total_seconds: totalTime, time_by_category, time_by_task, time_by_day };
     }
 };
 
@@ -250,6 +284,7 @@ export async function handleGuestRequest(endpoint, options = {}) {
             if (parts[2] === 'stats') return MockDB.getStats(params);
             if (method === 'GET') return MockDB.getTimeEntries(params);
             if (method === 'POST') return MockDB.createTimeEntry(body);
+            if (method === 'PUT') return MockDB.updateTimeEntry(parts[2], body);
             if (method === 'DELETE') return MockDB.deleteTimeEntry(parts[2]);
         }
 

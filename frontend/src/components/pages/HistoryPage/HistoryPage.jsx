@@ -4,8 +4,10 @@ import Spinner from '../../atoms/Spinner/Spinner';
 import BillingTable from '../../organisms/BillingTable/BillingTable';
 import HistoryTable from '../../organisms/HistoryTable/HistoryTable';
 import TabButton from '../../molecules/TabButton/TabButton';
-import { deleteTimeEntry, fetchCategories, fetchTimeEntries } from '../../../api';
+import EditModal from '../../organisms/EditModal/EditModal';
+import { deleteTimeEntry, fetchCategories, fetchTimeEntries, updateTimeEntry, updateTask } from '../../../api';
 import { convertCurrency, fetchExchangeRates } from '../../../utils/currency';
+import { Building2, Palmtree, Home, ScrollText, Clock, BarChart3 } from 'lucide-react';
 import './HistoryPage.css';
 
 function formatDuration(totalSeconds) {
@@ -39,13 +41,13 @@ function formatDate(dateStr) {
 }
 
 const WEEKDAY_CONFIG = {
-  1: { name: 'Segunda', icon: '🏢' },
-  2: { name: 'Terça', icon: '🏢' },
-  3: { name: 'Quarta', icon: '🏢' },
-  4: { name: 'Quinta', icon: '🏢' },
-  5: { name: 'Sexta', icon: '🏢' },
-  6: { name: 'Sábado', icon: '🏖️' },
-  0: { name: 'Domingo', icon: '⛪' },
+  1: { name: 'Segunda', icon: <Building2 size={16} strokeWidth={1.5} /> },
+  2: { name: 'Terça', icon: <Building2 size={16} strokeWidth={1.5} /> },
+  3: { name: 'Quarta', icon: <Building2 size={16} strokeWidth={1.5} /> },
+  4: { name: 'Quinta', icon: <Building2 size={16} strokeWidth={1.5} /> },
+  5: { name: 'Sexta', icon: <Building2 size={16} strokeWidth={1.5} /> },
+  6: { name: 'Sábado', icon: <Palmtree size={16} strokeWidth={1.5} /> },
+  0: { name: 'Domingo', icon: <Home size={16} strokeWidth={1.5} /> },
 };
 
 const DISPLAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
@@ -61,6 +63,8 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
   const [exchangeRateLoading, setExchangeRateLoading] = useState(true);
   const [targetCurrency, setTargetCurrency] = useState('BRL');
   const [activeTab, setActiveTab] = useState(initialTab || null);
+  const [editingItem, setEditingItem] = useState(null);
+  const [editForm, setEditForm] = useState({ task_name: '', start_date: '', duration: '', hourly_rate: 0, notes: '' });
 
   const initialTabKey = initialTab ?? null;
 
@@ -159,6 +163,57 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
     }
   };
 
+  const handleEditClick = (item) => {
+    setEditingItem(item);
+    setEditForm({
+      task_name: item.task_name || '',
+      start_date: item.start_time ? item.start_time.slice(0, 10) : '',
+      duration: formatDuration(item.duration_seconds || 0),
+      hourly_rate: item.task_hourly_rate || 0,
+      notes: item.notes ? (Array.isArray(item.notes) ? item.notes.join(' | ') : item.notes) : '',
+    });
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      if (!editingItem) return;
+      const isGroup = Array.isArray(editingItem.ids);
+      const parts = editForm.duration.split(':');
+      const newDurationSec = (parseInt(parts[0] || '0', 10) * 3600) + (parseInt(parts[1] || '0', 10) * 60) + parseInt(parts[2] || '0', 10);
+
+      if (editingItem.task_id) {
+        await updateTask(editingItem.task_id, {
+          name: editForm.task_name,
+          hourly_rate: parseFloat(editForm.hourly_rate),
+        });
+      }
+
+      if (isGroup) {
+        // Just update one entry's duration to make up difference, or first entry
+        const entryId = editingItem.ids[0];
+        const diff = newDurationSec - editingItem.duration_seconds;
+        const entry = entries.find(e => e.id === entryId);
+        if (entry) {
+          await updateTimeEntry(entryId, {
+            duration_seconds: Math.max(0, entry.duration_seconds + diff),
+            start_time: editForm.start_date ? new Date(editForm.start_date + 'T12:00:00Z').toISOString() : entry.start_time,
+          });
+        }
+      } else {
+        await updateTimeEntry(editingItem.id, {
+          duration_seconds: newDurationSec,
+          notes: editForm.notes,
+          start_time: editForm.start_date ? new Date(editForm.start_date + 'T12:00:00Z').toISOString() : editingItem.start_time,
+        });
+      }
+
+      setEditingItem(null);
+      onRefresh?.();
+    } catch (error) {
+      window.alert(`Erro ao salvar: ${error.message}`);
+    }
+  };
+
   const groupedByWeekday = useMemo(() => {
     const groups = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 0: [] };
     entries.forEach((entry) => {
@@ -185,8 +240,9 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
       if (!taskTotals[entry.task_id]) {
         taskTotals[entry.task_id] = {
           name: entry.task_name || 'Tarefa Excluída',
-          color: entry.task_color || '#6366f1',
-          category: entry.task_category || 'loco',
+          projectName: entry.project_name || '',
+          color: entry.task_color || 'var(--color-info)',
+          category: (entry.task_category || 'sem-categoria').toLowerCase(),
           hourlyRate: entry.task_hourly_rate || 0,
           currency: entry.task_currency || 'EUR',
           budgetedHours: entry.task_budgeted_hours,
@@ -214,7 +270,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
   return (
     <div className="time-history">
       <div className="time-history-header">
-        <h2 className="time-history-title gradient-text">📜 Histórico de Sessões</h2>
+        <h2 className="time-history-title gradient-text"><ScrollText size={20} strokeWidth={1.5} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} /> Histórico de Sessões</h2>
         <div className="history-filters">
           <Input type="month" value={monthFilter} onChange={(event) => setMonthFilter(event.target.value)} className="filter-month-input" />
           <TabButton className={`filter-btn ${categoryFilter === 'all' ? 'active' : ''}`} isActive={categoryFilter === 'all'} onClick={() => setCategoryFilter('all')}>Todos</TabButton>
@@ -241,7 +297,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
       ) : entries.length === 0 ? (
         <div className="glass-card-static empty-card">
           <div className="empty-state">
-            <span className="empty-state-icon">⏱️</span>
+            <span className="empty-state-icon"><Clock size={40} strokeWidth={1.5} /></span>
             <div className="empty-state-title">Nenhum registro encontrado</div>
             <div className="empty-state-text">
               {categoryFilter === 'all'
@@ -270,7 +326,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
                   </TabButton>
                 );
               })}
-              <TabButton className={`horizontal-tab-btn faturamento-tab ${activeTab === 'faturamento' ? 'active' : ''}`} isActive={activeTab === 'faturamento'} icon="📊" onClick={() => handleTabClick('faturamento')}>Faturamento</TabButton>
+              <TabButton className={`horizontal-tab-btn faturamento-tab ${activeTab === 'faturamento' ? 'active' : ''}`} isActive={activeTab === 'faturamento'} icon={<BarChart3 size={16} strokeWidth={1.5} />} onClick={() => handleTabClick('faturamento')}>Faturamento</TabButton>
             </div>
           </div>
 
@@ -288,6 +344,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
                 deletingId={deletingId}
                 setDeletingId={setDeletingId}
                 onDeleteGroup={handleDeleteGroup}
+                onEdit={handleEditClick}
               />
             ) : null}
 
@@ -312,6 +369,41 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
           </div>
         </div>
       )}
+
+      {/* Modal de Edição */}
+      <EditModal
+        isOpen={!!editingItem}
+        title="Editar Registro"
+        onClose={() => setEditingItem(null)}
+        onSave={handleSaveEdit}
+      >
+        {editingItem?.task_id && (
+          <>
+            <div className="edit-modal-field">
+              <label className="edit-modal-label">Nome da Tarefa</label>
+              <Input value={editForm.task_name} onChange={e => setEditForm({ ...editForm, task_name: e.target.value })} />
+            </div>
+            <div className="edit-modal-field">
+              <label className="edit-modal-label">Valor / Hora</label>
+              <Input type="number" step="0.01" value={editForm.hourly_rate} onChange={e => setEditForm({ ...editForm, hourly_rate: e.target.value })} />
+            </div>
+          </>
+        )}
+        <div className="edit-modal-field">
+          <label className="edit-modal-label">Data (Resumo)</label>
+          <Input type="date" value={editForm.start_date} onChange={e => setEditForm({ ...editForm, start_date: e.target.value })} />
+        </div>
+        <div className="edit-modal-field">
+          <label className="edit-modal-label">Duração (HH:MM:SS)</label>
+          <Input value={editForm.duration} onChange={e => setEditForm({ ...editForm, duration: e.target.value })} />
+        </div>
+        {!Array.isArray(editingItem?.ids) && (
+          <div className="edit-modal-field">
+            <label className="edit-modal-label">Notas</label>
+            <Input value={editForm.notes} onChange={e => setEditForm({ ...editForm, notes: e.target.value })} />
+          </div>
+        )}
+      </EditModal>
     </div>
   );
 }

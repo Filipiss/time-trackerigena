@@ -2,6 +2,7 @@
 import ColorDot from '../../atoms/ColorDot/ColorDot';
 import Input from '../../atoms/Input/Input';
 import { createTimeEntry } from '../../../api';
+import { Play, Pause, Square, RotateCcw, Save, Zap } from 'lucide-react';
 import './TimerWidget.css';
 
 function formatTime(ms) {
@@ -207,7 +208,7 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
           </div>
         </div>
       ) : (
-        <div className="timer-no-task">⚡ Para começar a cronometrar, selecione ou crie uma nova Task.</div>
+        <div className="timer-no-task"><Zap size={16} strokeWidth={1.5} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Para começar a cronometrar, selecione ou crie uma nova Task.</div>
       )}
 
       <div className={`timer-display-wrapper ${timerState}`}>
@@ -230,19 +231,25 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
       </div>
 
       <div className="timer-controls">
-        <button className="timer-btn timer-btn-start" onClick={handleStart} disabled={!canStart} title="Iniciar">▶</button>
-        <button className="timer-btn timer-btn-pause" onClick={handlePause} disabled={!canPause} title="Pausar">⏸</button>
-        <button className="timer-btn timer-btn-stop" onClick={handleStop} disabled={!canStop} title="Parar">⏹</button>
+        <button className="timer-btn timer-btn-start" onClick={handleStart} disabled={!canStart} title="Iniciar">
+          <Play size={22} fill="currentColor" strokeWidth={1.5} />
+        </button>
+        <button className="timer-btn timer-btn-pause" onClick={handlePause} disabled={!canPause} title="Pausar">
+          <Pause size={22} fill="currentColor" strokeWidth={1.5} />
+        </button>
+        <button className="timer-btn timer-btn-stop" onClick={handleStop} disabled={!canStop} title="Parar">
+          <Square size={20} fill="currentColor" strokeWidth={1.5} />
+        </button>
         <button
           className="timer-btn timer-btn-restart"
           onClick={handleRestart}
           disabled={timerState === TIMER_STATES.STOPPED && elapsedTime === 0}
           title="Reiniciar"
         >
-          🔄
+          <RotateCcw size={20} strokeWidth={1.5} />
         </button>
         <button className="timer-btn timer-btn-save" onClick={handleSaveClick} disabled={!canSave} title="Salvar">
-          💾 Salvar
+          <Save size={18} strokeWidth={1.5} style={{ marginRight: '6px' }} /> Salvar
         </button>
       </div>
 

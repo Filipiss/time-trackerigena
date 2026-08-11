@@ -1,14 +1,15 @@
 import NavItem from '../../molecules/NavItem/NavItem';
 import UserWidget from '../../molecules/UserWidget/UserWidget';
 import { useAuth } from '../../../contexts/AuthContext';
+import { Clock, CheckSquare, LayoutDashboard, Calendar, ScrollText } from 'lucide-react';
 import './Sidebar.css';
 
 const NAV_ITEMS = [
-  { id: 'timer', icon: '⏱️', label: 'Timer' },
-  { id: 'tasks', icon: '📋', label: 'Tasks' },
-  { id: 'dashboard', icon: '📊', label: 'Dashboard' },
-  { id: 'calendar', icon: '📅', label: 'Calendário' },
-  { id: 'history', icon: '📜', label: 'Histórico' },
+  { id: 'timer', icon: <Clock size={20} strokeWidth={1.5} />, label: 'Timer' },
+  { id: 'tasks', icon: <CheckSquare size={20} strokeWidth={1.5} />, label: 'Tasks' },
+  { id: 'dashboard', icon: <LayoutDashboard size={20} strokeWidth={1.5} />, label: 'Dashboard' },
+  { id: 'calendar', icon: <Calendar size={20} strokeWidth={1.5} />, label: 'Calendário' },
+  { id: 'history', icon: <ScrollText size={20} strokeWidth={1.5} />, label: 'Histórico' },
 ];
 
 export default function Sidebar({ activeTab, onTabChange }) {

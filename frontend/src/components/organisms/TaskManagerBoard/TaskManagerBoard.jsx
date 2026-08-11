@@ -6,6 +6,8 @@ import Spinner from '../../atoms/Spinner/Spinner';
 import CurrencySelect from '../../molecules/CurrencySelect/CurrencySelect';
 import TabButton from '../../molecules/TabButton/TabButton';
 import TaskCard from '../../molecules/TaskCard/TaskCard';
+import EditModal from '../../organisms/EditModal/EditModal';
+import { Pencil, Trash2, Folder, Sparkles, FolderOpen, Blocks } from 'lucide-react';
 import {
   createCategory,
   createProject,
@@ -39,6 +41,12 @@ export default function TaskManagerBoard({ onTaskChange, onNavigateToHistory }) 
   const [newTaskBudgetedHours, setNewTaskBudgetedHours] = useState('');
   const [creatingTask, setCreatingTask] = useState(false);
   const [activeTab, setActiveTab] = useState('loco');
+
+  const [editingProject, setEditingProject] = useState(null);
+  const [editProjectForm, setEditProjectForm] = useState({ name: '' });
+
+  const [editingTask, setEditingTask] = useState(null);
+  const [editTaskForm, setEditTaskForm] = useState({ name: '', hourly_rate: '', budgeted_hours: '' });
 
   useEffect(() => {
     let active = true;
@@ -207,6 +215,48 @@ export default function TaskManagerBoard({ onTaskChange, onNavigateToHistory }) 
     }
   };
 
+  const handleEditProjectClick = (project) => {
+    setEditingProject(project);
+    setEditProjectForm({ name: project.name });
+  };
+
+  const handleSaveProject = async () => {
+    try {
+      if (!editingProject || !editProjectForm.name.trim()) return;
+      const updated = await updateProject(editingProject.id, { name: editProjectForm.name.trim() });
+      setProjects((previous) => previous.map((p) => p.id === updated.id ? updated : p));
+      setEditingProject(null);
+      onTaskChange?.();
+    } catch (error) {
+      window.alert(`Erro ao salvar projeto: ${error.message}`);
+    }
+  };
+
+  const handleEditTaskClick = (task) => {
+    setEditingTask(task);
+    setEditTaskForm({
+      name: task.name,
+      hourly_rate: task.hourly_rate || 0,
+      budgeted_hours: task.budgeted_hours !== null && task.budgeted_hours !== undefined ? task.budgeted_hours : ''
+    });
+  };
+
+  const handleSaveTask = async () => {
+    try {
+      if (!editingTask || !editTaskForm.name.trim()) return;
+      const updated = await updateTask(editingTask.id, {
+        name: editTaskForm.name.trim(),
+        hourly_rate: parseFloat(editTaskForm.hourly_rate) || 0,
+        budgeted_hours: editTaskForm.budgeted_hours === '' ? null : parseFloat(editTaskForm.budgeted_hours)
+      });
+      setTasks((previous) => previous.map((t) => t.id === updated.id ? updated : t));
+      setEditingTask(null);
+      onTaskChange?.();
+    } catch (error) {
+      window.alert(`Erro ao salvar task: ${error.message}`);
+    }
+  };
+
   const categoryProjects = useMemo(
     () => projects.filter((project) => project.category === activeTab),
     [activeTab, projects],
@@ -219,7 +269,7 @@ export default function TaskManagerBoard({ onTaskChange, onNavigateToHistory }) 
   return (
     <div className="task-manager fade-in">
       <div className="task-manager-header">
-        <h2 className="task-manager-title gradient-text">📋 Gerenciar Projetos e Tasks</h2>
+        <h2 className="task-manager-title gradient-text"><Blocks size={24} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '8px' }} strokeWidth={1.5} /> Gerenciar Projetos e Tasks</h2>
       </div>
 
       <div className="forms-grid">
@@ -234,15 +284,19 @@ export default function TaskManagerBoard({ onTaskChange, onNavigateToHistory }) 
             {categories.map((category) => (
               <Badge key={category.id} className="badge category-admin-badge">
                 <span className="truncate">{category.name}</span>
-                <button type="button" className="btn-icon" onClick={() => handleEditCategory(category)} title="Editar categoria">✏️</button>
-                <button type="button" className="btn-icon" onClick={() => handleDeleteCategory(category)} title="Excluir categoria" style={{ color: 'var(--color-danger)' }}>🗑️</button>
+                <button type="button" className="btn-icon" onClick={() => handleEditCategory(category)} title="Editar categoria">
+                  <Pencil size={14} strokeWidth={1.5} />
+                </button>
+                <button type="button" className="btn-icon" onClick={() => handleDeleteCategory(category)} title="Excluir categoria" style={{ color: 'var(--color-danger)' }}>
+                  <Trash2 size={14} strokeWidth={1.5} />
+                </button>
               </Badge>
             ))}
           </div>
         </form>
 
         <form className="task-form glass-card-static" onSubmit={handleCreateProject}>
-          <div className="task-form-title">📁 Novo Projeto</div>
+          <div className="task-form-title"><FolderOpen size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> Novo Projeto</div>
           <div className="task-form-field">
             <label className="task-form-label">Nome do Projeto</label>
             <Input value={newProjectName} onChange={(event) => setNewProjectName(event.target.value)} required />
@@ -259,7 +313,7 @@ export default function TaskManagerBoard({ onTaskChange, onNavigateToHistory }) 
         </form>
 
         <form className="task-form glass-card-static" onSubmit={handleCreateTask}>
-          <div className="task-form-title">✨ Nova Task</div>
+          <div className="task-form-title"><Sparkles size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> Nova Task</div>
           <div className="task-form-field">
             <label className="task-form-label">Nome da Task</label>
             <Input value={newTaskName} onChange={(event) => setNewTaskName(event.target.value)} required />
@@ -317,18 +371,30 @@ export default function TaskManagerBoard({ onTaskChange, onNavigateToHistory }) 
           return (
             <div key={project.id} className="project-folder">
               <div className="project-folder-tab" onClick={() => onNavigateToHistory?.('faturamento')} title="Ver Faturamento deste projeto">
-                <span>📁 {project.name}</span>
-                <button
-                  className="btn-icon"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleDeleteProject(project.id);
-                  }}
-                  style={{ color: 'var(--color-danger)' }}
-                  title="Excluir Projeto"
-                >
-                  🗑️
-                </button>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Folder size={16} strokeWidth={1.5} /> {project.name}</span>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <button
+                    className="btn-icon"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleEditProjectClick(project);
+                    }}
+                    title="Editar Projeto"
+                  >
+                    <Pencil size={16} strokeWidth={1.5} />
+                  </button>
+                  <button
+                    className="btn-icon"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleDeleteProject(project.id);
+                    }}
+                    style={{ color: 'var(--color-danger)' }}
+                    title="Excluir Projeto"
+                  >
+                    <Trash2 size={16} strokeWidth={1.5} />
+                  </button>
+                </div>
               </div>
               <div className="project-folder-body glass-card">
                 <div className="task-cards-list">
@@ -340,6 +406,7 @@ export default function TaskManagerBoard({ onTaskChange, onNavigateToHistory }) 
                       currencySymbol={CURRENCY_SYMBOLS[task.currency || 'EUR']}
                       onToggleBilled={toggleBilled}
                       onDelete={handleDeleteTask}
+                      onEdit={handleEditTaskClick}
                     />
                   ))}
                   {projectTasks.length === 0 ? <span className="empty-msg task-list-empty">Sem tasks neste projeto.</span> : null}
@@ -349,6 +416,29 @@ export default function TaskManagerBoard({ onTaskChange, onNavigateToHistory }) 
           );
         })}
       </div>
+
+      <EditModal isOpen={!!editingProject} title="Editar Projeto" onClose={() => setEditingProject(null)} onSave={handleSaveProject}>
+        <div className="edit-modal-field">
+          <label className="edit-modal-label">Nome do Projeto</label>
+          <Input value={editProjectForm.name} onChange={e => setEditProjectForm({ ...editProjectForm, name: e.target.value })} required />
+        </div>
+      </EditModal>
+
+      <EditModal isOpen={!!editingTask} title="Editar Tarefa" onClose={() => setEditingTask(null)} onSave={handleSaveTask}>
+        <div className="edit-modal-field">
+          <label className="edit-modal-label">Nome da Tarefa</label>
+          <Input value={editTaskForm.name} onChange={e => setEditTaskForm({ ...editTaskForm, name: e.target.value })} required />
+        </div>
+        <div className="edit-modal-field">
+          <label className="edit-modal-label">Valor / Hora</label>
+          <Input type="number" step="0.01" value={editTaskForm.hourly_rate} onChange={e => setEditTaskForm({ ...editTaskForm, hourly_rate: e.target.value })} />
+        </div>
+        <div className="edit-modal-field">
+          <label className="edit-modal-label">Horas Orçadas (Opicional)</label>
+          <Input type="number" step="0.1" value={editTaskForm.budgeted_hours} onChange={e => setEditTaskForm({ ...editTaskForm, budgeted_hours: e.target.value })} />
+        </div>
+      </EditModal>
+
     </div>
   );
 }
