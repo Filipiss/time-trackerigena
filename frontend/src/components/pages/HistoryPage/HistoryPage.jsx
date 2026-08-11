@@ -166,10 +166,10 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
   const handleEditClick = (item) => {
     setEditingItem(item);
     setEditForm({
-      task_name: item.task_name || '',
-      start_date: item.start_time ? item.start_time.slice(0, 10) : '',
-      duration: formatDuration(item.duration_seconds || 0),
-      hourly_rate: item.task_hourly_rate || 0,
+      task_name: item.task_name || item.name || '',
+      start_date: item.start_time ? item.start_time.slice(0, 10) : (item.start_date ? item.start_date.slice(0, 10) : ''),
+      duration: formatDuration(item.duration_seconds || item.totalSeconds || 0),
+      hourly_rate: item.task_hourly_rate || item.hourlyRate || 0,
       notes: item.notes ? (Array.isArray(item.notes) ? item.notes.join(' | ') : item.notes) : '',
     });
   };
@@ -239,6 +239,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
       if (!entry.task_id) return;
       if (!taskTotals[entry.task_id]) {
         taskTotals[entry.task_id] = {
+          task_id: entry.task_id,
           name: entry.task_name || 'Tarefa Excluída',
           projectName: entry.project_name || '',
           color: entry.task_color || 'var(--color-info)',
@@ -247,9 +248,11 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
           currency: entry.task_currency || 'EUR',
           budgetedHours: entry.task_budgeted_hours,
           totalSeconds: 0,
+          ids: [],
         };
       }
       taskTotals[entry.task_id].totalSeconds += entry.duration_seconds;
+      taskTotals[entry.task_id].ids.push(entry.id);
     });
     return Object.values(taskTotals);
   }, [entries]);
@@ -358,6 +361,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh, initialTab }) {
                 totalInTargetCurrency={totalInTargetCurrency}
                 formatDurationShort={formatDurationShort}
                 convertCurrency={convertCurrency}
+                onEdit={handleEditClick}
               />
             ) : null}
 

@@ -1,5 +1,6 @@
 ﻿import CurrencySelect from '../../molecules/CurrencySelect/CurrencySelect';
 import { CURRENCY_SYMBOLS } from '../../../utils/currency';
+import { Pencil } from 'lucide-react';
 import './BillingTable.css';
 
 export default function BillingTable({
@@ -11,6 +12,7 @@ export default function BillingTable({
   totalInTargetCurrency,
   formatDurationShort,
   convertCurrency,
+  onEdit,
 }) {
   return (
     <div className="values-section-card glass-card-static fade-in">
@@ -42,6 +44,7 @@ export default function BillingTable({
                 <th>Valor/Hora</th>
                 <th>Lucro da Task</th>
                 <th>Total ({targetCurrency})</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
