@@ -7,7 +7,7 @@ import './Sidebar.css';
 import { useNavigate } from 'react-router-dom';
 
 const NAV_ITEMS = [
-  { id: '/', icon: <Clock size={20} strokeWidth={1.5} />, label: 'Timer', exact: true },
+  { id: '/timer', icon: <Clock size={20} strokeWidth={1.5} />, label: 'Timer', exact: false },
   { id: '/tasks', icon: <CheckSquare size={20} strokeWidth={1.5} />, label: 'Tasks', exact: false },
   { id: '/dashboard', icon: <LayoutDashboard size={20} strokeWidth={1.5} />, label: 'Dashboard', exact: false },
   { id: '/calendar', icon: <Calendar size={20} strokeWidth={1.5} />, label: 'Calendário', exact: false },

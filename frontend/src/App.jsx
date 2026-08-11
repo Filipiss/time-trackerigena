@@ -41,13 +41,14 @@ function AppRoutes() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        <Route path="/" element={<TimerPage selectedTask={selectedTask} onSelectTask={setSelectedTask} refreshTrigger={refreshTrigger} onSaveSuccess={handleSaveSuccess} />} />
+        <Route path="/timer" element={<TimerPage selectedTask={selectedTask} onSelectTask={setSelectedTask} refreshTrigger={refreshTrigger} onSaveSuccess={handleSaveSuccess} />} />
         <Route path="/tasks" element={<TasksPage onTaskChange={handleTaskChange} />} />
         <Route path="/dashboard" element={<DashboardPage refreshTrigger={refreshTrigger} />} />
         <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/history" element={<HistoryPage refreshTrigger={refreshTrigger} onRefresh={handleRefresh} />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/" element={<Navigate to="/timer" replace />} />
+        <Route path="*" element={<Navigate to="/timer" replace />} />
       </Route>
     </Routes>
   );
