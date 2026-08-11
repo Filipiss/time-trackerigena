@@ -24,8 +24,11 @@
   justify-content: flex-end;
 }
 
-.dashboard-filters > * {
-  min-width: 140px;
+.dashboard-filters>* {
+  min-width: 120px;
+  width: auto;
+  flex: 1 1 auto;
+  max-width: 220px;
 }
 
 .summary-cards {
@@ -91,7 +94,7 @@
 }
 
 @media (max-width: 880px) {
-  .dashboard-filters > * {
+  .dashboard-filters>* {
     min-width: 0;
     flex: 1 1 180px;
   }
@@ -106,7 +109,8 @@
     grid-template-columns: 1fr;
   }
 
-  .dashboard-filters > * {
+  .dashboard-filters>* {
     flex-basis: 100%;
+    max-width: 100%;
   }
 }
