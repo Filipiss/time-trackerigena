@@ -19,11 +19,32 @@ schema = CategorySchema()
 many_schema = CategorySchema(many=True)
 
 
+@category_bp.route("/reorder", methods=["PATCH"])
+def reorder_categories():
+    data = request.json
+    if not isinstance(data, list):
+        return error_response("Payload precisa ser uma lista de objetos {id, sort_order}", 400)
+    
+    db = get_db_session()
+    try:
+        for item in data:
+            cat_id = item.get("id")
+            order = item.get("sort_order", 0)
+            if cat_id is not None:
+                db.query(Category).filter(Category.id == cat_id).update({"sort_order": order})
+        db.commit()
+        return success_response({"msg": "Categorias reordenadas com sucesso."})
+    except Exception as e:
+        return error_response(str(e), 500)
+    finally:
+        db.close()
+
+
 @category_bp.route("/", methods=["GET"])
 def list_categories():
     db = get_db_session()
     try:
-        return success_response(many_schema.dump(db.query(Category).order_by(Category.name).all()))
+        return success_response(many_schema.dump(db.query(Category).order_by(Category.sort_order.asc(), Category.created_at.asc()).all()))
     finally:
         db.close()
 

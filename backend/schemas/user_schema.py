@@ -74,4 +74,5 @@ class UserPublicSchema(Schema):
     avatar_url = fields.Str(dump_only=True, allow_none=True)
     phone = fields.Str(dump_only=True, allow_none=True)
     is_active = fields.Bool(dump_only=True)
+    is_admin = fields.Bool(dump_only=True)
     created_at = fields.DateTime(dump_only=True)

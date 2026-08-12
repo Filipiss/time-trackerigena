@@ -1,0 +1,126 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: #1e1e24;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.header {
+    background: #2c2e33;
+    padding: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #373A40;
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #e9ecef;
+}
+
+.closeBtn {
+    background: none;
+    border: none;
+    color: #a0aab2;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.closeBtn:hover {
+    color: #fff;
+}
+
+.formBody {
+    padding: 1.5rem;
+}
+
+.formGroup {
+    margin-bottom: 1.15rem;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    color: #adb5bd;
+}
+
+.formGroup input {
+    width: 100%;
+    padding: 0.7rem;
+    background: #141517;
+    border: 1px solid #373A40;
+    border-radius: 4px;
+    color: #f1f3f5;
+    font-family: inherit;
+}
+
+.formGroup input:focus {
+    border-color: #3b82f6;
+    outline: none;
+}
+
+.alert {
+    background: rgba(245, 159, 0, 0.1);
+    border: 1px solid rgba(245, 159, 0, 0.3);
+    color: #fcc419;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btnCancel,
+.btnSave {
+    padding: 0.65rem 1.25rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.btnCancel {
+    background: transparent;
+    color: #adb5bd;
+    border: 1px solid #495057;
+}
+
+.btnCancel:hover {
+    background: #495057;
+    color: #fff;
+}
+
+.btnSave {
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+}
+
+.btnSave:hover {
+    background: #2563eb;
+}

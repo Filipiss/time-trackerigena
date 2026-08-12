@@ -59,7 +59,7 @@ export default function CalendarBoard({
                 <div key={iso} className={`calendar-day-cell ${isCurrentMonth ? '' : 'other-month'} ${isToday ? 'today' : ''}`}>
                   <div className="calendar-day-cell-header">
                     <span className="calendar-day-number">{cellDate.getDate()}</span>
-                    <button className="calendar-add-btn" onClick={() => onCreateDeadline(iso)} title="Adicionar deadline neste dia">+</button>
+                    <button className="calendar-add-btn" onClick={() => onCreateDeadline(iso)} title="Adicionar status/compromisso neste dia">+</button>
                   </div>
                   <div className="calendar-day-projects">
                     {dayEvents.map((event) => {

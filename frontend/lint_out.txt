@@ -1,0 +1,6 @@
+﻿
+D:\Projetos\Projetos Pessoais\time trackerigena\frontend\src\components\organisms\TaskManagerBoard\TaskManagerBoard.jsx
+  31:3  error  Parsing error: Identifier 'updateProjectAttachment' has already been declared
+
+Ô£û 1 problem (1 error, 0 warnings)
+

@@ -28,9 +28,51 @@ import {
   addProjectAttachment,
   deleteProjectAttachment,
   updateProjectAttachment,
+  reorderCategories,
+  reorderProjects,
+  reorderTasks,
 } from '../../../api';
 import { CURRENCY_SYMBOLS } from '../../../utils/currency';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  horizontalListSortingStrategy,
+  verticalListSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import './TaskManagerBoard.css';
+
+function SortableCategory({ category, activeTab, setActiveTab }) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: `cat-${category.id}` });
+  const style = { transform: CSS.Transform.toString(transform), transition };
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <TabButton
+        className={`tab-btn ${activeTab === category.name.toLowerCase() ? 'active-loco' : ''}`}
+        isActive={activeTab === category.name.toLowerCase()}
+        onClick={() => setActiveTab(category.name.toLowerCase())}
+      >
+        {category.name}
+      </TabButton>
+    </div>
+  );
+}
+
+function SortableWrapper({ id, children }) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
+  const style = { transform: CSS.Transform.toString(transform), transition };
+  return children({ setNodeRef, style, attributes, listeners });
+}
 
 export default function TaskManagerBoard({ onTaskChange }) {
   const navigate = useNavigate();
@@ -58,6 +100,57 @@ export default function TaskManagerBoard({ onTaskChange }) {
 
   const [attachmentsByProject, setAttachmentsByProject] = useState({});
   const [uploadingToProject, setUploadingToProject] = useState(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEndCategory = async (event) => {
+    const { active, over } = event;
+    if (active.id !== over?.id && over != null) {
+      const oldIndex = categories.findIndex(c => `cat-${c.id}` === active.id);
+      const newIndex = categories.findIndex(c => `cat-${c.id}` === over.id);
+      const newCategories = arrayMove(categories, oldIndex, newIndex);
+      setCategories(newCategories);
+      const orderData = newCategories.map((c, i) => ({ id: c.id, sort_order: i }));
+      await reorderCategories(orderData);
+    }
+  };
+
+  const handleDragEndProject = async (event) => {
+    const { active, over } = event;
+    if (active.id !== over?.id && over != null) {
+      const oldIndex = projects.findIndex(p => `proj-${p.id}` === active.id);
+      const newIndex = projects.findIndex(p => `proj-${p.id}` === over.id);
+      const newProjects = arrayMove(projects, oldIndex, newIndex);
+      setProjects(newProjects);
+      const orderData = newProjects.map((p, i) => ({ id: p.id, sort_order: i }));
+      await reorderProjects(orderData);
+    }
+  };
+
+  const handleDragEndTask = async (event) => {
+    const { active, over } = event;
+    if (active.id !== over?.id && over != null) {
+      const oldIndex = tasks.findIndex(t => `task-${t.id}` === active.id);
+      const newIndex = tasks.findIndex(t => `task-${t.id}` === over.id);
+      const newTasks = arrayMove(tasks, oldIndex, newIndex);
+      setTasks(newTasks);
+      const orderData = newTasks.map((t, i) => ({ id: t.id, sort_order: i }));
+      await reorderTasks(orderData);
+      if (onTaskChange) onTaskChange();
+    }
+  };
+
+  const handleDragEnd = async (event) => {
+    const { active } = event;
+    if (!active) return;
+    const idStr = String(active.id);
+    if (idStr.startsWith('cat-')) await handleDragEndCategory(event);
+    else if (idStr.startsWith('proj-')) await handleDragEndProject(event);
+    else if (idStr.startsWith('task-')) await handleDragEndTask(event);
+  };
 
   const [editingProject, setEditingProject] = useState(null);
   const [editProjectForm, setEditProjectForm] = useState({ name: '' });
@@ -353,317 +446,328 @@ export default function TaskManagerBoard({ onTaskChange }) {
   }
 
   return (
-    <div className="task-manager fade-in">
-      <div className="task-manager-header">
-        <h2 className="task-manager-title gradient-text"><Blocks size={24} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '8px' }} strokeWidth={1.5} /> Gerenciar Projetos e Tasks</h2>
-      </div>
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <div className="task-manager fade-in">
+        <div className="task-manager-header">
+          <h2 className="task-manager-title gradient-text"><Blocks size={24} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '8px' }} strokeWidth={1.5} /> Gerenciar Projetos e Tasks</h2>
+        </div>
 
-      <div className="forms-grid">
-        <form className="task-form glass-card-static" onSubmit={handleCreateCategory}>
-          <div className="task-form-title"><Briefcase size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> Nova Categoria</div>
-          <div className="task-form-field">
-            <label className="task-form-label">Nome</label>
-            <Input
-              value={newCategoryName}
-              onChange={(event) => setNewCategoryName(event.target.value)}
-              required
-              placeholder="Ex.: Trabalho, Freelance, Pessoal..."
-              onFocus={(e) => { e.target.placeholder = ''; setIsCategoryNameFocused(true); }}
-              onBlur={(e) => { e.target.placeholder = 'Ex.: Trabalho, Freelance, Pessoal...'; setIsCategoryNameFocused(false); }}
-            />
-          </div>
-          <div className="task-form-field task-form-spacing" style={{ marginBottom: 'var(--space-6)' }}>
-            <label className="task-form-label">Gerenciar Categoria</label>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <Select
-                value={selectedCategoryToManage}
-                onChange={(e) => setSelectedCategoryToManage(e.target.value)}
-                style={{ flex: 1 }}
-              >
-                <option value="">Selecionar categoria...</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </Select>
-
-              {selectedCategoryToManage && categories.find((c) => String(c.id) === selectedCategoryToManage) && (
-                <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
-                  <button
-                    type="button"
-                    className="btn btn-icon"
-                    style={{ background: 'rgba(255,255,255,0.05)', padding: '8px' }}
-                    onClick={() => {
-                      const cat = categories.find((c) => String(c.id) === selectedCategoryToManage);
-                      if (cat) handleEditCategory(cat);
-                    }}
-                    title="Editar categoria"
-                  >
-                    <Pencil size={16} strokeWidth={1.5} style={{ color: 'var(--color-info)' }} />
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-icon"
-                    style={{ background: 'rgba(255,255,255,0.05)', padding: '8px' }}
-                    onClick={() => {
-                      const cat = categories.find((c) => String(c.id) === selectedCategoryToManage);
-                      if (cat) {
-                        handleDeleteCategory(cat);
-                        setSelectedCategoryToManage('');
-                      }
-                    }}
-                    title="Excluir categoria"
-                  >
-                    <Trash2 size={16} strokeWidth={1.5} style={{ color: 'var(--color-danger)' }} />
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-          <button type="submit" className="btn btn-primary task-form-submit">+ Criar Categoria</button>
-        </form>
-
-        <form className="task-form glass-card-static" onSubmit={handleCreateProject}>
-          <div className="task-form-title"><FolderOpen size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> Novo Projeto</div>
-          <div className="task-form-field">
-            <label className="task-form-label">💼 Nome do Projeto</label>
-            <Input value={newProjectName} onChange={(event) => setNewProjectName(event.target.value)} required />
-          </div>
-          <div className="task-form-field task-form-spacing" style={{ marginBottom: 'var(--space-6)' }}>
-            <label className="task-form-label">🏷️ Categoria</label>
-            <Select value={newProjectCategory} onChange={(event) => setNewProjectCategory(event.target.value)} required>
-              {categories.map((category) => (
-                <option key={category.id} value={category.name}>{category.name}</option>
-              ))}
-            </Select>
-          </div>
-          <button type="submit" className="btn btn-primary task-form-submit" disabled={creatingProject}>+ Criar Projeto</button>
-        </form>
-
-        <form className="task-form glass-card-static" onSubmit={handleCreateTask}>
-          <div className="task-form-title"><Sparkles size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> Nova Task</div>
-          <div className="task-form-field">
-            <label className="task-form-label">✨ Nome da Task</label>
-            <Input value={newTaskName} onChange={(event) => setNewTaskName(event.target.value)} required />
-          </div>
-          <div className="task-form-field task-form-spacing">
-            <label className="task-form-label">Projeto</label>
-            <Select value={newTaskProjectId} onChange={(event) => setNewTaskProjectId(event.target.value)} required>
-              <option value="">Selecione um projeto...</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>[{project.category}] {project.name}</option>
-              ))}
-            </Select>
-          </div>
-          <div className="task-form-inline-row" style={{ marginBottom: 'var(--space-6)' }}>
-            <div className="task-form-field task-form-currency-field">
-              <label className="task-form-label">Moeda</label>
-              <CurrencySelect value={newTaskCurrency} onChange={(event) => setNewTaskCurrency(event.target.value)} />
-            </div>
-            <div className="task-form-field task-form-inline-field">
-              <label className="task-form-label">Valor/Hora</label>
+        <div className="forms-grid">
+          <form className="task-form glass-card-static" onSubmit={handleCreateCategory}>
+            <div className="task-form-title"><Briefcase size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> Nova Categoria</div>
+            <div className="task-form-field">
+              <label className="task-form-label">Nome</label>
               <Input
-                type="number"
-                step="0.01"
-                value={newTaskHourlyRate}
-                onChange={(event) => setNewTaskHourlyRate(event.target.value)}
-                placeholder={`${CURRENCY_SYMBOLS[newTaskCurrency] || '$'}`}
-                onFocus={(e) => e.target.placeholder = ''}
-                onBlur={(e) => e.target.placeholder = `${CURRENCY_SYMBOLS[newTaskCurrency] || '$'}`}
+                value={newCategoryName}
+                onChange={(event) => setNewCategoryName(event.target.value)}
+                required
+                placeholder="Ex.: Trabalho, Freelance, Pessoal..."
+                onFocus={(e) => { e.target.placeholder = ''; setIsCategoryNameFocused(true); }}
+                onBlur={(e) => { e.target.placeholder = 'Ex.: Trabalho, Freelance, Pessoal...'; setIsCategoryNameFocused(false); }}
               />
             </div>
-            <div className="task-form-field task-form-inline-field">
-              <label className="task-form-label">Horas Orçadas</label>
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                <Input
-                  type="number"
-                  step="0.5"
-                  min="0"
-                  value={newTaskBudgetedHours}
-                  onChange={(event) => setNewTaskBudgetedHours(event.target.value)}
-                  placeholder=""
-                  onFocus={() => setIsBudgetFocused(true)}
-                  onBlur={() => setIsBudgetFocused(false)}
-                />
-                {!newTaskBudgetedHours && !isBudgetFocused && (
-                  <Clock size={16} strokeWidth={1.5} style={{ position: 'absolute', left: 'var(--space-3)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
+            <div className="task-form-field task-form-spacing" style={{ marginBottom: 'var(--space-6)' }}>
+              <label className="task-form-label">Gerenciar Categoria</label>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <Select
+                  value={selectedCategoryToManage}
+                  onChange={(e) => setSelectedCategoryToManage(e.target.value)}
+                  style={{ flex: 1 }}
+                >
+                  <option value="">Selecionar categoria...</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </Select>
+
+                {selectedCategoryToManage && categories.find((c) => String(c.id) === selectedCategoryToManage) && (
+                  <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
+                    <button
+                      type="button"
+                      className="btn btn-icon"
+                      style={{ background: 'rgba(255,255,255,0.05)', padding: '8px' }}
+                      onClick={() => {
+                        const cat = categories.find((c) => String(c.id) === selectedCategoryToManage);
+                        if (cat) handleEditCategory(cat);
+                      }}
+                      title="Editar categoria"
+                    >
+                      <Pencil size={16} strokeWidth={1.5} style={{ color: 'var(--color-info)' }} />
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-icon"
+                      style={{ background: 'rgba(255,255,255,0.05)', padding: '8px' }}
+                      onClick={() => {
+                        const cat = categories.find((c) => String(c.id) === selectedCategoryToManage);
+                        if (cat) {
+                          handleDeleteCategory(cat);
+                          setSelectedCategoryToManage('');
+                        }
+                      }}
+                      title="Excluir categoria"
+                    >
+                      <Trash2 size={16} strokeWidth={1.5} style={{ color: 'var(--color-danger)' }} />
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
-          </div>
-          <button type="submit" className="btn btn-primary task-form-submit" disabled={creatingTask}>+ Criar Task</button>
-        </form>
-      </div>
+            <button type="submit" className="btn btn-primary task-form-submit">+ Criar Categoria</button>
+          </form>
 
-      <div className="category-tabs-scroll">
-        <div className="category-tabs">
-          {categories.map((category) => (
-            <TabButton
-              key={category.id}
-              className={`tab-btn ${activeTab === category.name.toLowerCase() ? 'active-loco' : ''}`}
-              isActive={activeTab === category.name.toLowerCase()}
-              onClick={() => setActiveTab(category.name.toLowerCase())}
-            >
-              {category.name}
-            </TabButton>
-          ))}
-        </div>
-      </div>
+          <form className="task-form glass-card-static" onSubmit={handleCreateProject}>
+            <div className="task-form-title"><FolderOpen size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> Novo Projeto</div>
+            <div className="task-form-field">
+              <label className="task-form-label">💼 Nome do Projeto</label>
+              <Input value={newProjectName} onChange={(event) => setNewProjectName(event.target.value)} required />
+            </div>
+            <div className="task-form-field task-form-spacing" style={{ marginBottom: 'var(--space-6)' }}>
+              <label className="task-form-label">🏷️ Categoria</label>
+              <Select value={newProjectCategory} onChange={(event) => setNewProjectCategory(event.target.value)} required>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.name}>{category.name}</option>
+                ))}
+              </Select>
+            </div>
+            <button type="submit" className="btn btn-primary task-form-submit" disabled={creatingProject}>+ Criar Projeto</button>
+          </form>
 
-      <div className="projects-grid">
-        {categoryProjects.length === 0 ? <p className="empty-msg">Nenhum projeto encontrado.</p> : null}
-        {categoryProjects.map((project) => {
-          const projectTasks = tasks.filter((task) => task.project_id === project.id);
-          return (
-            <div key={project.id} className="project-folder">
-              <div
-                className="project-folder-tab"
-                onClick={() => {
-                  setCollapsedProjects(prev => {
-                    const next = new Set(prev);
-                    if (next.has(project.id)) next.delete(project.id);
-                    else next.add(project.id);
-                    return next;
-                  });
-                }}
-                style={{ cursor: 'pointer' }}
-                title={collapsedProjects.has(project.id) ? "Expandir projeto" : "Minimizar projeto"}
-              >
-                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <button
-                    className="btn-icon"
-                    title={collapsedProjects.has(project.id) ? "Expandir projeto" : "Minimizar projeto"}
-                  >
-                    {collapsedProjects.has(project.id) ? <ChevronRight size={18} strokeWidth={1.5} /> : <ChevronDown size={18} strokeWidth={1.5} />}
-                  </button>
-                  <Folder size={16} strokeWidth={1.5} /> {project.name}
-                </span>
-                <div style={{ display: 'flex', gap: '4px' }}>
-                  <label className="btn-icon" title="Anexar arquivo na nuvem" onClick={e => e.stopPropagation()} style={{ cursor: 'pointer', opacity: uploadingToProject === project.id ? 0.5 : 1 }}>
-                    {uploadingToProject === project.id ? <Loader size={16} strokeWidth={1.5} className="spin-animation" /> : <Paperclip size={16} strokeWidth={1.5} />}
-                    <input type="file" hidden accept=".svg,.png,.jpg,.jpeg,.gif,.pdf,.zip,.rar,.doc,.docx,.xls,.xlsx,.json,.fig" onChange={(e) => {
-                      const file = e.target.files[0];
-                      e.target.value = null; // reseta pra conseguir mandar o mesmo
-                      handleFileUpload(project.id, file);
-                    }} disabled={uploadingToProject === project.id} />
-                  </label>
-                  <button
-                    className="btn-icon"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleEditProjectClick(project);
-                    }}
-                    title="Editar Projeto"
-                  >
-                    <Pencil size={16} strokeWidth={1.5} />
-                  </button>
-                  <button
-                    className="btn-icon"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleDeleteProject(project.id);
-                    }}
-                    style={{ color: 'var(--color-danger)' }}
-                    title="Excluir Projeto"
-                  >
-                    <Trash2 size={16} strokeWidth={1.5} />
-                  </button>
-                </div>
+          <form className="task-form glass-card-static" onSubmit={handleCreateTask}>
+            <div className="task-form-title"><Sparkles size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> Nova Task</div>
+            <div className="task-form-field">
+              <label className="task-form-label">✨ Nome da Task</label>
+              <Input value={newTaskName} onChange={(event) => setNewTaskName(event.target.value)} required />
+            </div>
+            <div className="task-form-field task-form-spacing">
+              <label className="task-form-label">Projeto</label>
+              <Select value={newTaskProjectId} onChange={(event) => setNewTaskProjectId(event.target.value)} required>
+                <option value="">Selecione um projeto...</option>
+                {projects.map((project) => (
+                  <option key={project.id} value={project.id}>[{project.category}] {project.name}</option>
+                ))}
+              </Select>
+            </div>
+            <div className="task-form-inline-row" style={{ marginBottom: 'var(--space-6)' }}>
+              <div className="task-form-field task-form-currency-field">
+                <label className="task-form-label">Moeda</label>
+                <CurrencySelect value={newTaskCurrency} onChange={(event) => setNewTaskCurrency(event.target.value)} />
               </div>
-              {!collapsedProjects.has(project.id) && (
-                <div className="project-folder-body glass-card">
-
-                  <div className="task-cards-list" style={{ marginBottom: (attachmentsByProject[project.id] && attachmentsByProject[project.id].length > 0) ? 'var(--space-6)' : 0 }}>
-                    {projectTasks.map((task) => (
-                      <TaskCard
-                        key={task.id}
-                        variant="manager"
-                        task={task}
-                        currencySymbol={CURRENCY_SYMBOLS[task.currency || 'EUR']}
-                        onToggleBilled={toggleBilled}
-                        onDelete={handleDeleteTask}
-                        onEdit={handleEditTaskClick}
-                      />
-                    ))}
-                    {projectTasks.length === 0 ? <span className="empty-msg task-list-empty">Sem tasks neste projeto.</span> : null}
-                  </div>
-
-                  {attachmentsByProject[project.id] && attachmentsByProject[project.id].length > 0 && (
-                    <div className="attachments-section">
-                      <div style={{ padding: 'var(--space-2) var(--space-4)', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--text-secondary)', borderTop: '1px solid var(--border-subtle)', paddingTop: 'var(--space-4)', marginBottom: 'var(--space-3)' }}>
-                        <FolderOpen size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} />
-                        Arquivos do projeto
-                      </div>
-                      <div className="attachments-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 'var(--space-3)', padding: '0 var(--space-2)' }}>
-                        {attachmentsByProject[project.id].map(att => (
-                          <div key={att.id} style={{ position: 'relative', overflow: 'hidden', paddingLeft: '14px', display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: 'var(--space-2) var(--space-3) var(--space-2) 18px', fontSize: 'var(--text-xs)' }}>
-                            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', backgroundColor: att.color || 'var(--border-subtle)' }} />
-
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <label title="Vincular cor da task" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-                                <input
-                                  type="color"
-                                  style={{ width: '16px', height: '16px', padding: 0, border: 'none', cursor: 'pointer', background: 'transparent' }}
-                                  value={att.color || '#4a5568'}
-                                  onChange={(e) => handleUpdateAttachmentColor(project.id, att, e.target.value)}
-                                />
-                              </label>
-                            </div>
-
-                            <span className="truncate" style={{ flex: 1, fontWeight: 500, color: 'var(--text-primary)' }} title={att.file_name}>{att.file_name}</span>
-
-                            <div style={{ display: 'flex', gap: '4px' }}>
-                              <a href={att.file_url} target="_blank" rel="noreferrer" className="btn-icon" style={{ padding: '6px' }} title="Baixar">
-                                <Download size={14} style={{ color: 'var(--color-primary)' }} strokeWidth={1.5} />
-                              </a>
-                              <button type="button" onClick={() => handleDeleteAttachment(project.id, att)} className="btn-icon" style={{ padding: '6px' }} title="Excluir">
-                                <X size={14} style={{ color: 'var(--color-danger)' }} strokeWidth={1.5} />
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+              <div className="task-form-field task-form-inline-field">
+                <label className="task-form-label">Valor/Hora</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={newTaskHourlyRate}
+                  onChange={(event) => setNewTaskHourlyRate(event.target.value)}
+                  placeholder={`${CURRENCY_SYMBOLS[newTaskCurrency] || '$'}`}
+                  onFocus={(e) => e.target.placeholder = ''}
+                  onBlur={(e) => e.target.placeholder = `${CURRENCY_SYMBOLS[newTaskCurrency] || '$'}`}
+                />
+              </div>
+              <div className="task-form-field task-form-inline-field">
+                <label className="task-form-label">Horas Orçadas</label>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <Input
+                    type="number"
+                    step="0.5"
+                    min="0"
+                    value={newTaskBudgetedHours}
+                    onChange={(event) => setNewTaskBudgetedHours(event.target.value)}
+                    placeholder=""
+                    onFocus={() => setIsBudgetFocused(true)}
+                    onBlur={() => setIsBudgetFocused(false)}
+                  />
+                  {!newTaskBudgetedHours && !isBudgetFocused && (
+                    <Clock size={16} strokeWidth={1.5} style={{ position: 'absolute', left: 'var(--space-3)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
                   )}
                 </div>
-              )}
+              </div>
             </div>
-          );
-        })}
-      </div>
-
-      <EditModal isOpen={!!editingProject} title="Editar Projeto" onClose={() => setEditingProject(null)} onSave={handleSaveProject}>
-        <div className="edit-modal-field">
-          <label className="edit-modal-label">Nome do Projeto</label>
-          <Input value={editProjectForm.name} onChange={e => setEditProjectForm({ ...editProjectForm, name: e.target.value })} required />
+            <button type="submit" className="btn btn-primary task-form-submit" disabled={creatingTask}>+ Criar Task</button>
+          </form>
         </div>
-      </EditModal>
 
-      <EditModal isOpen={!!editingTask} title="Editar Tarefa" onClose={() => setEditingTask(null)} onSave={handleSaveTask}>
-        <div className="edit-modal-field">
-          <label className="edit-modal-label">✨ Nome da Tarefa</label>
-          <Input value={editTaskForm.name} onChange={e => setEditTaskForm({ ...editTaskForm, name: e.target.value })} required />
+        <div className="category-tabs-scroll" style={{ marginBottom: 'var(--space-4)' }}>
+          <SortableContext items={categories.map(c => `cat-${c.id}`)} strategy={horizontalListSortingStrategy}>
+            <div className="category-tabs">
+              {categories.map((category) => (
+                <SortableCategory key={category.id} category={category} activeTab={activeTab} setActiveTab={setActiveTab} />
+              ))}
+            </div>
+          </SortableContext>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', alignItems: 'end' }}>
-          <div className="edit-modal-field">
-            <label className="edit-modal-label">Valor / Hora</label>
-            <Input type="number" step="0.01" value={editTaskForm.hourly_rate} onChange={e => setEditTaskForm({ ...editTaskForm, hourly_rate: e.target.value })} />
+
+        <SortableContext items={categoryProjects.map(p => `proj-${p.id}`)} strategy={verticalListSortingStrategy}>
+          <div className="projects-grid">
+            {categoryProjects.length === 0 ? <p className="empty-msg">Nenhum projeto encontrado.</p> : null}
+            {categoryProjects.map((project) => {
+              const projectTasks = tasks.filter((task) => task.project_id === project.id);
+              return (
+                <SortableWrapper key={project.id} id={`proj-${project.id}`}>
+                  {({ setNodeRef, style, attributes, listeners }) => (
+                    <div ref={setNodeRef} style={{ ...style, position: 'relative' }} className="project-folder">
+                      <div
+                        className="project-folder-tab"
+                        {...attributes} {...listeners}
+                        onClick={() => {
+                          setCollapsedProjects(prev => {
+                            const next = new Set(prev);
+                            if (next.has(project.id)) next.delete(project.id);
+                            else next.add(project.id);
+                            return next;
+                          });
+                        }}
+                        style={{ cursor: 'pointer' }}
+                        title={collapsedProjects.has(project.id) ? "Expandir projeto" : "Minimizar projeto"}
+                      >
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <button
+                            className="btn-icon"
+                            title={collapsedProjects.has(project.id) ? "Expandir projeto" : "Minimizar projeto"}
+                          >
+                            {collapsedProjects.has(project.id) ? <ChevronRight size={18} strokeWidth={1.5} /> : <ChevronDown size={18} strokeWidth={1.5} />}
+                          </button>
+                          <Folder size={16} strokeWidth={1.5} /> {project.name}
+                        </span>
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                          <label className="btn-icon" title="Anexar arquivo na nuvem" onClick={e => e.stopPropagation()} style={{ cursor: 'pointer', opacity: uploadingToProject === project.id ? 0.5 : 1 }}>
+                            {uploadingToProject === project.id ? <Loader size={16} strokeWidth={1.5} className="spin-animation" /> : <Paperclip size={16} strokeWidth={1.5} />}
+                            <input type="file" hidden accept=".svg,.png,.jpg,.jpeg,.gif,.pdf,.zip,.rar,.doc,.docx,.xls,.xlsx,.json,.fig" onChange={(e) => {
+                              const file = e.target.files[0];
+                              e.target.value = null; // reseta pra conseguir mandar o mesmo
+                              handleFileUpload(project.id, file);
+                            }} disabled={uploadingToProject === project.id} />
+                          </label>
+                          <button
+                            className="btn-icon"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handleEditProjectClick(project);
+                            }}
+                            title="Editar Projeto"
+                          >
+                            <Pencil size={16} strokeWidth={1.5} />
+                          </button>
+                          <button
+                            className="btn-icon"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handleDeleteProject(project.id);
+                            }}
+                            style={{ color: 'var(--color-danger)' }}
+                            title="Excluir Projeto"
+                          >
+                            <Trash2 size={16} strokeWidth={1.5} />
+                          </button>
+                        </div>
+                      </div>
+                      {!collapsedProjects.has(project.id) && (
+                        <div className="project-folder-body glass-card">
+
+                          <SortableContext items={projectTasks.map(t => `task-${t.id}`)} strategy={verticalListSortingStrategy}>
+                            <div className="task-cards-list" style={{ marginBottom: (attachmentsByProject[project.id] && attachmentsByProject[project.id].length > 0) ? 'var(--space-6)' : 0 }}>
+                              {projectTasks.map((task) => (
+                                <SortableWrapper key={task.id} id={`task-${task.id}`}>
+                                  {({ setNodeRef, style, attributes, listeners }) => (
+                                    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+                                      <TaskCard
+                                        variant="manager"
+                                        task={task}
+                                        currencySymbol={CURRENCY_SYMBOLS[task.currency || 'EUR']}
+                                        onToggleBilled={toggleBilled}
+                                        onDelete={handleDeleteTask}
+                                        onEdit={handleEditTaskClick}
+                                      />
+                                    </div>
+                                  )}
+                                </SortableWrapper>
+                              ))}
+                              {projectTasks.length === 0 ? <span className="empty-msg task-list-empty">Sem tasks neste projeto.</span> : null}
+                            </div>
+                          </SortableContext>
+
+                          {attachmentsByProject[project.id] && attachmentsByProject[project.id].length > 0 && (
+                            <div className="attachments-section">
+                              <div style={{ padding: 'var(--space-2) var(--space-4)', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--text-secondary)', borderTop: '1px solid var(--border-subtle)', paddingTop: 'var(--space-4)', marginBottom: 'var(--space-3)' }}>
+                                <FolderOpen size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} />
+                                Arquivos do projeto
+                              </div>
+                              <div className="attachments-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 'var(--space-3)', padding: '0 var(--space-2)' }}>
+                                {attachmentsByProject[project.id].map(att => (
+                                  <div key={att.id} style={{ position: 'relative', overflow: 'hidden', paddingLeft: '14px', display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: 'var(--space-2) var(--space-3) var(--space-2) 18px', fontSize: 'var(--text-xs)' }}>
+                                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', backgroundColor: att.color || 'var(--border-subtle)' }} />
+
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                      <label title="Vincular cor da task" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                                        <input
+                                          type="color"
+                                          style={{ width: '16px', height: '16px', padding: 0, border: 'none', cursor: 'pointer', background: 'transparent' }}
+                                          value={att.color || '#4a5568'}
+                                          onChange={(e) => handleUpdateAttachmentColor(project.id, att, e.target.value)}
+                                        />
+                                      </label>
+                                    </div>
+
+                                    <span className="truncate" style={{ flex: 1, fontWeight: 500, color: 'var(--text-primary)' }} title={att.file_name}>{att.file_name}</span>
+
+                                    <div style={{ display: 'flex', gap: '4px' }}>
+                                      <a href={att.file_url} target="_blank" rel="noreferrer" className="btn-icon" style={{ padding: '6px' }} title="Baixar">
+                                        <Download size={14} style={{ color: 'var(--color-primary)' }} strokeWidth={1.5} />
+                                      </a>
+                                      <button type="button" onClick={() => handleDeleteAttachment(project.id, att)} className="btn-icon" style={{ padding: '6px' }} title="Excluir">
+                                        <X size={14} style={{ color: 'var(--color-danger)' }} strokeWidth={1.5} />
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </SortableWrapper>
+              );
+            })}
           </div>
+        </SortableContext>
+
+        <EditModal isOpen={!!editingProject} title="Editar Projeto" onClose={() => setEditingProject(null)} onSave={handleSaveProject}>
           <div className="edit-modal-field">
-            <label className="edit-modal-label">Horas Orçadas</label>
-            <Input type="number" step="0.1" value={editTaskForm.budgeted_hours} onChange={e => setEditTaskForm({ ...editTaskForm, budgeted_hours: e.target.value })} />
+            <label className="edit-modal-label">Nome do Projeto</label>
+            <Input value={editProjectForm.name} onChange={e => setEditProjectForm({ ...editProjectForm, name: e.target.value })} required />
           </div>
+        </EditModal>
+
+        <EditModal isOpen={!!editingTask} title="Editar Tarefa" onClose={() => setEditingTask(null)} onSave={handleSaveTask}>
           <div className="edit-modal-field">
-            <label className="edit-modal-label">Cor</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <input type="color" className="color-picker" value={editTaskForm.color || '#10b981'} onChange={e => setEditTaskForm({ ...editTaskForm, color: e.target.value })} style={{ width: '42px', height: '42px', padding: '0', cursor: 'pointer', borderRadius: '4px' }} />
-              <button type="button" onClick={() => navigator.clipboard.writeText(editTaskForm.color || '#10b981')} className="btn-icon" style={{ padding: '6px', opacity: 0.7 }} title="Copiar código HEX">
-                <Copy size={16} strokeWidth={1.5} />
-              </button>
+            <label className="edit-modal-label">✨ Nome da Tarefa</label>
+            <Input value={editTaskForm.name} onChange={e => setEditTaskForm({ ...editTaskForm, name: e.target.value })} required />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', alignItems: 'end' }}>
+            <div className="edit-modal-field">
+              <label className="edit-modal-label">Valor / Hora</label>
+              <Input type="number" step="0.01" value={editTaskForm.hourly_rate} onChange={e => setEditTaskForm({ ...editTaskForm, hourly_rate: e.target.value })} />
+            </div>
+            <div className="edit-modal-field">
+              <label className="edit-modal-label">Horas Orçadas</label>
+              <Input type="number" step="0.1" value={editTaskForm.budgeted_hours} onChange={e => setEditTaskForm({ ...editTaskForm, budgeted_hours: e.target.value })} />
+            </div>
+            <div className="edit-modal-field">
+              <label className="edit-modal-label">Cor</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <input type="color" className="color-picker" value={editTaskForm.color || '#10b981'} onChange={e => setEditTaskForm({ ...editTaskForm, color: e.target.value })} style={{ width: '42px', height: '42px', padding: '0', cursor: 'pointer', borderRadius: '4px' }} />
+                <button type="button" onClick={() => navigator.clipboard.writeText(editTaskForm.color || '#10b981')} className="btn-icon" style={{ padding: '6px', opacity: 0.7 }} title="Copiar código HEX">
+                  <Copy size={16} strokeWidth={1.5} />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </EditModal>
+        </EditModal>
 
-    </div >
+      </div >
+    </DndContext>
   );
 }

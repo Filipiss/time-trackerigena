@@ -21,7 +21,7 @@ def check_and_notify_deadlines(app):
         # Projetos
         projects = db.query(Project).filter(
             Project.deadline == today_iso,
-            Project.status != "completo",
+            Project.status.in_(["deadline", "urgente"]),
             Project.deadline_notified == False
         ).all()
         
@@ -40,7 +40,7 @@ def check_and_notify_deadlines(app):
         # precisamos recuperar o owner da task atravessando o project.
         tasks = db.query(Task).join(Project, Task.project_id == Project.id).filter(
             Task.deadline == today_iso,
-            Task.status != "completo",
+            Task.status.in_(["deadline", "urgente"]),
             Task.deadline_notified == False
         ).all()
         

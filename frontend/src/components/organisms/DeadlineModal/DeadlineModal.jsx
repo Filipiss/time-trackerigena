@@ -63,7 +63,7 @@ export default function DeadlineModal({
                   <option value="">Selecione um projeto...</option>
                   {projects.map((project) => (
                     <option key={project.id} value={project.id}>
-                      [{project.category}] {project.name}{project.deadline ? ` (já tem deadline: ${formatDateBR(project.deadline)})` : ''}
+                      [{project.category}] {project.name}
                     </option>
                   ))}
                 </Select>
@@ -76,7 +76,7 @@ export default function DeadlineModal({
                     <option value="">Nenhuma task (Aplicar ao Projeto)</option>
                     {projectTasks.map((task) => (
                       <option key={task.id} value={task.id}>
-                        {task.name}{task.deadline ? ` (já tem deadline: ${formatDateBR(task.deadline)})` : ''}
+                        {task.name}
                       </option>
                     ))}
                   </Select>
@@ -93,7 +93,7 @@ export default function DeadlineModal({
           ) : null}
 
           <div className="task-form-field modal-form-spacing">
-            <label className="task-form-label">Deadline</label>
+            <label className="task-form-label">Data Agendada</label>
             <Input type="date" value={formDeadline} onChange={(event) => setFormDeadline(event.target.value)} />
           </div>
 
@@ -108,7 +108,7 @@ export default function DeadlineModal({
 
           <div className="task-form-field modal-form-spacing">
             <label className="task-form-label">Observações</label>
-            <Input as="textarea" rows={3} value={formNotes} onChange={(event) => setFormNotes(event.target.value)} placeholder="Observações sobre o compromisso/deadline..." />
+            <Input as="textarea" rows={3} value={formNotes} onChange={(event) => setFormNotes(event.target.value)} placeholder="Observações sobre o compromisso..." />
           </div>
 
           {editingEventId ? (

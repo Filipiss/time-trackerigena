@@ -11,7 +11,7 @@ class ProjectRepository:
             query = query.filter(Project.category == category)
         if user_id is not None:
             query = query.filter(Project.user_id == user_id)
-        return query.order_by(Project.created_at.desc()).all()
+        return query.order_by(Project.sort_order.asc(), Project.created_at.desc()).all()
 
     @staticmethod
     def create(db: Session, project_data: dict) -> Project:

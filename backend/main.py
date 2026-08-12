@@ -16,11 +16,16 @@ from routes.time_entry_routes import time_entry_bp
 from routes.category_routes import category_bp
 from routes.auth_routes import auth_bp
 from routes.user_routes import user_bp
+from routes.calendar_event_routes import calendar_event_bp
+from routes.admin_routes import admin_bp
+from routes.settings_routes import settings_bp
 
 from models.category import Category
 from models.project import Project
 from models.task import Task
-from models.user import User  # noqa: F401 — necessário para create_all detectar a tabela
+from models.user import User  # noqa: F401
+from models.calendar_event import CalendarEvent # noqa: F401
+from models.system_setting import SystemSetting # noqa: F401
 
 load_dotenv()
 
@@ -33,15 +38,23 @@ def _run_lightweight_migrations():
     inspector = inspect(engine)
 
     columns_to_add = {
+        "users": [
+            ("is_admin", "BOOLEAN DEFAULT FALSE NOT NULL"),
+        ],
+        "categories": [
+            ("sort_order", "INTEGER DEFAULT 0"),
+        ],
         "projects": [
             ("deadline", "VARCHAR(10)"),
             ("status", "VARCHAR(30)"),
             ("notes", "TEXT"),
             ("user_id", "INTEGER"),  # FK para users — adicionada gradualmente
+            ("sort_order", "INTEGER DEFAULT 0"),
         ],
         "tasks": [
             ("currency", "VARCHAR(3)"),
             ("budgeted_hours", "FLOAT"),
+            ("sort_order", "INTEGER DEFAULT 0"),
         ],
     }
 
@@ -60,7 +73,23 @@ def _run_lightweight_migrations():
     with engine.begin() as connection:
         connection.execute(text("UPDATE projects SET status = 'em_andamento' WHERE status IS NULL"))
         connection.execute(text("UPDATE tasks SET currency = 'EUR' WHERE currency IS NULL"))
+        connection.execute(text("UPDATE categories SET sort_order = 0 WHERE sort_order IS NULL"))
+        connection.execute(text("UPDATE projects SET sort_order = 0 WHERE sort_order IS NULL"))
+        connection.execute(text("UPDATE tasks SET sort_order = 0 WHERE sort_order IS NULL"))
 
+        # Backward compatibility migration: If calendar_events is totally empty, migrate older deadlines
+        res = connection.execute(text("SELECT count(id) FROM calendar_events")).scalar()
+        if res == 0:
+            # Transfer old projects
+            connection.execute(text("""
+                INSERT INTO calendar_events (user_id, project_id, date, status, deadline_notified)
+                SELECT user_id, id, deadline, status, 0 FROM projects WHERE deadline IS NOT NULL
+            """))
+            # Transfer old tasks
+            connection.execute(text("""
+                INSERT INTO calendar_events (user_id, task_id, date, status, deadline_notified)
+                SELECT (SELECT user_id FROM projects WHERE projects.id = tasks.project_id), id, deadline, status, 0 FROM tasks WHERE deadline IS NOT NULL
+            """))
 
 _run_lightweight_migrations()
 
@@ -117,6 +146,9 @@ def create_app():
     app.register_blueprint(task_bp)
     app.register_blueprint(time_entry_bp)
     app.register_blueprint(category_bp)
+    app.register_blueprint(calendar_event_bp)
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(settings_bp)
 
     @app.route("/", methods=["GET"])
     def root():

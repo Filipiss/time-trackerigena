@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Spinner from '../../atoms/Spinner/Spinner';
 import CalendarBoard from '../../organisms/CalendarBoard/CalendarBoard';
 import DeadlineModal from '../../organisms/DeadlineModal/DeadlineModal';
-import { fetchProjectDeadlineHistory, fetchTaskDeadlineHistory, fetchProjects, fetchTasks, updateProject, updateTask } from '../../../api';
+import { fetchProjects, fetchTasks, getCalendarEvents, createCalendarEvent, updateCalendarEvent, deleteCalendarEvent } from '../../../api';
 import './CalendarPage.css';
 
 const STATUS_CONFIG = {
@@ -42,6 +42,7 @@ function buildMonthGrid(monthDate) {
 export default function CalendarPage() {
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [calendarEvents, setCalendarEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [monthDate, setMonthDate] = useState(() => {
     const now = new Date();
@@ -65,13 +66,15 @@ export default function CalendarPage() {
     const loadData = async () => {
       try {
         if (active) setLoading(true);
-        const [projectsData, tasksData] = await Promise.all([
+        const [projectsData, tasksData, eventsData] = await Promise.all([
           fetchProjects(),
-          fetchTasks()
+          fetchTasks(),
+          getCalendarEvents()
         ]);
         if (active) {
           setProjects(projectsData || []);
           setTasks(tasksData || []);
+          setCalendarEvents(eventsData || []);
         }
       } catch (error) {
         console.error('Erro ao carregar dados do calendário:', error);
@@ -89,22 +92,29 @@ export default function CalendarPage() {
 
   const eventsByDate = useMemo(() => {
     const map = {};
-    projects.forEach((item) => {
-      if (item.deadline) {
-        if (!map[item.deadline]) map[item.deadline] = [];
-        map[item.deadline].push({ ...item, eventType: 'project' });
-      }
-    });
-    tasks.forEach((item) => {
-      if (item.deadline) {
-        if (!map[item.deadline]) map[item.deadline] = [];
-        map[item.deadline].push({ ...item, eventType: 'task' });
+    calendarEvents.forEach((ev) => {
+      if (ev.date) {
+        if (!map[ev.date]) map[ev.date] = [];
+
+        const p = projects.find(proj => proj.id === ev.project_id);
+        const t = tasks.find(tsk => tsk.id === ev.task_id);
+        const name = (ev.task_id && t) ? t.name : (p ? p.name : 'Desconhecido');
+        const category = p ? p.category : '';
+
+        map[ev.date].push({
+          ...ev,
+          name,
+          category,
+          eventType: ev.task_id ? 'task' : 'project'
+        });
       }
     });
     return map;
-  }, [projects, tasks]);
+  }, [calendarEvents, projects, tasks]);
 
-  const projectsWithoutDeadline = useMemo(() => projects.filter((project) => !project.deadline), [projects]);
+  const projectsWithoutDeadline = useMemo(() => {
+    return projects.filter(p => !calendarEvents.some(ev => ev.project_id === p.id));
+  }, [projects, calendarEvents]);
   const monthGrid = useMemo(() => buildMonthGrid(monthDate), [monthDate]);
   const currentMonthIndex = monthDate.getMonth();
   const todayISO = toISODate(new Date());
@@ -125,23 +135,12 @@ export default function CalendarPage() {
     setEditingEventId(event.id);
     setEditingType(event.eventType);
     setCreatingForDate(null);
-    setFormProjectId(event.eventType === 'task' ? event.project_id : event.id);
-    setFormTaskId(event.eventType === 'task' ? event.id : '');
-    setFormDeadline(event.deadline || '');
+    setFormProjectId(event.project_id || '');
+    setFormTaskId(event.task_id || '');
+    setFormDeadline(event.date || '');
     setFormStatus(event.status || 'em_andamento');
     setFormNotes(event.notes || '');
-    setLoadingHistory(true);
-    try {
-      const data = event.eventType === 'task'
-        ? await fetchTaskDeadlineHistory(event.id)
-        : await fetchProjectDeadlineHistory(event.id);
-      setHistory(data || []);
-    } catch (error) {
-      console.error('Erro ao carregar histórico:', error);
-      setHistory([]);
-    } finally {
-      setLoadingHistory(false);
-    }
+    setHistory([]);
   };
 
   const closeModal = () => {
@@ -158,22 +157,20 @@ export default function CalendarPage() {
     }
     setSaving(true);
     try {
-      if (formTaskId) {
-        // Saving task deadline
-        const updated = await updateTask(formTaskId, {
-          deadline: formDeadline || null,
-          status: formStatus,
-          notes: formNotes.trim() || null,
-        });
-        setTasks((prev) => prev.map((t) => (t.id === updated.id ? { ...t, ...updated } : t)));
+      const payload = {
+        project_id: formProjectId || null,
+        task_id: formTaskId || null,
+        date: formDeadline || null,
+        status: formStatus,
+        notes: formNotes.trim() || null
+      };
+
+      if (editingEventId) {
+        const updated = await updateCalendarEvent(editingEventId, payload);
+        setCalendarEvents((prev) => prev.map((ev) => (ev.id === updated.id ? updated : ev)));
       } else {
-        // Saving project deadline
-        const updated = await updateProject(formProjectId, {
-          deadline: formDeadline || null,
-          status: formStatus,
-          notes: formNotes.trim() || null,
-        });
-        setProjects((prev) => prev.map((p) => (p.id === updated.id ? { ...p, ...updated } : p)));
+        const created = await createCalendarEvent(payload);
+        setCalendarEvents((prev) => [...prev, created]);
       }
       closeModal();
     } catch (error) {
@@ -187,16 +184,11 @@ export default function CalendarPage() {
     if (!editingEventId) return;
     setSaving(true);
     try {
-      if (editingType === 'task') {
-        const updated = await updateTask(editingEventId, { deadline: null });
-        setTasks((prev) => prev.map((t) => (t.id === updated.id ? { ...t, ...updated } : t)));
-      } else {
-        const updated = await updateProject(editingEventId, { deadline: null });
-        setProjects((prev) => prev.map((p) => (p.id === updated.id ? { ...p, ...updated } : p)));
-      }
+      await deleteCalendarEvent(editingEventId);
+      setCalendarEvents((prev) => prev.filter((ev) => ev.id !== editingEventId));
       closeModal();
     } catch (error) {
-      window.alert(`Erro ao remover deadline: ${error.message}`);
+      window.alert(`Erro ao remover compromisso: ${error.message}`);
     } finally {
       setSaving(false);
     }

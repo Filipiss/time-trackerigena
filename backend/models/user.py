@@ -21,8 +21,9 @@ class User(Base):
     country = Column(String(100), nullable=True)
     avatar_url = Column(Text, nullable=True)                          # base64 ou URL futura
 
-    # Ativação de conta
+    # Ativação de conta e Permissões
     is_active = Column(Boolean, default=False, nullable=False)
+    is_admin = Column(Boolean, default=False, nullable=False)
     activation_token = Column(String(100), nullable=True)
 
     # Recuperação de senha

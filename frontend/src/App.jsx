@@ -1,6 +1,8 @@
 ﻿import { useCallback, useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { fetchSettings } from './api';
+import ReactGA from 'react-ga4';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import MainLayout from './components/templates/MainLayout/MainLayout';
 import CalendarPage from './components/pages/CalendarPage/CalendarPage';
 import DashboardPage from './components/pages/DashboardPage/DashboardPage';
@@ -10,9 +12,18 @@ import TimerPage from './components/pages/TimerPage/TimerPage';
 import ProfilePage from './components/pages/ProfilePage/ProfilePage';
 import ActivatePage from './components/pages/ActivatePage/ActivatePage';
 import ResetPasswordModal from './components/organisms/ResetPasswordModal/ResetPasswordModal';
+import AdminLayout from './components/templates/AdminLayout/AdminLayout';
+import AdminDashboardPage from './components/pages/AdminPages/AdminDashboardPage';
+import UsersManagementPage from './components/pages/AdminPages/UsersManagementPage';
+import AdminSettingsPage from './components/pages/AdminPages/AdminSettingsPage';
 import './App.css';
 
+ReactGA.initialize('G-GYLWC1S1J3');
+
 function AppRoutes() {
+  const { user } = useAuth();
+  const [settings, setSettings] = useState(null);
+
   const [selectedTask, setSelectedTask] = useState(() => {
     try {
       const saved = localStorage.getItem('tracker_selectedTask');
@@ -22,6 +33,19 @@ function AppRoutes() {
     }
   });
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const location = useLocation();
+
+  useEffect(() => {
+    fetchSettings().then(setSettings).catch(console.error);
+    const interval = setInterval(() => {
+      fetchSettings().then(setSettings).catch(console.error);
+    }, 10000); // Poll a cada 10 segundos
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search });
+  }, [location]);
 
   useEffect(() => {
     if (selectedTask) {
@@ -38,9 +62,24 @@ function AppRoutes() {
   const handleTaskChange = useCallback(() => { handleRefresh(); }, [handleRefresh]);
   const handleSaveSuccess = useCallback(() => { handleRefresh(); }, [handleRefresh]);
 
+  if (settings?.maintenance_mode && !user?.is_admin && !location.pathname.startsWith('/admin')) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0f172a', color: '#f8fafc', padding: '2rem', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '3rem', marginBottom: '1rem', background: 'linear-gradient(to right, #3b82f6, #a855f7)', WebkitBackgroundClip: 'text', color: 'transparent' }}>Voltamos logo!</h1>
+        <p style={{ fontSize: '1.2rem', color: '#94a3b8', maxWidth: '500px' }}>O Time Trackerígena está passando por uma manutenção essencial para melhorar sua experiência. Retorne em breve.</p>
+        <button onClick={() => window.location.reload()} style={{ marginTop: '2rem', padding: '0.8rem 2rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Tentar novamente</button>
+      </div>
+    );
+  }
+
   return (
     <Routes>
-      <Route element={<MainLayout />}>
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route path="users" element={<UsersManagementPage />} />
+        <Route path="settings" element={<AdminSettingsPage />} />
+        <Route path="" element={<AdminDashboardPage />} />
+      </Route>
+      <Route element={<MainLayout settings={settings} />}>
         <Route path="/timer" element={<TimerPage selectedTask={selectedTask} onSelectTask={setSelectedTask} refreshTrigger={refreshTrigger} onSaveSuccess={handleSaveSuccess} />} />
         <Route path="/tasks" element={<TasksPage onTaskChange={handleTaskChange} />} />
         <Route path="/dashboard" element={<DashboardPage refreshTrigger={refreshTrigger} />} />

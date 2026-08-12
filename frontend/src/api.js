@@ -112,6 +112,7 @@ export const fetchCategories = () => request('/api/categories');
 export const createCategory = (name) => request('/api/categories', { method: 'POST', body: JSON.stringify({ name }) });
 export const updateCategory = (id, name) => request(`/api/categories/${id}`, { method: 'PUT', body: JSON.stringify({ name }) });
 export const deleteCategory = (id) => request(`/api/categories/${id}`, { method: 'DELETE' });
+export const reorderCategories = (orderData) => request('/api/categories/reorder', { method: 'PATCH', body: JSON.stringify(orderData) });
 
 // ===================== PROJECTS =====================
 
@@ -165,6 +166,10 @@ export async function updateProject(id, data) {
 
 export async function deleteProject(id) {
   return request(`/api/projects/${id}`, { method: 'DELETE' });
+}
+
+export async function reorderProjects(orderData) {
+  return request('/api/projects/reorder', { method: 'PATCH', body: JSON.stringify(orderData) });
 }
 
 export async function fetchProjectDeadlineHistory(id) {
@@ -246,6 +251,38 @@ export async function updateTask(id, data) {
 export async function deleteTask(id) {
   return request(`/api/tasks/${id}`, { method: 'DELETE' });
 }
+
+export async function reorderTasks(orderData) {
+  return request('/api/tasks/reorder', { method: 'PATCH', body: JSON.stringify(orderData) });
+}
+
+/* =========================================================================
+   CALENDAR EVENTS ENDPOINTS
+   ========================================================================= */
+
+export const getCalendarEvents = async () => {
+  return request('/api/calendar_events');
+};
+
+export const createCalendarEvent = async (eventData) => {
+  return request('/api/calendar_events', {
+    method: 'POST',
+    body: JSON.stringify(eventData),
+  });
+};
+
+export const updateCalendarEvent = async (eventId, eventData) => {
+  return request(`/api/calendar_events/${eventId}`, {
+    method: 'PUT',
+    body: JSON.stringify(eventData),
+  });
+};
+
+export const deleteCalendarEvent = async (eventId) => {
+  return request(`/api/calendar_events/${eventId}`, {
+    method: 'DELETE',
+  });
+};
 
 export async function fetchTaskDeadlineHistory(id) {
   return request(`/api/tasks/${id}/deadline-history`);
@@ -335,4 +372,46 @@ export async function fetchStats(filters = {}) {
     })),
     time_by_day: stats.time_by_day || []
   };
+}
+
+// ===================== ADMIN =====================
+
+export async function fetchAdminMetrics() {
+  return request('/api/admin/metrics');
+}
+
+export async function fetchAllUsers() {
+  return request('/api/admin/users');
+}
+
+export async function toggleAdminRole(userId, isAdmin) {
+  return request(`/api/admin/users/${userId}/role`, {
+    method: 'PUT',
+    body: JSON.stringify({ is_admin: isAdmin }),
+  });
+}
+
+export async function deleteAdminUser(userId) {
+  return request(`/api/admin/users/${userId}`, { method: 'DELETE' });
+}
+
+export async function updateUserProfile(userId, profileData) {
+  return request(`/api/admin/users/${userId}`, {
+    method: 'PUT',
+    body: JSON.stringify(profileData),
+  });
+}
+
+export async function fetchSettings() {
+  // Public route, but requiresAuth=false so it doesn't bounce to Guest mock
+  // Added a cache breaker to ensure polling ignores 304 Not Modified browser caching
+  return request(`/api/settings?t=${Date.now()}`, {}, false);
+}
+
+export async function updateSettings(data) {
+  // Admin route, must use token
+  return request('/api/settings', {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
 }

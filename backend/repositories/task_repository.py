@@ -12,7 +12,7 @@ class TaskRepository:
             query = query.filter(Task.project_id == project_id)
         if user_id is not None:
             query = query.filter(Project.user_id == user_id)
-        return query.order_by(Task.created_at.desc()).all()
+        return query.order_by(Task.sort_order.asc(), Task.created_at.desc()).all()
 
     @staticmethod
     def get_by_id(db: Session, task_id: int) -> Task:

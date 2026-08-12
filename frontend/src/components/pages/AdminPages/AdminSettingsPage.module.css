@@ -1,0 +1,149 @@
+.container {
+    padding: 1rem;
+}
+
+.header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #f1f5f9;
+}
+
+.header p {
+    color: #94a3b8;
+    margin-bottom: 2rem;
+}
+
+.formContainer {
+    background: var(--surface-card, #1e293b);
+    border: 1px solid var(--border-color, #334155);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.settingsSection {
+    padding: 2rem;
+}
+
+.settingsSection h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #f1f5f9;
+}
+
+.hint {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.textarea {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color, #334155);
+    color: white;
+    padding: 1rem;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid var(--border-color, #334155);
+    margin: 0;
+}
+
+.toggleRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #334155;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: #ef4444;
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
+}
+
+.actions {
+    padding: 1.5rem 2rem;
+    background: rgba(0, 0, 0, 0.1);
+    border-top: 1px solid var(--border-color, #334155);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btnSave {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btnSave:hover {
+    background: #2563eb;
+}
+
+.btnSave:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: #94a3b8;
+}

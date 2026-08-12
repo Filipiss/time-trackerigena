@@ -15,6 +15,7 @@ class Task(Base):
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
     name = Column(String(100), nullable=False)
     color = Column(String(7), default="#6366f1")
+    sort_order = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
     hourly_rate = Column(Float, default=0.0)

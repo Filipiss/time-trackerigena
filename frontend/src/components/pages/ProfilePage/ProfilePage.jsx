@@ -34,7 +34,7 @@ const COUNTRIES = [
 export default function ProfilePage() {
     const { user, refreshUser } = useAuth();
     const fileRef = useRef(null);
-    const [form, setForm] = useState({ full_name: '', country: '', avatar_url: '' });
+    const [form, setForm] = useState({ full_name: '', country: '', phone: '', avatar_url: '' });
     const [countrySearch, setCountrySearch] = useState('');
     const [showCountryDropdown, setShowCountryDropdown] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -49,6 +49,7 @@ export default function ProfilePage() {
             setForm({
                 full_name: user.full_name || '',
                 country: user.country || '',
+                phone: user.phone || '',
                 avatar_url: user.avatar_url || '',
             });
             setCountrySearch(user.country || '');
@@ -200,6 +201,17 @@ export default function ProfilePage() {
                                         ))}
                                     </ul>
                                 )}
+                            </div>
+
+                            <div className="field-group">
+                                <label>Telefone / WhatsApp</label>
+                                <input
+                                    type="tel"
+                                    value={form.phone}
+                                    onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                                    placeholder="+55 (11) 99999-9999"
+                                    maxLength={30}
+                                />
                             </div>
 
                             <button type="submit" className="btn-save" disabled={saving}>

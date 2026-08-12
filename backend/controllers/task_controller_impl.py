@@ -13,6 +13,34 @@ tasks_schema = TaskSchema(many=True)
 task_update_schema = TaskUpdateSchema()
 task_deadline_history_schema = TaskDeadlineHistorySchema(many=True)
 
+from models.project import Project
+from models.task import Task
+
+@task_bp.route("/reorder", methods=["PATCH"])
+@jwt_required()
+def reorder_tasks():
+    data = request.json
+    if not isinstance(data, list):
+        return error_response("Payload precisa ser uma lista de objetos {id, sort_order}", 400)
+    
+    db = get_db_session()
+    user_id = int(get_jwt_identity())
+    try:
+        for item in data:
+            task_id = item.get("id")
+            order = item.get("sort_order", 0)
+            if task_id is not None:
+                # Segurança: garantir que a task pertence a projeto cujo dono é o usuario
+                task = db.query(Task).join(Project).filter(Task.id == task_id, Project.user_id == user_id).first()
+                if task:
+                    task.sort_order = order
+        db.commit()
+        return success_response({"msg": "Tarefas reordenadas com sucesso."})
+    except Exception as e:
+        return error_response(str(e), 500)
+    finally:
+        db.close()
+
 
 @task_bp.route("/", methods=["GET"])
 @jwt_required()

@@ -18,6 +18,7 @@ class Project(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # nullable para migração gradual
     name = Column(String(100), nullable=False)
     category = Column(String(20), nullable=False)  # 'Loco' ou 'Freelas'
+    sort_order = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Campos do calendário de deadlines

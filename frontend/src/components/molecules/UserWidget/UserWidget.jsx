@@ -1,9 +1,11 @@
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import './UserWidget.css';
 
 export default function UserWidget({ onNavigateToProfile }) {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const timeoutRef = useRef(null);
 
@@ -51,6 +53,11 @@ export default function UserWidget({ onNavigateToProfile }) {
 
             {open && (
                 <div className="user-dropdown">
+                    {user?.is_admin && (
+                        <button className="dropdown-item" onClick={() => { setOpen(false); navigate('/admin/users'); }}>
+                            <span>⚙️</span> Painel Admin
+                        </button>
+                    )}
                     <button className="dropdown-item" onClick={handleProfile}>
                         <span>👤</span> Perfil
                     </button>

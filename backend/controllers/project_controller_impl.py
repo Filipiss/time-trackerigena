@@ -16,6 +16,30 @@ project_attachment_schema = ProjectAttachmentSchema()
 project_attachments_schema = ProjectAttachmentSchema(many=True)
 
 
+@project_bp.route("/reorder", methods=["PATCH"])
+@jwt_required()
+def reorder_projects():
+    data = request.json
+    if not isinstance(data, list):
+        return error_response("Payload precisa ser uma lista de objetos {id, sort_order}", 400)
+    
+    db = get_db_session()
+    user_id = int(get_jwt_identity())
+    try:
+        from models.project import Project
+        for item in data:
+            proj_id = item.get("id")
+            order = item.get("sort_order", 0)
+            if proj_id is not None:
+                db.query(Project).filter(Project.id == proj_id, Project.user_id == user_id).update({"sort_order": order})
+        db.commit()
+        return success_response({"msg": "Projetos reordenados com sucesso."})
+    except Exception as e:
+        return error_response(str(e), 500)
+    finally:
+        db.close()
+
+
 @project_bp.route("/", methods=["GET"])
 @jwt_required()
 def list_projects():
