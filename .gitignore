@@ -21,3 +21,7 @@ Thumbs.db
 
 # Preserved legacy repository metadata
 backend/.git-history-backup/
+
+# Seed files
+backend/seed.py
+seed.py

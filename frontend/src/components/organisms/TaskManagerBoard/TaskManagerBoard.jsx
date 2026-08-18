@@ -62,6 +62,7 @@ function SortableCategory({ category, activeTab, setActiveTab }) {
         isActive={activeTab === category.name.toLowerCase()}
         onClick={() => setActiveTab(category.name.toLowerCase())}
       >
+        <Briefcase size={14} style={{ marginRight: '6px', display: 'inline-block', verticalAlign: 'middle' }} strokeWidth={1.5} />
         {category.name}
       </TabButton>
     </div>
@@ -96,7 +97,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
 
   const [selectedCategoryToManage, setSelectedCategoryToManage] = useState('');
   const [isCategoryNameFocused, setIsCategoryNameFocused] = useState(false);
-  const [collapsedProjects, setCollapsedProjects] = useState(new Set());
+  const [expandedProjects, setExpandedProjects] = useState(new Set());
 
   const [attachmentsByProject, setAttachmentsByProject] = useState({});
   const [uploadingToProject, setUploadingToProject] = useState(null);
@@ -556,6 +557,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
               <div className="task-form-field task-form-inline-field">
                 <label className="task-form-label">Valor/Hora</label>
                 <Input
+                  className="input-centered"
                   type="number"
                   step="0.01"
                   value={newTaskHourlyRate}
@@ -569,6 +571,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                 <label className="task-form-label">Horas Orçadas</label>
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                   <Input
+                    className="input-centered"
                     type="number"
                     step="0.5"
                     min="0"
@@ -579,7 +582,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                     onBlur={() => setIsBudgetFocused(false)}
                   />
                   {!newTaskBudgetedHours && !isBudgetFocused && (
-                    <Clock size={16} strokeWidth={1.5} style={{ position: 'absolute', left: 'var(--space-3)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
+                    <Clock size={16} strokeWidth={1.5} style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
                   )}
                 </div>
               </div>
@@ -611,7 +614,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                         className="project-folder-tab"
                         {...attributes} {...listeners}
                         onClick={() => {
-                          setCollapsedProjects(prev => {
+                          setExpandedProjects(prev => {
                             const next = new Set(prev);
                             if (next.has(project.id)) next.delete(project.id);
                             else next.add(project.id);
@@ -619,14 +622,14 @@ export default function TaskManagerBoard({ onTaskChange }) {
                           });
                         }}
                         style={{ cursor: 'pointer' }}
-                        title={collapsedProjects.has(project.id) ? "Expandir projeto" : "Minimizar projeto"}
+                        title={expandedProjects.has(project.id) ? "Minimizar projeto" : "Expandir projeto"}
                       >
                         <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <button
                             className="btn-icon"
-                            title={collapsedProjects.has(project.id) ? "Expandir projeto" : "Minimizar projeto"}
+                            title={expandedProjects.has(project.id) ? "Minimizar projeto" : "Expandir projeto"}
                           >
-                            {collapsedProjects.has(project.id) ? <ChevronRight size={18} strokeWidth={1.5} /> : <ChevronDown size={18} strokeWidth={1.5} />}
+                            {expandedProjects.has(project.id) ? <ChevronDown size={18} strokeWidth={1.5} /> : <ChevronRight size={18} strokeWidth={1.5} />}
                           </button>
                           <Folder size={16} strokeWidth={1.5} /> {project.name}
                         </span>
@@ -662,7 +665,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                           </button>
                         </div>
                       </div>
-                      {!collapsedProjects.has(project.id) && (
+                      {expandedProjects.has(project.id) && (
                         <div className="project-folder-body glass-card">
 
                           <SortableContext items={projectTasks.map(t => `task-${t.id}`)} strategy={verticalListSortingStrategy}>

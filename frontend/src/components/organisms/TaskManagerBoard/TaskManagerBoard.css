@@ -75,6 +75,10 @@
   min-width: 0;
 }
 
+.input-centered {
+  text-align: center;
+}
+
 .task-form-currency-field {
   min-width: 0;
 }

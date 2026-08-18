@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Spinner from '../../atoms/Spinner/Spinner';
 import TabButton from '../../molecules/TabButton/TabButton';
 import TaskCard from '../../molecules/TaskCard/TaskCard';
-import { Filter, Folder } from 'lucide-react';
+import { Folder, Briefcase } from 'lucide-react';
 import { fetchProjects, fetchTasks } from '../../../api';
 import './TaskSelectorPanel.css';
 
@@ -99,7 +99,7 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
   return (
     <div className="task-selector glass-card-static task-selector-shell">
       <div className="task-selector-header">
-        <h3 className="task-selector-title"><Filter size={18} strokeWidth={1.5} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} /> Filtro de Cronometragem</h3>
+        <h3 className="task-selector-title">Opções do Timer</h3>
       </div>
 
       {projects.length === 0 ? (
@@ -109,7 +109,9 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
       ) : (
         <>
           <div className="selector-filter-group">
-            <div className="selector-filter-label">💼 Categoria</div>
+            <div className="selector-filter-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Briefcase size={14} strokeWidth={1.5} /> Categoria
+            </div>
             <div className="selector-tabs-scroll">
               <div className="selector-tabs">
                 {categories.map((category) => (
@@ -125,6 +127,7 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
                         : undefined
                     }
                   >
+                    <Briefcase size={14} style={{ marginRight: '6px', display: 'inline-block', verticalAlign: 'middle' }} strokeWidth={1.5} />
                     {CATEGORY_LABELS[category] || category}
                   </TabButton>
                 ))}

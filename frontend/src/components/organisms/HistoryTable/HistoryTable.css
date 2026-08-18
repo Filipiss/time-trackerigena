@@ -34,6 +34,22 @@
   font-weight: 700;
 }
 
+.btn-icon-collapse {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  transition: all var(--transition-base);
+}
+
+.btn-icon-collapse:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
 .day-title {
   font-size: var(--text-sm);
   color: var(--text-primary);
