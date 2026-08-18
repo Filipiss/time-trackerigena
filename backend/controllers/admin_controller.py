@@ -173,7 +173,8 @@ def create_user_admin():
             
         password = data.get("password")
         if not password or not password.strip():
-            password = "123456"
+            import secrets
+            password = secrets.token_urlsafe(12)
             
         password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
         

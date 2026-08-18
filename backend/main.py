@@ -140,6 +140,17 @@ def create_app():
 
     CORS(app, origins=origins, supports_credentials=True)
 
+    @app.after_request
+    def add_security_headers(response):
+        """Inject recommended security headers for API responses."""
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+        # Secure CSP for REST APIs (not rendering HTML/iframes)
+        response.headers['Content-Security-Policy'] = "default-src 'none'; frame-ancestors 'none'"
+        return response
+
     # ── Blueprints ────────────────────────────────────────────────────────────
     from routes.admin_routes import admin_bp
     from routes.settings_routes import settings_bp

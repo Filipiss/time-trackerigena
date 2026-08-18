@@ -37,10 +37,10 @@ from models.time_entry import TimeEntry
 # ──────────────────────────────────────────────────
 
 DEMO_USER = {
-    "username": "demo",
-    "email": "demo@timetracker.dev",
-    "password": "Demo@1234",
-    "full_name": "Usuário Demo",
+    "username": os.getenv("DEMO_USERNAME", "demo"),
+    "email": os.getenv("DEMO_EMAIL", "demo@timetracker.dev"),
+    "password": os.getenv("DEMO_PASSWORD", "Demo@1234"),
+    "full_name": os.getenv("DEMO_FULL_NAME", "Usuário Demo"),
     "country": "Brasil",
     "is_active": True,
 }
