@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import styles from './AdminCreateUserModal.module.css';
 import { createAdminUser } from '../../../api';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 export default function AdminCreateUserModal({ onClose, onSuccess }) {
+    const { t } = useLanguage();
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -24,10 +26,10 @@ export default function AdminCreateUserModal({ onClose, onSuccess }) {
 
         try {
             await createAdminUser(formData);
-            alert("Usuário de testes criado e pré-ativado com sucesso.");
+            alert(t("Usuário criado com sucesso!"));
             onSuccess();
         } catch (err) {
-            setError(err.message || "Falha ao criar o usuário.");
+            setError(err.message || t("Falha ao criar o usuário."));
         } finally {
             setLoading(false);
         }
@@ -36,14 +38,14 @@ export default function AdminCreateUserModal({ onClose, onSuccess }) {
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
-                <h2>Criar Usuário de Teste / Fake</h2>
-                <p>O usuário gerado será ativado instantaneamente e poderá logar no sistema.</p>
+                <h2>{t("Criar Usuário de Teste / Fake")}</h2>
+                <p>{t("O usuário gerado será ativado instantaneamente e poderá logar no sistema.")}</p>
 
                 {error && <div className={styles.error}>{error}</div>}
 
                 <form onSubmit={handleSubmit}>
                     <div className={styles.formGroup}>
-                        <label>Nome de Usuário (Username)</label>
+                        <label>{t("Nome de Usuário (Username)")}</label>
                         <input
                             type="text"
                             name="username"
@@ -53,23 +55,23 @@ export default function AdminCreateUserModal({ onClose, onSuccess }) {
                         />
                     </div>
                     <div className={styles.formGroup}>
-                        <label>Email de Teste (Opcional)</label>
+                        <label>{t("Email de Teste (Opcional)")}</label>
                         <input
                             type="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            placeholder="Deixe em branco para gerar aleatório"
+                            placeholder={t("Deixe em branco para gerar aleatório")}
                         />
                     </div>
                     <div className={styles.formGroup}>
-                        <label>Senha Padrão (Opcional)</label>
+                        <label>{t("Senha Padrão (Opcional)")}</label>
                         <input
                             type="text"
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            placeholder="Deixe em branco para usar: 123456"
+                            placeholder={t("Deixe em branco para usar: 123456")}
                         />
                     </div>
 
@@ -81,15 +83,15 @@ export default function AdminCreateUserModal({ onClose, onSuccess }) {
                             checked={formData.is_admin}
                             onChange={handleChange}
                         />
-                        <label htmlFor="checkAdmin">Garantir acesso de Administrador?</label>
+                        <label htmlFor="checkAdmin">{t("Garantir acesso de Administrador?")}</label>
                     </div>
 
                     <div className={styles.actions}>
                         <button type="button" onClick={onClose} disabled={loading} className={styles.btnSecondary}>
-                            Cancelar
+                            {t("Cancelar")}
                         </button>
                         <button type="submit" disabled={loading} className={styles.btnPrimary}>
-                            {loading ? 'Criando...' : 'Criar e Ativar Usuário'}
+                            {loading ? t('Criando...') : t('Criar e Ativar Usuário')}
                         </button>
                     </div>
                 </form>

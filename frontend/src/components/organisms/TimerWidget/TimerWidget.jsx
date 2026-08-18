@@ -1,5 +1,6 @@
 ﻿import { useCallback, useEffect, useRef, useState } from 'react';
 import { createTimeEntry } from '../../../api';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import { Play, Pause, RotateCcw } from 'lucide-react';
 import './TimerWidget.css';
 
@@ -25,6 +26,7 @@ const TIMER_STATES = {
 };
 
 export default function TimerWidget({ selectedTask, onSaveSuccess }) {
+  const { t } = useLanguage();
   const [timerState, setTimerState] = useState(() => localStorage.getItem('tracker_timerState') || TIMER_STATES.STOPPED);
   const initialAccumulated = parseInt(localStorage.getItem('tracker_accumulated') || '0', 10);
   const accumulatedRef = useRef(initialAccumulated);
@@ -45,6 +47,7 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
     } else {
       localStorage.removeItem('tracker_startTime');
     }
+    window.dispatchEvent(new CustomEvent('timer-state-change'));
   }, []);
 
   const tick = useCallback(() => {
@@ -165,7 +168,7 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
         <input
           type="text"
           className="timer-bar-notes-input"
-          placeholder={selectedTask ? "O que você está fazendo?" : "Selecione uma Task abaixo para começar..."}
+          placeholder={selectedTask ? t("No que você está trabalhando?") : t("Selecione uma Task abaixo para começar...")}
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
           disabled={!selectedTask}
@@ -177,13 +180,13 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
         {selectedTask ? (
           <div className="timer-bar-task-info">
             <span className="task-color-dot" style={{ backgroundColor: selectedTask.color || '#03a9f4' }} />
-            <span className="task-badge-project">{selectedTask.project_name || 'Sem Projeto'}</span>
+            <span className="task-badge-project">{t(selectedTask.project_name || 'Sem Projeto')}</span>
             <span className="task-badge-divider">/</span>
             <span className="task-badge-name">{selectedTask.name}</span>
           </div>
         ) : (
           <div className="timer-bar-task-placeholder">
-            Nenhuma Task selecionada
+            {t("Nenhuma Task selecionada")}
           </div>
         )}
       </div>
@@ -198,21 +201,21 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
       {/* 4. Controles de Ação */}
       <div className="timer-bar-controls">
         {timerState !== TIMER_STATES.RUNNING ? (
-          <button className="timer-bar-btn start" onClick={handleStart} disabled={!canStart} title="Iniciar">
-            <Play size={16} fill="currentColor" /> Iniciar
+          <button className="timer-bar-btn start" onClick={handleStart} disabled={!canStart} title={t("Iniciar")}>
+            <Play size={16} fill="currentColor" /> {t("Iniciar")}
           </button>
         ) : (
-          <button className="timer-bar-btn pause" onClick={handlePause} title="Pausar">
-            <Pause size={16} fill="currentColor" /> Pausar
+          <button className="timer-bar-btn pause" onClick={handlePause} title={t("Pausar")}>
+            <Pause size={16} fill="currentColor" /> {t("Pausar")}
           </button>
         )}
 
-        <button className="timer-bar-btn restart" onClick={handleRestart} disabled={timerState === TIMER_STATES.STOPPED && elapsedTime === 0} title="Resetar">
+        <button className="timer-bar-btn restart" onClick={handleRestart} disabled={timerState === TIMER_STATES.STOPPED && elapsedTime === 0} title={t("Resetar")}>
           <RotateCcw size={14} />
         </button>
 
-        <button className="timer-bar-btn save" onClick={handleSave} disabled={!canSave || saving} title="Salvar Registro">
-          {saving ? '...' : 'Salvar'}
+        <button className="timer-bar-btn save" onClick={handleSave} disabled={!canSave || saving} title={t("Salvar Registro")}>
+          {saving ? '...' : t("Salvar")}
         </button>
       </div>
     </div>

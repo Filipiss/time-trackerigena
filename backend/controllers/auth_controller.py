@@ -14,6 +14,7 @@ from schemas.user_schema import (
 from services.auth_service import AuthService
 from services.user_service import UserService
 from utils.database import get_db_session
+from utils.audit_logger import log_action
 
 register_schema = RegisterSchema()
 login_schema = LoginSchema()
@@ -41,6 +42,7 @@ def register():
             password=validated["password"],
             app=current_app._get_current_object(),
         )
+        log_action(db, "REGISTER", "USER", result["user"].id, f"User {result['user'].username} registered first-time account.", user_id=result["user"].id)
         return jsonify({
             "message": "Cadastro realizado! Verifique seu e-mail para ativar a conta.",
             "username": result["user"].username,
@@ -81,6 +83,7 @@ def login():
     try:
         user = service.login(validated["identifier"], validated["password"])
         access_token = create_access_token(identity=str(user.id))
+        log_action(db, "LOGIN", "USER", user.id, f"User {user.username} logged in successfully.", user_id=user.id)
         return jsonify({
             "access_token": access_token,
             "user": user_public_schema.dump(user),
@@ -175,6 +178,7 @@ def update_profile():
     service = UserService(db)
     try:
         user = service.update_profile(user_id, **validated)
+        log_action(db, "UPDATE_PROFILE", "USER", user.id, f"User {user.username} updated profile personal information.", user_id=user.id)
         return jsonify(user_public_schema.dump(user)), 200
     except ValueError as err:
         return jsonify({"error": str(err)}), 404
@@ -196,6 +200,7 @@ def change_password():
     service = AuthService(db)
     try:
         service.change_password(user_id, validated["current_password"], validated["new_password"])
+        log_action(db, "CHANGE_PASSWORD", "USER", user_id, f"User changed account password credentials.", user_id=user_id)
         return jsonify({"message": "Senha alterada com sucesso"}), 200
     except ValueError as err:
         return jsonify({"error": str(err)}), 400

@@ -5,6 +5,7 @@ import Select from '../../atoms/Select/Select';
 import Spinner from '../../atoms/Spinner/Spinner';
 import StatCard from '../../molecules/StatCard/StatCard';
 import { fetchCategories, fetchStats } from '../../../api';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import './DashboardOverview.css';
 
 const COLORS = ['#a3e635', '#bbf7d0', '#84cc16', '#a1a1aa', '#71717a', '#d4d4d8'];
@@ -31,6 +32,7 @@ function datesFor(filters) {
 }
 
 export default function DashboardOverview({ refreshTrigger }) {
+  const { t, language } = useLanguage();
   const [filters, setFilters] = useState(() => JSON.parse(localStorage.getItem('dashboard_filters') || JSON.stringify(initialFilters)));
   const [stats, setStats] = useState(null);
   const [availableCategories, setAvailableCategories] = useState([]);
@@ -73,6 +75,7 @@ export default function DashboardOverview({ refreshTrigger }) {
   const update = (key, value) => setFilters((previous) => ({ ...previous, [key]: value }));
   const year = new Date().getFullYear();
   const years = Array.from({ length: 8 }, (_, index) => year - index);
+  const monthLocale = language === 'en' ? 'en-US' : 'pt-BR';
   const categories = (stats?.time_by_category || []).filter((item) => item.total_seconds > 0);
   const tasks = (stats?.time_by_task || []).slice(0, 10).map((item) => ({ ...item, hours: +(item.total_seconds / 3600).toFixed(2) }));
   const days = (stats?.time_by_day || []).map((item) => ({
@@ -91,18 +94,18 @@ export default function DashboardOverview({ refreshTrigger }) {
         <h2 className="dashboard-title gradient-text">Dashboard</h2>
         <div className="dashboard-filters">
           <Select value={filters.category} onChange={(event) => update('category', event.target.value)}>
-            <option value="">Todas as categorias</option>
+            <option value="">{t("Todas as categorias")}</option>
             {availableCategories.map((category) => (
               <option key={category.id} value={category.name}>{category.name}</option>
             ))}
           </Select>
           <Select value={filters.type} onChange={(event) => update('type', event.target.value)}>
-            <option value="">Filtros</option>
-            <option value="total">Total acumulado</option>
-            <option value="day">Dia</option>
-            <option value="week">Semana</option>
-            <option value="month">Mês</option>
-            <option value="year">Ano</option>
+            <option value="">{t("Filtros")}</option>
+            <option value="total">{t("Total acumulado")}</option>
+            <option value="day">{t("Dia")}</option>
+            <option value="week">{t("Semana")}</option>
+            <option value="month">{t("Mês")}</option>
+            <option value="year">{t("Ano")}</option>
           </Select>
           {filters.type && !['total', 'day'].includes(filters.type) ? (
             <Select value={filters.year || year} onChange={(event) => update('year', event.target.value)}>
@@ -112,7 +115,7 @@ export default function DashboardOverview({ refreshTrigger }) {
           {['month', 'week'].includes(filters.type) ? (
             <Select value={filters.month || new Date().getMonth() + 1} onChange={(event) => update('month', event.target.value)}>
               {Array.from({ length: 12 }, (_, index) => (
-                <option key={index} value={index + 1}>{new Date(2020, index).toLocaleString('pt-BR', { month: 'long' })}</option>
+                <option key={index} value={index + 1}>{new Date(2020, index).toLocaleString(monthLocale, { month: 'long' })}</option>
               ))}
             </Select>
           ) : null}
@@ -124,7 +127,7 @@ export default function DashboardOverview({ refreshTrigger }) {
               {Array.from({
                 length: Math.ceil(new Date(Number(filters.year || year), Number(filters.month || new Date().getMonth() + 1), 0).getDate() / 7),
               }, (_, index) => (
-                <option key={index} value={index + 1}>Semana {index + 1}</option>
+                <option key={index} value={index + 1}>{t("Semana")} {index + 1}</option>
               ))}
             </Select>
           ) : null}
@@ -133,7 +136,7 @@ export default function DashboardOverview({ refreshTrigger }) {
       </div>
 
       <div className="summary-cards">
-        {filters.type === 'total' ? <StatCard label="Tempo Total Acumulado" value={formatTime(stats?.total_seconds)} className="overall-card" /> : null}
+        {filters.type === 'total' ? <StatCard label={t("Tempo Total Acumulado")} value={formatTime(stats?.total_seconds)} className="overall-card" /> : null}
         {categories.map((item, index) => (
           <StatCard key={item.category} label={item.category} value={formatTime(item.total_seconds)} valueStyle={{ color: COLORS[index % COLORS.length] }} />
         ))}
@@ -141,7 +144,7 @@ export default function DashboardOverview({ refreshTrigger }) {
 
       <div className="charts-grid">
         <div className="glass-card chart-card">
-          <h3 className="chart-card-title">Proporção por categoria</h3>
+          <h3 className="chart-card-title">{t("Proporção por categoria")}</h3>
           <div className="chart-wrapper">
             <ResponsiveContainer width="100%" height={260}>
               <PieChart>
@@ -155,7 +158,7 @@ export default function DashboardOverview({ refreshTrigger }) {
           </div>
         </div>
         <div className="glass-card chart-card">
-          <h3 className="chart-card-title">Horas trabalhadas</h3>
+          <h3 className="chart-card-title">{t("Horas trabalhadas")}</h3>
           <div className="chart-wrapper">
             <ResponsiveContainer width="100%" height={260}>
               <AreaChart data={days}>
@@ -169,7 +172,7 @@ export default function DashboardOverview({ refreshTrigger }) {
           </div>
         </div>
         <div className="glass-card chart-card span-2-desktop">
-          <h3 className="chart-card-title">Tempo gasto por task</h3>
+          <h3 className="chart-card-title">{t("Tempo gasto por task")}</h3>
           <div className="chart-wrapper">
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={tasks}>

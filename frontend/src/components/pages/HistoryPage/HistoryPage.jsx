@@ -5,6 +5,7 @@ import BillingTable from '../../organisms/BillingTable/BillingTable';
 import HistoryTable from '../../organisms/HistoryTable/HistoryTable';
 import TabButton from '../../molecules/TabButton/TabButton';
 import EditModal from '../../organisms/EditModal/EditModal';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import { deleteTimeEntry, fetchCategories, fetchTimeEntries, updateTimeEntry, updateTask } from '../../../api';
 import { convertCurrency, fetchExchangeRates } from '../../../utils/currency';
 import { Clock, BarChart3, List, ScrollText } from 'lucide-react';
@@ -28,20 +29,20 @@ function formatDurationShort(totalSeconds) {
   return parts.join(' ');
 }
 
-function formatDate(dateStr) {
+function formatDate(dateStr, lang = 'pt') {
   if (!dateStr) return '';
   if (dateStr.length === 10) {
     const [year, month, day] = dateStr.split('-');
-    return `${day}/${month}/${year}`;
+    return lang === 'en' ? `${month}/${day}/${year}` : `${day}/${month}/${year}`;
   }
   try {
-    return new Date(dateStr).toLocaleDateString('pt-BR');
+    return new Date(dateStr).toLocaleDateString(lang === 'en' ? 'en-US' : 'pt-BR');
   } catch {
     return dateStr;
   }
 }
 
-function getWeeksOfMonth(year, month) {
+function getWeeksOfMonth(year, month, lang = 'pt') {
   const weeks = [];
   let current = new Date(Date.UTC(year, month, 1));
   const end = new Date(Date.UTC(year, month + 1, 0));
@@ -58,7 +59,7 @@ function getWeeksOfMonth(year, month) {
     weeks.push({
       start: monday,
       end: sunday,
-      label: `${formatDayMonth(monday)} - ${formatDayMonth(sunday)}`,
+      label: `${formatDayMonth(monday, lang)} - ${formatDayMonth(sunday, lang)}`,
       key: monday.toISOString().split('T')[0]
     });
 
@@ -67,13 +68,41 @@ function getWeeksOfMonth(year, month) {
   return weeks;
 }
 
-function formatDayMonth(date) {
+function formatDayMonth(date, lang = 'pt') {
   const d = date.getUTCDate();
   const m = date.getUTCMonth() + 1;
-  return `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}`;
+  return lang === 'en'
+    ? `${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}`
+    : `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}`;
 }
 
 export default function HistoryPage({ refreshTrigger, onRefresh }) {
+  const { t, language } = useLanguage();
+
+  const months = useMemo(() => [
+    { value: '01', label: t('Janeiro') },
+    { value: '02', label: t('Fevereiro') },
+    { value: '03', label: t('Março') },
+    { value: '04', label: t('Abril') },
+    { value: '05', label: t('Maio') },
+    { value: '06', label: t('Junho') },
+    { value: '07', label: t('Julho') },
+    { value: '08', label: t('Agosto') },
+    { value: '09', label: t('Setembro') },
+    { value: '10', label: t('Outubro') },
+    { value: '11', label: t('Novembro') },
+    { value: '12', label: t('Dezembro') }
+  ], [t]);
+
+  const years = useMemo(() => {
+    const arr = [];
+    const currentYear = new Date().getFullYear();
+    for (let y = 2024; y <= currentYear + 1; y++) {
+      arr.push(String(y));
+    }
+    return arr;
+  }, []);
+
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const initialTab = queryParams.get('tab');
@@ -94,8 +123,6 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
 
   const [editingItem, setEditingItem] = useState(null);
   const [editForm, setEditForm] = useState({ task_name: '', start_date: '', duration: '', hourly_rate: 0, notes: '' });
-
-
 
   useEffect(() => {
     let active = true;
@@ -180,7 +207,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
       onRefresh?.();
     } catch (error) {
       console.error('Erro ao deletar entradas:', error);
-      window.alert(`Erro: ${error.message}`);
+      window.alert(`${t("Erro")}: ${error.message}`);
     }
   };
 
@@ -238,7 +265,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
       setEditingItem(null);
       onRefresh?.();
     } catch (error) {
-      window.alert(`Erro ao salvar: ${error.message}`);
+      window.alert(`${t("Erro ao salvar")}: ${error.message}`);
     }
   };
 
@@ -246,8 +273,8 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
   const weeksList = useMemo(() => {
     if (!monthFilter) return [];
     const [year, month] = monthFilter.split('-').map(Number);
-    return getWeeksOfMonth(year, month - 1);
-  }, [monthFilter]);
+    return getWeeksOfMonth(year, month - 1, language);
+  }, [monthFilter, language]);
 
   // 2. Dias úteis da semana atual selecionada (Segunda a Domingo)
   const weekDaysList = useMemo(() => {
@@ -268,13 +295,13 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
 
       days.push({
         dateStr,
-        weekdayShort: WEEKDAYS_SHORT[current.getDay()],
-        weekdayFull: WEEKDAYS_FULL[current.getDay()],
-        label: `${d}/${m}`
+        weekdayShort: t(WEEKDAYS_SHORT[current.getDay()]),
+        weekdayFull: t(WEEKDAYS_FULL[current.getDay()]),
+        label: language === 'en' ? `${m}/${d}` : `${d}/${m}`
       });
     }
     return days;
-  }, [selectedWeek]);
+  }, [selectedWeek, t, language]);
 
   // Validadores para prevenir efeitos colaterais caso a semana/dia selecionado fiquem órfãos quando mudar o mês
   const safeSelectedWeek = useMemo(() => {
@@ -394,10 +421,10 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
       <div className="time-history-header">
         <h2 className="time-history-title gradient-text">
           <ScrollText size={20} strokeWidth={1.5} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} />
-          Histórico de Sessões
+          {t("Histórico de Sessões")}
         </h2>
         <div className="history-filters">
-          <TabButton className={`filter-btn ${categoryFilter === 'all' ? 'active' : ''}`} isActive={categoryFilter === 'all'} onClick={() => setCategoryFilter('all')}>Todos</TabButton>
+          <TabButton className={`filter-btn ${categoryFilter === 'all' ? 'active' : ''}`} isActive={categoryFilter === 'all'} onClick={() => setCategoryFilter('all')}>{t("Todos")}</TabButton>
           {categories.map((category) => {
             const key = category.name.toLowerCase();
             return (
@@ -418,47 +445,58 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
 
       <div className="view-mode-tabs" style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-default)', paddingBottom: '12px' }}>
         <TabButton isActive={viewMode === 'registros'} onClick={() => setViewMode('registros')} icon={<List size={16} strokeWidth={1.5} />}>
-          Registros
+          {t("Registros")}
         </TabButton>
         <TabButton isActive={viewMode === 'faturamento'} onClick={() => setViewMode('faturamento')} icon={<BarChart3 size={16} strokeWidth={1.5} />}>
-          Faturamento
+          {t("Faturamento")}
         </TabButton>
       </div>
 
       {loading ? (
         <div className="loading-container"><Spinner /></div>
-      ) : entries.length === 0 ? (
-        <div className="glass-card-static empty-card">
-          <div className="empty-state">
-            <span className="empty-state-icon"><Clock size={40} strokeWidth={1.5} /></span>
-            <div className="empty-state-title">Nenhum registro encontrado</div>
-            <div className="empty-state-text">
-              {categoryFilter === 'all'
-                ? 'Você ainda não cronometrou nenhuma atividade. Vá para a aba Timer!'
-                : `Nenhum registro na categoria ${categories.find((category) => category.name.toLowerCase() === categoryFilter)?.name || categoryFilter} ainda.`}
-            </div>
-          </div>
-        </div>
       ) : (
         <div className="history-content-layout fade-in">
           <div className="period-dropdowns-container">
             <div className="filter-group">
-              <label className="filter-label">Mês</label>
-              <Input
-                type="month"
-                value={monthFilter}
-                onChange={(event) => {
-                  setMonthFilter(event.target.value);
-                  setSelectedWeek('all');
-                  setSelectedDay('all');
-                }}
-                className="filter-select text-center"
-                style={{ width: '100%', minWidth: '150px' }}
-              />
+              <label className="filter-label">{t("Mês")}</label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <select
+                  value={monthFilter.split('-')[1]}
+                  onChange={(e) => {
+                    const newMonth = e.target.value;
+                    const year = monthFilter.split('-')[0];
+                    setMonthFilter(`${year}-${newMonth}`);
+                    setSelectedWeek('all');
+                    setSelectedDay('all');
+                  }}
+                  className="filter-select"
+                  style={{ minWidth: '130px', fontWeight: '600' }}
+                >
+                  {months.map(m => (
+                    <option key={m.value} value={m.value}>{m.label}</option>
+                  ))}
+                </select>
+                <select
+                  value={monthFilter.split('-')[0]}
+                  onChange={(e) => {
+                    const newYear = e.target.value;
+                    const month = monthFilter.split('-')[1];
+                    setMonthFilter(`${newYear}-${month}`);
+                    setSelectedWeek('all');
+                    setSelectedDay('all');
+                  }}
+                  className="filter-select"
+                  style={{ minWidth: '90px', fontWeight: '600' }}
+                >
+                  {years.map(y => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className="filter-group">
-              <label className="filter-label">Semana</label>
+              <label className="filter-label">{t("Semana")}</label>
               <select
                 value={safeSelectedWeek}
                 onChange={(e) => {
@@ -467,10 +505,10 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
                 }}
                 className="filter-select"
               >
-                <option value="all">Todas as Semanas</option>
+                <option value="all">{t("Todas as Semanas")}</option>
                 {weeksList.map((week) => (
                   <option key={week.key} value={week.key}>
-                    Semana {week.label}
+                    {t("Semana")} {week.label}
                   </option>
                 ))}
               </select>
@@ -478,13 +516,13 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
 
             {safeSelectedWeek !== 'all' && viewMode === 'registros' && (
               <div className="filter-group">
-                <label className="filter-label">Dia da Semana</label>
+                <label className="filter-label">{t("Dia da Semana")}</label>
                 <select
                   value={safeSelectedDay}
                   onChange={(e) => setSelectedDay(e.target.value)}
                   className="filter-select"
                 >
-                  <option value="all">Todos da Semana</option>
+                  <option value="all">{t("Todos da Semana")}</option>
                   {weekDaysList.map((d) => (
                     <option key={d.dateStr} value={d.dateStr}>
                       {d.weekdayFull} ({d.label})
@@ -495,69 +533,88 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
             )}
           </div>
 
-          <div className="active-tab-content">
-            {viewMode === 'registros' ? (
-              groupedByDayList.length === 0 ? (
-                <div className="glass-card-static empty-card" style={{ padding: '2rem', textAlign: 'center' }}>
-                  Nenhum registro no período ou dia selecionado.
+          {entries.length === 0 ? (
+            <div className="glass-card-static empty-card">
+              <div className="empty-state">
+                <span className="empty-state-icon"><Clock size={40} strokeWidth={1.5} /></span>
+                <div className="empty-state-title">{t("Nenhum registro encontrado")}</div>
+                <div className="empty-state-text">
+                  {categoryFilter === 'all'
+                    ? t('Você ainda não cronometrou nenhuma atividade. Vá para a aba Timer!')
+                    : t("Nenhum registro na categoria {category} ainda.").replace("{category}", categories.find((category) => category.name.toLowerCase() === categoryFilter)?.name || categoryFilter)}
                 </div>
+              </div>
+            </div>
+          ) : (
+            <div className="active-tab-content">
+              {viewMode === 'registros' ? (
+                groupedByDayList.length === 0 ? (
+                  <div className="glass-card-static empty-card" style={{ padding: '2rem', textAlign: 'center' }}>
+                    {t("Nenhum registro no período ou dia selecionado.")}
+                  </div>
+                ) : (
+                  <HistoryTable
+                    groupedByDayList={groupedByDayList}
+                    categoryFilter={categoryFilter}
+                    formatDate={(d) => formatDate(d, language)}
+                    formatDuration={formatDuration}
+                    formatDurationShort={formatDurationShort}
+                    deletingId={deletingId}
+                    setDeletingId={setDeletingId}
+                    onDeleteGroup={handleDeleteGroup}
+                    onEdit={handleEditClick}
+                  />
+                )
               ) : (
-                <HistoryTable
-                  groupedByDayList={groupedByDayList}
-                  categoryFilter={categoryFilter}
-                  formatDate={formatDate}
-                  formatDuration={formatDuration}
+                <BillingTable
+                  taskTotalsList={taskTotalsList}
+                  targetCurrency={targetCurrency}
+                  setTargetCurrency={setTargetCurrency}
+                  exchangeRates={exchangeRates}
+                  exchangeRateLoading={exchangeRateLoading}
+                  totalInTargetCurrency={totalInTargetCurrency}
                   formatDurationShort={formatDurationShort}
-                  deletingId={deletingId}
-                  setDeletingId={setDeletingId}
-                  onDeleteGroup={handleDeleteGroup}
+                  convertCurrency={convertCurrency}
                   onEdit={handleEditClick}
                 />
-              )
-            ) : (
-              <BillingTable
-                taskTotalsList={taskTotalsList}
-                targetCurrency={targetCurrency}
-                setTargetCurrency={setTargetCurrency}
-                exchangeRates={exchangeRates}
-                exchangeRateLoading={exchangeRateLoading}
-                totalInTargetCurrency={totalInTargetCurrency}
-                formatDurationShort={formatDurationShort}
-                convertCurrency={convertCurrency}
-                onEdit={handleEditClick}
-              />
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 
       {/* Modal de Edição */}
       <EditModal
         isOpen={!!editingItem}
-        title="Editar Registro"
+        title={t("Editar Registro")}
         onClose={() => setEditingItem(null)}
         onSave={handleSaveEdit}
       >
         {editingItem?.task_id && (
           <>
             <div className="edit-modal-field">
-              <label className="edit-modal-label">Nome da Tarefa</label>
+              <label className="edit-modal-label">{t("Nome da Tarefa")}</label>
               <Input value={editForm.task_name} onChange={e => setEditForm({ ...editForm, task_name: e.target.value })} />
             </div>
             <div className="edit-modal-field">
-              <label className="edit-modal-label">Valor / Hora</label>
+              <label className="edit-modal-label">{t("Valor/Hora")}</label>
               <Input type="number" step="0.01" value={editForm.hourly_rate} onChange={e => setEditForm({ ...editForm, hourly_rate: e.target.value })} />
             </div>
           </>
         )}
         {viewMode !== 'faturamento' && (
           <div className="edit-modal-field">
-            <label className="edit-modal-label">Data (Resumo)</label>
-            <Input type="date" value={editForm.start_date} onChange={e => setEditForm({ ...editForm, start_date: e.target.value })} />
+            <label className="edit-modal-label">{t("Data (Resumo)")}</label>
+            <Input
+              type="date"
+              value={editForm.start_date}
+              lang={language === 'en' ? 'en' : 'pt-BR'}
+              onChange={e => setEditForm({ ...editForm, start_date: e.target.value })}
+            />
           </div>
         )}
         <div className="edit-modal-field">
-          <label className="edit-modal-label">{viewMode === 'faturamento' ? 'Horas Trabalhadas (Decimal)' : 'Duração (HH:MM:SS)'}</label>
+          <label className="edit-modal-label">{viewMode === 'faturamento' ? t('Horas Trabalhadas (Decimal)') : t('Duração (HH:MM:SS)')}</label>
           <Input
             value={editForm.duration}
             onChange={e => setEditForm({ ...editForm, duration: e.target.value })}
@@ -567,7 +624,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
         </div>
         {!Array.isArray(editingItem?.ids) && (
           <div className="edit-modal-field">
-            <label className="edit-modal-label">Notas</label>
+            <label className="edit-modal-label">{t("Notas")}</label>
             <Input value={editForm.notes} onChange={e => setEditForm({ ...editForm, notes: e.target.value })} />
           </div>
         )}

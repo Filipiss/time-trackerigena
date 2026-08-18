@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow import ValidationError
 from utils.database import get_db_session
 from utils.responses import success_response, error_response
+from utils.audit_logger import log_action
 from services.time_entry_service import TimeEntryService
 from services.task_service import TaskService
 from services.project_service import ProjectService
@@ -55,6 +56,7 @@ def create_time_entry():
             return error_response("Tarefa não encontrada", 404)
 
         entry = TimeEntryService.create_entry(db, data)
+        log_action(db, "CREATE_TIME_ENTRY", "TIME_ENTRY", entry.id, f"Logged session of duration {entry.duration_seconds}s for task '{task.name}'.")
         return success_response(time_entry_schema.dump(entry), 201)
     except ValueError as e:
         return error_response(str(e), 404)
@@ -89,9 +91,18 @@ def delete_time_entry(entry_id):
     user_id = int(get_jwt_identity())
     db = get_db_session()
     try:
+        from models.time_entry import TimeEntry
+        from models.task import Task
+        entry = db.query(TimeEntry).filter(TimeEntry.id == entry_id).first()
+        task_name = "unknown"
+        if entry:
+            t_obj = db.query(Task).filter(Task.id == entry.task_id).first()
+            if t_obj:
+                task_name = t_obj.name
         success = TimeEntryService.delete_entry(db, entry_id, user_id=user_id)
         if not success:
             return error_response("Registro não encontrado", 404)
+        log_action(db, "DELETE_TIME_ENTRY", "TIME_ENTRY", entry_id, f"Deleted session entry (ID {entry_id}) for task '{task_name}'.")
         return "", 204
     finally:
         db.close()
@@ -108,6 +119,10 @@ def update_time_entry(entry_id):
     db = get_db_session()
     try:
         entry = TimeEntryService.update_entry(db, entry_id, data, user_id=user_id)
+        from models.task import Task
+        t_obj = db.query(Task).filter(Task.id == entry.task_id).first()
+        task_name = t_obj.name if t_obj else "unknown"
+        log_action(db, "UPDATE_TIME_ENTRY", "TIME_ENTRY", entry.id, f"Updated session entry (ID {entry_id}) for task '{task_name}'.")
         return success_response(time_entry_schema.dump(entry))
     except ValueError as e:
         return error_response(str(e), 404)

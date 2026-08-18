@@ -27,6 +27,7 @@ from models.user import User  # noqa: F401
 from models.calendar_event import CalendarEvent # noqa: F401
 from models.system_setting import SystemSetting # noqa: F401
 from models.ticket import Ticket, TicketMessage # noqa: F401
+from models.audit_log import AuditLog # noqa: F401
 
 load_dotenv()
 

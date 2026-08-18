@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import styles from './AdminEditUserModal.module.css';
 
 export default function AdminEditUserModal({ user, onClose, onSave }) {
+    const { t } = useLanguage();
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -37,7 +39,7 @@ export default function AdminEditUserModal({ user, onClose, onSave }) {
         <div className={styles.overlay}>
             <div className={styles.modal}>
                 <div className={styles.header}>
-                    <h2>Editar Perfil de {user.username}</h2>
+                    <h2>{t("Editar Perfil de")} {user.username}</h2>
                     <button className={styles.closeBtn} onClick={onClose}>&times;</button>
                 </div>
 
@@ -53,27 +55,27 @@ export default function AdminEditUserModal({ user, onClose, onSave }) {
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label>Nome Completo</label>
+                        <label>{t("Nome Completo")}</label>
                         <input type="text" name="full_name" value={formData.full_name} onChange={handleChange} />
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label>País</label>
+                        <label>{t("País")}</label>
                         <input type="text" name="country" value={formData.country} onChange={handleChange} />
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label>Telefone</label>
+                        <label>{t("Telefone")}</label>
                         <input type="text" name="phone" value={formData.phone} onChange={handleChange} />
                     </div>
 
                     <div className={styles.alert}>
-                        ⚠️ Para a segurança do usuário, senhas não podem ser editadas pelo administrador.
+                        {t("⚠️ Para a segurança do usuário, senhas não podem ser editadas pelo administrador.")}
                     </div>
 
                     <div className={styles.actions}>
-                        <button type="button" className={styles.btnCancel} onClick={onClose}>Cancelar</button>
-                        <button type="submit" className={styles.btnSave}>Salvar Alterações</button>
+                        <button type="button" className={styles.btnCancel} onClick={onClose}>{t("Cancelar")}</button>
+                        <button type="submit" className={styles.btnSave}>{t("Salvar Alterações")}</button>
                     </div>
                 </form>
             </div>

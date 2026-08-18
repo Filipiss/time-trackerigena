@@ -3,6 +3,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { apiUpdateProfile } from '../../../api';
 import { validate_password_strength_js } from '../../../utils/passwordStrength';
 import { apiChangePassword } from '../../../api';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import { Check, Circle, Camera } from 'lucide-react';
 import './ProfilePage.css';
 
@@ -33,6 +34,7 @@ const COUNTRIES = [
 
 export default function ProfilePage() {
     const { user, refreshUser } = useAuth();
+    const { t } = useLanguage();
     const fileRef = useRef(null);
     const [form, setForm] = useState({ full_name: '', country: '', phone: '', avatar_url: '' });
     const [countrySearch, setCountrySearch] = useState('');
@@ -79,9 +81,9 @@ export default function ProfilePage() {
         try {
             await apiUpdateProfile(form);
             await refreshUser();
-            showToast('Perfil salvo com sucesso!');
+            showToast(t('Perfil salvo com sucesso!'));
         } catch (err) {
-            showToast('Erro ao salvar: ' + err.message, true);
+            showToast(t('Erro ao salvar: ') + err.message, true);
         } finally {
             setSaving(false);
         }
@@ -90,14 +92,14 @@ export default function ProfilePage() {
     async function handleChangePassword(e) {
         e.preventDefault();
         setPwdError('');
-        if (pwdForm.next !== pwdForm.confirm) { setPwdError('As senhas não coincidem'); return; }
+        if (pwdForm.next !== pwdForm.confirm) { setPwdError(t('As senhas não coincidem')); return; }
         const errs = validate_password_strength_js(pwdForm.next).errors;
         if (errs.length) { setPwdError(errs[0]); return; }
         setPwdSaving(true);
         try {
             await apiChangePassword(pwdForm.current, pwdForm.next);
             setPwdForm({ current: '', next: '', confirm: '' });
-            showToast('Senha alterada com sucesso!');
+            showToast(t('Senha alterada com sucesso!'));
         } catch (err) {
             setPwdError(err.message);
         } finally {
@@ -114,11 +116,11 @@ export default function ProfilePage() {
         .split(' ').slice(0, 2).map(s => s[0]?.toUpperCase()).join('');
 
     const pwdRules = [
-        { label: 'Mínimo 8 caracteres', ok: pwdForm.next.length >= 8 },
-        { label: 'Letra minúscula', ok: /[a-z]/.test(pwdForm.next) },
-        { label: 'Letra maiúscula', ok: /[A-Z]/.test(pwdForm.next) },
-        { label: 'Número', ok: /\d/.test(pwdForm.next) },
-        { label: 'Caractere especial', ok: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwdForm.next) },
+        { label: t('Mínimo 8 caracteres'), ok: pwdForm.next.length >= 8 },
+        { label: t('Letra minúscula'), ok: /[a-z]/.test(pwdForm.next) },
+        { label: t('Letra maiúscula'), ok: /[A-Z]/.test(pwdForm.next) },
+        { label: t('Número'), ok: /\d/.test(pwdForm.next) },
+        { label: t('Caractere especial'), ok: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwdForm.next) },
     ];
     const strengthColor = ['', '#ef4444', '#f97316', '#eab308', '#22c55e', '#10b981'][strength.score] || '#444';
 
@@ -130,21 +132,21 @@ export default function ProfilePage() {
                 </div>
             )}
 
-            <h1 className="profile-title">Meu Perfil</h1>
+            <h1 className="profile-title">{t("Meu Perfil")}</h1>
 
             {!user ? (
                 <div className="profile-guest-notice">
-                    <p style={{ color: '#ccc' }}>O perfil não está disponível no Modo Visitante.</p>
-                    <p style={{ color: '#888', fontSize: '14px', marginTop: '8px' }}>Cadastre-se para personalizar sua experiência e salvar seus dados na nuvem!</p>
+                    <p style={{ color: '#ccc' }}>{t("O perfil não está disponível no Modo Visitante.")}</p>
+                    <p style={{ color: '#888', fontSize: '14px', marginTop: '8px' }}>{t("Cadastre-se para personalizar sua experiência e salvar seus dados na nuvem!")}</p>
                 </div>
             ) : (
                 <div className="profile-grid">
                     {/* ── Card: Avatar + identidade ── */}
                     <section className="profile-card">
-                        <h2 className="card-heading">Foto e identidade</h2>
+                        <h2 className="card-heading">{t("Foto e identidade")}</h2>
 
                         <div className="avatar-area">
-                            <button className="avatar-btn" onClick={() => fileRef.current?.click()} title="Trocar foto">
+                            <button className="avatar-btn" onClick={() => fileRef.current?.click()} title={t("Trocar foto")}>
                                 {form.avatar_url ? (
                                     <img src={form.avatar_url} alt="avatar" className="avatar-img" />
                                 ) : (
@@ -153,31 +155,31 @@ export default function ProfilePage() {
                                 <div className="avatar-overlay"><Camera size={20} strokeWidth={1.5} /></div>
                             </button>
                             <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
-                            <p className="avatar-hint">Clique para trocar a foto</p>
+                            <p className="avatar-hint">{t("Clique para trocar a foto")}</p>
                         </div>
 
                         <form onSubmit={handleSaveProfile} className="profile-form">
                             <div className="field-group">
-                                <label>Username</label>
+                                <label>{t("Username")}</label>
                                 <input value={user?.username || ''} readOnly className="field-readonly" />
                             </div>
 
                             <div className="field-group">
-                                <label>Nome completo</label>
+                                <label>{t("Nome completo")}</label>
                                 <input
                                     value={form.full_name}
                                     onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
-                                    placeholder="Seu nome completo"
+                                    placeholder={t("Seu nome completo")}
                                 />
                             </div>
 
                             <div className="field-group">
-                                <label>E-mail</label>
+                                <label>{t("E-mail")}</label>
                                 <input value={user?.email || ''} readOnly className="field-readonly" />
                             </div>
 
                             <div className="field-group country-field">
-                                <label>País de origem</label>
+                                <label>{t("País de origem")}</label>
                                 <input
                                     value={countrySearch}
                                     onChange={e => {
@@ -187,7 +189,7 @@ export default function ProfilePage() {
                                     }}
                                     onFocus={() => setShowCountryDropdown(true)}
                                     onBlur={() => setTimeout(() => setShowCountryDropdown(false), 180)}
-                                    placeholder="Buscar país…"
+                                    placeholder={t("Buscar país…")}
                                     autoComplete="off"
                                 />
                                 {showCountryDropdown && filteredCountries.length > 0 && (
@@ -204,7 +206,7 @@ export default function ProfilePage() {
                             </div>
 
                             <div className="field-group">
-                                <label>Telefone / WhatsApp</label>
+                                <label>{t("Telefone / WhatsApp")}</label>
                                 <input
                                     type="tel"
                                     value={form.phone}
@@ -215,30 +217,30 @@ export default function ProfilePage() {
                             </div>
 
                             <button type="submit" className="btn-save" disabled={saving}>
-                                {saving ? 'Salvando…' : 'Salvar perfil'}
+                                {saving ? t('Salvando…') : t('Salvar perfil')}
                             </button>
                         </form>
                     </section>
 
                     {/* ── Card: Trocar senha ── */}
                     <section className="profile-card">
-                        <h2 className="card-heading">Alterar senha</h2>
+                        <h2 className="card-heading">{t("Alterar senha")}</h2>
 
                         {pwdError && <div className="pwd-error">{pwdError}</div>}
 
                         <form onSubmit={handleChangePassword} className="profile-form">
                             <div className="field-group">
-                                <label>Senha atual</label>
+                                <label>{t("Senha atual")}</label>
                                 <input type="password" value={pwdForm.current}
                                     onChange={e => setPwdForm(f => ({ ...f, current: e.target.value }))}
-                                    placeholder="Senha atual" autoComplete="current-password" />
+                                    placeholder={t("Senha atual")} autoComplete="current-password" />
                             </div>
 
                             <div className="field-group">
-                                <label>Nova senha</label>
+                                <label>{t("Nova senha")}</label>
                                 <input type="password" value={pwdForm.next}
                                     onChange={e => setPwdForm(f => ({ ...f, next: e.target.value }))}
-                                    placeholder="Nova senha segura" autoComplete="new-password" />
+                                    placeholder={t("Nova senha segura")} autoComplete="new-password" />
                                 {pwdForm.next && (
                                     <>
                                         <div className="strength-bar-wrap">
@@ -258,14 +260,14 @@ export default function ProfilePage() {
                             </div>
 
                             <div className="field-group">
-                                <label>Confirmar nova senha</label>
+                                <label>{t("Confirmar nova senha")}</label>
                                 <input type="password" value={pwdForm.confirm}
                                     onChange={e => setPwdForm(f => ({ ...f, confirm: e.target.value }))}
-                                    placeholder="Repita a nova senha" autoComplete="new-password" />
+                                    placeholder={t("Repita a nova senha")} autoComplete="new-password" />
                             </div>
 
                             <button type="submit" className="btn-save" disabled={pwdSaving}>
-                                {pwdSaving ? 'Alterando…' : 'Alterar senha'}
+                                {pwdSaving ? t('Alterando…') : t('Alterar senha')}
                             </button>
                         </form>
                     </section>

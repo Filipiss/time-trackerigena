@@ -10,6 +10,7 @@ import EditModal from '../../organisms/EditModal/EditModal';
 import { Pencil, Trash2, Folder, Sparkles, FolderOpen, Blocks, Clock, ChevronDown, ChevronRight, Paperclip, Loader, X, Download, Briefcase, Copy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import { supabase } from '../../../utils/supabaseClient';
 import {
   createCategory,
@@ -78,6 +79,7 @@ function SortableWrapper({ id, children }) {
 export default function TaskManagerBoard({ onTaskChange }) {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -249,7 +251,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
   };
 
   const handleEditCategory = async (category) => {
-    const name = window.prompt('Novo nome da categoria:', category.name);
+    const name = window.prompt(t('Novo nome da categoria:'), category.name);
     if (!name?.trim() || name.trim() === category.name) return;
     try {
       const updated = await updateCategory(category.id, name.trim());
@@ -260,12 +262,12 @@ export default function TaskManagerBoard({ onTaskChange }) {
       setActiveTab((current) => (current === category.name.toLowerCase() ? updated.name.toLowerCase() : current));
       setNewProjectCategory((current) => (current === category.name ? updated.name : current));
     } catch (error) {
-      window.alert(`Erro: ${error.message}`);
+      window.alert(`${t("Erro")}: ${error.message}`);
     }
   };
 
   const handleDeleteCategory = async (category) => {
-    if (!window.confirm('Excluindo uma categoria, todos os projetos e tarefas associados a ela serão perdidos, deseja continuar?')) return;
+    if (!window.confirm(t('Excluindo uma categoria, todos os projetos e tarefas associados a ela serão perdidos, deseja continuar?'))) return;
     try {
       await deleteCategory(category.id);
       const categoryProjectIds = projects.filter((p) => p.category === category.name.toLowerCase()).map((p) => p.id);
@@ -275,7 +277,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
       setActiveTab((current) => (current === category.name.toLowerCase() ? '' : current));
       onTaskChange?.();
     } catch (error) {
-      window.alert(`Erro: ${error.message}`);
+      window.alert(`${t("Erro")}: ${error.message}`);
     }
   };
 
@@ -316,14 +318,14 @@ export default function TaskManagerBoard({ onTaskChange }) {
   };
 
   const handleDeleteProject = async (id) => {
-    if (!window.confirm('Excluindo um projeto, todas as tarefas e registros de tempo associados a ele serão perdidos, deseja continuar?')) return;
+    if (!window.confirm(t('Excluindo um projeto, todas as tarefas e registros de tempo associados a ele serão perdidos, deseja continuar?'))) return;
     try {
       await deleteProject(id);
       setProjects((previous) => previous.filter((project) => project.id !== id));
       setTasks((previous) => previous.filter((task) => task.project_id !== id));
       onTaskChange?.();
     } catch (error) {
-      window.alert(`Erro: ${error.message}`);
+      window.alert(`${t("Erro")}: ${error.message}`);
     }
   };
 
@@ -412,16 +414,15 @@ export default function TaskManagerBoard({ onTaskChange }) {
   };
 
   const handleDeleteAttachment = async (projectId, attachment) => {
-    if (!window.confirm(`Tem certeza que deseja apagar o anexo ${attachment.file_name}?`)) return;
+    if (!window.confirm(t("Tem certeza que deseja apagar o anexo") + ` ${attachment.file_name}?`)) return;
     try {
       await deleteProjectAttachment(attachment.id);
       setAttachmentsByProject(prev => ({
         ...prev,
         [projectId]: (prev[projectId] || []).filter(a => a.id !== attachment.id)
       }));
-      // Note: Opcionalmente deletaríamos fisicamente do Supabase, mas no plano grátis podemos acumular.
     } catch (e) {
-      window.alert(`Erro ao deletar anexo: ${e.message}`);
+      window.alert(`${t("Erro ao deletar anexo")}: ${e.message}`);
     }
   };
 
@@ -450,32 +451,32 @@ export default function TaskManagerBoard({ onTaskChange }) {
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <div className="task-manager fade-in">
         <div className="task-manager-header">
-          <h2 className="task-manager-title gradient-text"><Blocks size={24} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '8px' }} strokeWidth={1.5} /> Gerenciar Projetos e Tasks</h2>
+          <h2 className="task-manager-title gradient-text"><Blocks size={24} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '8px' }} strokeWidth={1.5} /> {t("Gerenciamento de Projetos e Tarefas")}</h2>
         </div>
 
         <div className="forms-grid">
           <form className="task-form glass-card-static" onSubmit={handleCreateCategory}>
-            <div className="task-form-title"><Briefcase size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> Nova Categoria</div>
+            <div className="task-form-title"><Briefcase size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> {t("Nova Categoria")}</div>
             <div className="task-form-field">
-              <label className="task-form-label">Nome</label>
+              <label className="task-form-label">{t("Nome")}</label>
               <Input
                 value={newCategoryName}
                 onChange={(event) => setNewCategoryName(event.target.value)}
                 required
-                placeholder="Ex.: Trabalho, Freelance, Pessoal..."
+                placeholder={t("Ex.: Trabalho, Freelance, Pessoal...")}
                 onFocus={(e) => { e.target.placeholder = ''; setIsCategoryNameFocused(true); }}
-                onBlur={(e) => { e.target.placeholder = 'Ex.: Trabalho, Freelance, Pessoal...'; setIsCategoryNameFocused(false); }}
+                onBlur={(e) => { e.target.placeholder = t("Ex.: Trabalho, Freelance, Pessoal..."); setIsCategoryNameFocused(false); }}
               />
             </div>
             <div className="task-form-field task-form-spacing" style={{ marginBottom: 'var(--space-6)' }}>
-              <label className="task-form-label">Gerenciar Categoria</label>
+              <label className="task-form-label">{t("Gerenciar Categoria")}</label>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <Select
                   value={selectedCategoryToManage}
                   onChange={(e) => setSelectedCategoryToManage(e.target.value)}
                   style={{ flex: 1 }}
                 >
-                  <option value="">Selecionar categoria...</option>
+                  <option value="">{t("Selecionar categoria...")}</option>
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
@@ -491,7 +492,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                         const cat = categories.find((c) => String(c.id) === selectedCategoryToManage);
                         if (cat) handleEditCategory(cat);
                       }}
-                      title="Editar categoria"
+                      title={t("Editar categoria")}
                     >
                       <Pencil size={16} strokeWidth={1.5} style={{ color: 'var(--color-info)' }} />
                     </button>
@@ -506,7 +507,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                           setSelectedCategoryToManage('');
                         }
                       }}
-                      title="Excluir categoria"
+                      title={t("Excluir categoria")}
                     >
                       <Trash2 size={16} strokeWidth={1.5} style={{ color: 'var(--color-danger)' }} />
                     </button>
@@ -514,36 +515,36 @@ export default function TaskManagerBoard({ onTaskChange }) {
                 )}
               </div>
             </div>
-            <button type="submit" className="btn btn-primary task-form-submit">+ Criar Categoria</button>
+            <button type="submit" className="btn btn-primary task-form-submit">+ {t("Criar Categoria")}</button>
           </form>
 
           <form className="task-form glass-card-static" onSubmit={handleCreateProject}>
-            <div className="task-form-title"><FolderOpen size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> Novo Projeto</div>
+            <div className="task-form-title"><FolderOpen size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> {t("Novo Projeto")}</div>
             <div className="task-form-field">
-              <label className="task-form-label">💼 Nome do Projeto</label>
+              <label className="task-form-label">💼 {t("Nome do Projeto")}</label>
               <Input value={newProjectName} onChange={(event) => setNewProjectName(event.target.value)} required />
             </div>
             <div className="task-form-field task-form-spacing" style={{ marginBottom: 'var(--space-6)' }}>
-              <label className="task-form-label">🏷️ Categoria</label>
+              <label className="task-form-label">🏷️ {t("Categoria")}</label>
               <Select value={newProjectCategory} onChange={(event) => setNewProjectCategory(event.target.value)} required>
                 {categories.map((category) => (
                   <option key={category.id} value={category.name}>{category.name}</option>
                 ))}
               </Select>
             </div>
-            <button type="submit" className="btn btn-primary task-form-submit" disabled={creatingProject}>+ Criar Projeto</button>
+            <button type="submit" className="btn btn-primary task-form-submit" disabled={creatingProject}>+ {t("Criar Projeto")}</button>
           </form>
 
           <form className="task-form glass-card-static" onSubmit={handleCreateTask}>
-            <div className="task-form-title"><Sparkles size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> Nova Task</div>
+            <div className="task-form-title"><Sparkles size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> {t("Nova Task")}</div>
             <div className="task-form-field">
-              <label className="task-form-label">✨ Nome da Task</label>
+              <label className="task-form-label">✨ {t("Nome da Tarefa")}</label>
               <Input value={newTaskName} onChange={(event) => setNewTaskName(event.target.value)} required />
             </div>
             <div className="task-form-field task-form-spacing">
-              <label className="task-form-label">Projeto</label>
+              <label className="task-form-label">{t("Projeto")}</label>
               <Select value={newTaskProjectId} onChange={(event) => setNewTaskProjectId(event.target.value)} required>
-                <option value="">Selecione um projeto...</option>
+                <option value="">{t("Selecione um projeto...")}</option>
                 {projects.map((project) => (
                   <option key={project.id} value={project.id}>[{project.category}] {project.name}</option>
                 ))}
@@ -551,11 +552,11 @@ export default function TaskManagerBoard({ onTaskChange }) {
             </div>
             <div className="task-form-inline-row" style={{ marginBottom: 'var(--space-6)' }}>
               <div className="task-form-field task-form-currency-field">
-                <label className="task-form-label">Moeda</label>
+                <label className="task-form-label">{t("Moeda")}</label>
                 <CurrencySelect value={newTaskCurrency} onChange={(event) => setNewTaskCurrency(event.target.value)} />
               </div>
               <div className="task-form-field task-form-inline-field">
-                <label className="task-form-label">Valor/Hora</label>
+                <label className="task-form-label">{t("Valor/Hora")}</label>
                 <Input
                   className="input-centered"
                   type="number"
@@ -568,7 +569,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                 />
               </div>
               <div className="task-form-field task-form-inline-field">
-                <label className="task-form-label">Horas Orçadas</label>
+                <label className="task-form-label">{t("Horas Orçadas")}</label>
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                   <Input
                     className="input-centered"
@@ -587,7 +588,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                 </div>
               </div>
             </div>
-            <button type="submit" className="btn btn-primary task-form-submit" disabled={creatingTask}>+ Criar Task</button>
+            <button type="submit" className="btn btn-primary task-form-submit" disabled={creatingTask}>+ {t("Criar Tarefa")}</button>
           </form>
         </div>
 
@@ -603,7 +604,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
 
         <SortableContext items={categoryProjects.map(p => `proj-${p.id}`)} strategy={verticalListSortingStrategy}>
           <div className="projects-grid">
-            {categoryProjects.length === 0 ? <p className="empty-msg">Nenhum projeto encontrado.</p> : null}
+            {categoryProjects.length === 0 ? <p className="empty-msg">{t("Nenhum projeto encontrado.")}</p> : null}
             {categoryProjects.map((project) => {
               const projectTasks = tasks.filter((task) => task.project_id === project.id);
               return (
@@ -622,19 +623,19 @@ export default function TaskManagerBoard({ onTaskChange }) {
                           });
                         }}
                         style={{ cursor: 'pointer' }}
-                        title={expandedProjects.has(project.id) ? "Minimizar projeto" : "Expandir projeto"}
+                        title={expandedProjects.has(project.id) ? t("Minimizar projeto") : t("Expandir projeto")}
                       >
                         <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <button
                             className="btn-icon"
-                            title={expandedProjects.has(project.id) ? "Minimizar projeto" : "Expandir projeto"}
+                            title={expandedProjects.has(project.id) ? t("Minimizar projeto") : t("Expandir projeto")}
                           >
                             {expandedProjects.has(project.id) ? <ChevronDown size={18} strokeWidth={1.5} /> : <ChevronRight size={18} strokeWidth={1.5} />}
                           </button>
                           <Folder size={16} strokeWidth={1.5} /> {project.name}
                         </span>
                         <div style={{ display: 'flex', gap: '4px' }}>
-                          <label className="btn-icon" title="Anexar arquivo na nuvem" onClick={e => e.stopPropagation()} style={{ cursor: 'pointer', opacity: uploadingToProject === project.id ? 0.5 : 1 }}>
+                          <label className="btn-icon" title={t("Anexar arquivo")} onClick={e => e.stopPropagation()} style={{ cursor: 'pointer', opacity: uploadingToProject === project.id ? 0.5 : 1 }}>
                             {uploadingToProject === project.id ? <Loader size={16} strokeWidth={1.5} className="spin-animation" /> : <Paperclip size={16} strokeWidth={1.5} />}
                             <input type="file" hidden accept=".svg,.png,.jpg,.jpeg,.gif,.pdf,.zip,.rar,.doc,.docx,.xls,.xlsx,.json,.fig" onChange={(e) => {
                               const file = e.target.files[0];
@@ -648,7 +649,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                               event.stopPropagation();
                               handleEditProjectClick(project);
                             }}
-                            title="Editar Projeto"
+                            title={t("Editar Projeto")}
                           >
                             <Pencil size={16} strokeWidth={1.5} />
                           </button>
@@ -659,7 +660,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                               handleDeleteProject(project.id);
                             }}
                             style={{ color: 'var(--color-danger)' }}
-                            title="Excluir Projeto"
+                            title={t("Excluir Projeto")}
                           >
                             <Trash2 size={16} strokeWidth={1.5} />
                           </button>
@@ -686,7 +687,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                                   )}
                                 </SortableWrapper>
                               ))}
-                              {projectTasks.length === 0 ? <span className="empty-msg task-list-empty">Sem tasks neste projeto.</span> : null}
+                              {projectTasks.length === 0 ? <span className="empty-msg task-list-empty">{t("Nenhuma tarefa cadastrada para este projeto.")}</span> : null}
                             </div>
                           </SortableContext>
 
@@ -694,7 +695,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                             <div className="attachments-section">
                               <div style={{ padding: 'var(--space-2) var(--space-4)', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--text-secondary)', borderTop: '1px solid var(--border-subtle)', paddingTop: 'var(--space-4)', marginBottom: 'var(--space-3)' }}>
                                 <FolderOpen size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} />
-                                Arquivos do projeto
+                                {t("Arquivos do projeto")}
                               </div>
                               <div className="attachments-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 'var(--space-3)', padding: '0 var(--space-2)' }}>
                                 {attachmentsByProject[project.id].map(att => (
@@ -715,10 +716,10 @@ export default function TaskManagerBoard({ onTaskChange }) {
                                     <span className="truncate" style={{ flex: 1, fontWeight: 500, color: 'var(--text-primary)' }} title={att.file_name}>{att.file_name}</span>
 
                                     <div style={{ display: 'flex', gap: '4px' }}>
-                                      <a href={att.file_url} target="_blank" rel="noreferrer" className="btn-icon" style={{ padding: '6px' }} title="Baixar">
+                                      <a href={att.file_url} target="_blank" rel="noreferrer" className="btn-icon" style={{ padding: '6px' }} title={t("Download")}>
                                         <Download size={14} style={{ color: 'var(--color-primary)' }} strokeWidth={1.5} />
                                       </a>
-                                      <button type="button" onClick={() => handleDeleteAttachment(project.id, att)} className="btn-icon" style={{ padding: '6px' }} title="Excluir">
+                                      <button type="button" onClick={() => handleDeleteAttachment(project.id, att)} className="btn-icon" style={{ padding: '6px' }} title={t("Excluir")}>
                                         <X size={14} style={{ color: 'var(--color-danger)' }} strokeWidth={1.5} />
                                       </button>
                                     </div>
@@ -737,32 +738,32 @@ export default function TaskManagerBoard({ onTaskChange }) {
           </div>
         </SortableContext>
 
-        <EditModal isOpen={!!editingProject} title="Editar Projeto" onClose={() => setEditingProject(null)} onSave={handleSaveProject}>
+        <EditModal isOpen={!!editingProject} title={t("Editar Projeto")} onClose={() => setEditingProject(null)} onSave={handleSaveProject}>
           <div className="edit-modal-field">
-            <label className="edit-modal-label">Nome do Projeto</label>
+            <label className="edit-modal-label">{t("Nome do Projeto")}</label>
             <Input value={editProjectForm.name} onChange={e => setEditProjectForm({ ...editProjectForm, name: e.target.value })} required />
           </div>
         </EditModal>
 
-        <EditModal isOpen={!!editingTask} title="Editar Tarefa" onClose={() => setEditingTask(null)} onSave={handleSaveTask}>
+        <EditModal isOpen={!!editingTask} title={t("Editar Tarefa")} onClose={() => setEditingTask(null)} onSave={handleSaveTask}>
           <div className="edit-modal-field">
-            <label className="edit-modal-label">✨ Nome da Tarefa</label>
+            <label className="edit-modal-label">✨ {t("Nome da Tarefa")}</label>
             <Input value={editTaskForm.name} onChange={e => setEditTaskForm({ ...editTaskForm, name: e.target.value })} required />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', alignItems: 'end' }}>
             <div className="edit-modal-field">
-              <label className="edit-modal-label">Valor / Hora</label>
+              <label className="edit-modal-label">{t("Valor/Hora")}</label>
               <Input type="number" step="0.01" value={editTaskForm.hourly_rate} onChange={e => setEditTaskForm({ ...editTaskForm, hourly_rate: e.target.value })} />
             </div>
             <div className="edit-modal-field">
-              <label className="edit-modal-label">Horas Orçadas</label>
+              <label className="edit-modal-label">{t("Horas Orçadas")}</label>
               <Input type="number" step="0.1" value={editTaskForm.budgeted_hours} onChange={e => setEditTaskForm({ ...editTaskForm, budgeted_hours: e.target.value })} />
             </div>
             <div className="edit-modal-field">
-              <label className="edit-modal-label">Cor</label>
+              <label className="edit-modal-label">{t("Cor")}</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <input type="color" className="color-picker" value={editTaskForm.color || '#10b981'} onChange={e => setEditTaskForm({ ...editTaskForm, color: e.target.value })} style={{ width: '42px', height: '42px', padding: '0', cursor: 'pointer', borderRadius: '4px' }} />
-                <button type="button" onClick={() => navigator.clipboard.writeText(editTaskForm.color || '#10b981')} className="btn-icon" style={{ padding: '6px', opacity: 0.7 }} title="Copiar código HEX">
+                <button type="button" onClick={() => navigator.clipboard.writeText(editTaskForm.color || '#10b981')} className="btn-icon" style={{ padding: '6px', opacity: 0.7 }} title={t("Copiar código HEX")}>
                   <Copy size={16} strokeWidth={1.5} />
                 </button>
               </div>

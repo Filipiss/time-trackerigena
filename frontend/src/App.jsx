@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { fetchSettings } from './api';
 import ReactGA from 'react-ga4';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { LanguageProvider } from './contexts/LanguageContext';
 import MainLayout from './components/templates/MainLayout/MainLayout';
 import CalendarPage from './components/pages/CalendarPage/CalendarPage';
 import DashboardPage from './components/pages/DashboardPage/DashboardPage';
@@ -18,6 +19,7 @@ import UsersManagementPage from './components/pages/AdminPages/UsersManagementPa
 import AdminSettingsPage from './components/pages/AdminPages/AdminSettingsPage';
 import SupportPage from './components/pages/SupportPage/SupportPage';
 import AdminSupportPage from './components/pages/AdminPages/AdminSupportPage';
+import AdminLogsPage from './components/pages/AdminPages/AdminLogsPage';
 import FloatingWidget from './components/organisms/FloatingWidget/FloatingWidget';
 import './App.css';
 
@@ -82,6 +84,7 @@ function AppRoutes() {
         <Route path="users" element={<UsersManagementPage />} />
         <Route path="settings" element={<AdminSettingsPage />} />
         <Route path="support" element={<AdminSupportPage />} />
+        <Route path="logs" element={<AdminLogsPage />} />
       </Route>
       <Route element={<MainLayout settings={settings} />}>
         <Route path="/timer" element={<TimerPage selectedTask={selectedTask} onSelectTask={setSelectedTask} refreshTrigger={refreshTrigger} onSaveSuccess={handleSaveSuccess} />} />
@@ -120,23 +123,25 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <AuthProvider>
-        {isActivatePage ? (
-          <ActivatePage token={activationToken} />
-        ) : activeResetToken ? (
-          <>
+      <LanguageProvider>
+        <AuthProvider>
+          {isActivatePage ? (
+            <ActivatePage token={activationToken} />
+          ) : activeResetToken ? (
+            <>
+              <AppRoutes />
+              <ResetPasswordModal
+                token={activeResetToken}
+                onClose={handleResetClose}
+                onSwitchToLogin={handleResetClose}
+              />
+            </>
+          ) : (
             <AppRoutes />
-            <ResetPasswordModal
-              token={activeResetToken}
-              onClose={handleResetClose}
-              onSwitchToLogin={handleResetClose}
-            />
-          </>
-        ) : (
-          <AppRoutes />
-        )}
-        <FloatingWidget />
-      </AuthProvider>
+          )}
+          <FloatingWidget />
+        </AuthProvider>
+      </LanguageProvider>
     </BrowserRouter>
   );
 }

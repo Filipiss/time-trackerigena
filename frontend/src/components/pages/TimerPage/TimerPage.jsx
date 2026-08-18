@@ -3,6 +3,7 @@ import TaskSelectorPanel from '../../organisms/TaskSelectorPanel/TaskSelectorPan
 import TimerWidget from '../../organisms/TimerWidget/TimerWidget';
 import HistoryTable from '../../organisms/HistoryTable/HistoryTable';
 import { fetchTimeEntries, deleteTimeEntry } from '../../../api';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import './TimerPage.css';
 
 function formatDuration(totalSeconds) {
@@ -36,6 +37,7 @@ function formatDate(dateStr) {
 }
 
 export default function TimerPage({ selectedTask, onSelectTask, refreshTrigger, onSaveSuccess }) {
+  const { t } = useLanguage();
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
@@ -87,8 +89,8 @@ export default function TimerPage({ selectedTask, onSelectTask, refreshTrigger, 
 
   const todayGroupedList = [
     {
-      dateStr: new Date().toISOString().split('T')[0],
-      weekdayLabel: "Registros de Hoje",
+      dateStr: new Date().toLocaleDateString('en-CA'),
+      weekdayLabel: t("Registros de Hoje"),
       totalDuration: todayTotal,
       entries: entries
     }
@@ -105,11 +107,11 @@ export default function TimerPage({ selectedTask, onSelectTask, refreshTrigger, 
           <div className="recent-logs-column">
             {loading ? (
               <div className="weekday-tab-content glass-card-static" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                Carregando registros de hoje...
+                {t("Carregando registros de hoje...")}
               </div>
             ) : entries.length === 0 ? (
               <div className="weekday-tab-content glass-card-static" style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                Nenhum registro cronometrado hoje. Escolha uma tarefa ao lado e inicie o cronômetro!
+                {t("Nenhum registro cronometrado hoje. Escolha uma tarefa ao lado e inicie o cronômetro!")}
               </div>
             ) : (
               <HistoryTable

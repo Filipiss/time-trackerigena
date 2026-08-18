@@ -1,3 +1,4 @@
+/* ── Widget container ── */
 .floating-accessibility-widget {
     position: fixed;
     right: 24px;
@@ -6,14 +7,15 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 12px;
+    gap: 10px;
 }
 
 .floating-buttons-bar {
     display: flex;
-    gap: 12px;
+    gap: 10px;
 }
 
+/* ── Botões flutuantes ── */
 .widget-float-btn {
     width: 44px;
     height: 44px;
@@ -21,7 +23,7 @@
     border: 1px solid var(--border-default);
     background: var(--bg-card);
     color: var(--text-primary);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -33,7 +35,7 @@
     transform: translateY(-2px);
     border-color: var(--border-highlight);
     background: var(--bg-card-hover);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
 }
 
 .widget-float-btn.accessibility-toggle.active {
@@ -42,114 +44,191 @@
     border-color: var(--theme-accent);
 }
 
-/* Painel de acessibilidade */
+/* ── Painel principal ── */
 .accessibility-panel {
     background: var(--bg-card);
     border: 1px solid var(--border-default);
-    border-radius: var(--radius-md);
-    padding: var(--space-4);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-    width: 260px;
+    border-radius: var(--radius-lg);
+    padding: 18px 20px 14px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    width: 300px;
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
-    backdrop-filter: blur(10px);
-    margin-bottom: 4px;
+    gap: 0;
+    backdrop-filter: blur(16px);
 }
 
+/* ── Cabeçalho ── */
 .accessibility-panel-header h4 {
-    margin: 0;
+    margin: 0 0 14px;
     font-size: var(--text-sm);
     font-weight: 700;
     color: var(--text-primary);
-    border-bottom: 1px solid var(--border-default);
-    padding-bottom: var(--space-2);
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
+.accessibility-panel-header h4::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 14px;
+    background: var(--theme-accent);
+    border-radius: 2px;
+}
+
+/* ── Corpo do painel ── */
+.accessibility-panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* ── Linha de controle genérica ── */
 .accessibility-control-group {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
+    gap: 8px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.accessibility-control-group:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
 }
 
 .accessibility-control-group.flex-row {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid var(--border-default);
-    padding-top: var(--space-3);
 }
 
+/* ── Label de seção ── */
 .control-group-title {
-    font-size: var(--text-xs);
+    font-size: 11.5px;
     font-weight: 600;
     color: var(--text-secondary);
+    white-space: nowrap;
+    letter-spacing: 0.01em;
 }
 
+/* ── Zoom ── */
 .zoom-buttons-row {
     display: flex;
     gap: 6px;
+    width: 100%;
 }
 
 .zoom-btn {
     flex: 1;
-    padding: var(--space-1) var(--space-2);
+    padding: 7px 0;
     background: var(--bg-surface);
     border: 1px solid var(--border-default);
     color: var(--text-primary);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
     font-weight: 700;
     cursor: pointer;
-    font-size: var(--text-xs);
+    font-size: 11.5px;
     transition: all var(--transition-fast);
+    text-align: center;
 }
 
 .zoom-btn:hover {
     background: var(--bg-card-hover);
     border-color: var(--border-highlight);
+    color: var(--theme-accent);
 }
 
 .zoom-btn.reset {
-    font-weight: 600;
+    font-weight: 500;
+    color: var(--text-secondary);
 }
 
+/* ── Botão de toggle (on/off) ── */
 .toggle-switch-btn {
-    padding: 4px 10px;
+    padding: 5px 13px;
     border-radius: var(--radius-full);
     border: 1px solid var(--border-default);
     background: var(--bg-surface);
     color: var(--text-secondary);
-    font-size: var(--text-xs);
+    font-size: 11.5px;
     font-weight: 600;
     cursor: pointer;
     transition: all var(--transition-fast);
     display: inline-flex;
     align-items: center;
+    gap: 5px;
+    min-width: 88px;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .toggle-switch-btn:hover {
     border-color: var(--border-highlight);
+    background: var(--bg-card-hover);
 }
 
 .toggle-switch-btn.active {
     background: var(--theme-accent);
     color: var(--text-inverse);
     border-color: var(--theme-accent);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .speech-btn {
-    gap: var(--space-1);
+    gap: 5px;
 }
 
-/* ---- OVERRIDES GLOBAL DE ACESSIBILIDADE ---- */
+/* ── Seletor de idioma ── */
+.lang-buttons-row {
+    display: flex;
+    gap: 3px;
+    background: var(--bg-surface);
+    padding: 3px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-default);
+    flex-shrink: 0;
+}
 
-/* Fonte disléxica */
+.lang-btn {
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    letter-spacing: 0.04em;
+}
+
+.lang-btn.active {
+    background: var(--theme-accent);
+    color: var(--text-inverse);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
+}
+
+.lang-btn:not(.active):hover {
+    color: var(--text-primary);
+}
+
+/* ── Overrides globais de acessibilidade ── */
 body.accessibility-dyslexic,
 body.accessibility-dyslexic * {
     font-family: "Comic Sans MS", "Comic Sans", "Arial", sans-serif !important;
 }
 
-/* Alto contraste global */
 body.accessibility-high-contrast {
     filter: contrast(1.15) saturate(1.1) !important;
+}
+
+@media (max-width: 767px) {
+    .floating-accessibility-widget {
+        bottom: 96px;
+        right: 16px;
+    }
 }

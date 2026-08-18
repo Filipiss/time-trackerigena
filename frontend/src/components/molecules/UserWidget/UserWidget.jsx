@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import './UserWidget.css';
 
 export default function UserWidget({ onNavigateToProfile }) {
     const { user, logout } = useAuth();
+    const { t } = useLanguage();
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const timeoutRef = useRef(null);
@@ -41,7 +43,7 @@ export default function UserWidget({ onNavigateToProfile }) {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            <button className="user-widget-trigger" aria-label="Menu do usuário">
+            <button className="user-widget-trigger" aria-label={t("Menu do usuário")}>
                 {user.avatar_url ? (
                     <img src={user.avatar_url} alt={user.username} className="user-avatar" />
                 ) : (
@@ -55,14 +57,14 @@ export default function UserWidget({ onNavigateToProfile }) {
                 <div className="user-dropdown">
                     {user?.is_admin && (
                         <button className="dropdown-item" onClick={() => { setOpen(false); navigate('/admin/users'); }}>
-                            <span>⚙️</span> Painel Admin
+                            <span>⚙️</span> {t("Painel Admin")}
                         </button>
                     )}
                     <button className="dropdown-item" onClick={handleProfile}>
-                        <span>👤</span> Perfil
+                        <span>👤</span> {t("Perfil")}
                     </button>
                     <button className="dropdown-item dropdown-item--danger" onClick={handleLogout}>
-                        <span>🚪</span> Sair
+                        <span>🚪</span> {t("Sair")}
                     </button>
                 </div>
             )}

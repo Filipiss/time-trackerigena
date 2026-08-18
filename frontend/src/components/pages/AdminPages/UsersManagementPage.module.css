@@ -36,14 +36,25 @@
     color: var(--text-primary);
 }
 
+.tableWrapper {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+    background-color: var(--bg-surface);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 24px;
+}
+
 .table {
     width: 100%;
     border-collapse: collapse;
-    background-color: var(--bg-surface);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-default);
+}
+
+@media (max-width: 767px) {
+    .table {
+        min-width: 800px;
+    }
 }
 
 .table th,
@@ -131,4 +142,17 @@
     background-color: var(--color-danger);
     color: var(--text-inverse);
     border-color: var(--color-danger);
+}
+
+@media (max-width: 767px) {
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .btnCreate {
+        width: 100%;
+        text-align: center;
+    }
 }

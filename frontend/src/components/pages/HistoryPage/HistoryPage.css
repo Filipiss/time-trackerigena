@@ -190,13 +190,66 @@
 }
 
 @media (max-width: 767px) {
-
-  .filter-month-input,
-  .filter-btn {
+  .history-filters {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
     width: 100%;
+    padding: var(--space-1);
+    -webkit-overflow-scrolling: touch;
+    gap: var(--space-2);
+  }
+
+  .filter-btn {
+    width: auto !important;
+    flex-shrink: 0;
+  }
+
+  .period-dropdowns-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3) !important;
+    padding: var(--space-3);
+  }
+
+  .filter-group {
+    width: 100%;
+  }
+
+  .filter-group>div {
+    display: flex;
+    width: 100%;
+    gap: var(--space-2);
+  }
+
+  .filter-group>div>select {
+    flex: 1;
+    min-width: 0 !important;
+  }
+
+  .filter-select {
+    width: 100%;
+    min-width: 0 !important;
   }
 
   .horizontal-tab-btn {
     padding-inline: var(--space-3);
+  }
+}
+
+@media (max-width: 360px) {
+  .horizontal-tab-btn {
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-2);
+    gap: var(--space-1);
+  }
+
+  .period-dropdowns-container {
+    padding: var(--space-2);
+  }
+
+  .filter-group>div>select,
+  .filter-select {
+    font-size: var(--text-xs);
+    padding: var(--space-1);
   }
 }

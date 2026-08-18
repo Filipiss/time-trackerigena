@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow import ValidationError
 from utils.database import get_db_session
 from utils.responses import success_response, error_response
+from utils.audit_logger import log_action
 from services.task_service import TaskService
 from services.project_service import ProjectService
 from schemas.task_schema import TaskSchema, TaskUpdateSchema, TaskDeadlineHistorySchema
@@ -76,6 +77,7 @@ def create_task():
         if not project or project.user_id != user_id:
             return error_response("Projeto não encontrado", 404)
         task = TaskService.create_task(db, data)
+        log_action(db, "CREATE_TASK", "TASK", task.id, f"Created task '{task.name}'.")
         return success_response(task_schema.dump(task), 201)
     except ValueError as e:
         return error_response(str(e), 404)
@@ -102,6 +104,7 @@ def update_task(task_id):
         if not project or project.user_id != user_id:
             return error_response("Tarefa não encontrada", 404)
         task = TaskService.update_task(db, task_id, data)
+        log_action(db, "UPDATE_TASK", "TASK", task.id, f"Updated task '{task.name}'.")
         return success_response(task_schema.dump(task))
     except ValueError as e:
         return error_response(str(e), 404)
@@ -140,6 +143,7 @@ def delete_task(task_id):
         if not project or project.user_id != user_id:
             return error_response("Tarefa não encontrada", 404)
         TaskService.delete_task(db, task_id)
+        log_action(db, "DELETE_TASK", "TASK", task_id, f"Deleted task '{task.name}' (ID {task_id}).")
         return "", 204
     finally:
         db.close()

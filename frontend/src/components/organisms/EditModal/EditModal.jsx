@@ -1,8 +1,10 @@
 import { X } from 'lucide-react';
 import Button from '../../atoms/Button/Button';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import './EditModal.css';
 
 export default function EditModal({ title, isOpen, onClose, onSave, children }) {
+    const { t } = useLanguage();
     if (!isOpen) return null;
 
     return (
@@ -16,8 +18,8 @@ export default function EditModal({ title, isOpen, onClose, onSave, children }) 
                     {children}
                 </div>
                 <div className="edit-modal-footer">
-                    <Button className="btn btn-ghost" onClick={onClose}>Cancelar</Button>
-                    <Button className="btn btn-primary" onClick={onSave}>Salvar</Button>
+                    <Button className="btn btn-ghost" onClick={onClose}>{t("Cancelar")}</Button>
+                    <Button className="btn btn-primary" onClick={onSave}>{t("Salvar")}</Button>
                 </div>
             </div>
         </div>

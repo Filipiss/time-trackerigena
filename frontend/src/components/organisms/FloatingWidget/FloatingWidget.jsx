@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Sun, Moon, Accessibility, Volume2, VolumeX } from 'lucide-react';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import './FloatingWidget.css';
 
 export default function FloatingWidget() {
+    const { language, setLanguage, t } = useLanguage();
     const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
     const [isOpen, setIsOpen] = useState(false);
     const [fontSize, setFontSize] = useState(() => parseInt(localStorage.getItem('access_fontSize') || '100', 10));
@@ -56,12 +58,11 @@ export default function FloatingWidget() {
             if (!window.speechSynthesis) return;
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
-            utterance.lang = 'pt-BR';
+            utterance.lang = language === 'pt' ? 'pt-BR' : 'en-US';
             window.speechSynthesis.speak(utterance);
         };
 
         const handleMouseOver = (e) => {
-            // Evita ler vários elementos aninhados redundantes
             e.stopPropagation();
             const el = e.target;
             const text = el.getAttribute('aria-label') || el.getAttribute('title') || el.innerText?.trim();
@@ -87,7 +88,7 @@ export default function FloatingWidget() {
             document.removeEventListener('focusin', handleFocus);
             if (window.speechSynthesis) window.speechSynthesis.cancel();
         };
-    }, [speechEnabled]);
+    }, [speechEnabled, language]);
 
     // Fechar menu ao clicar fora
     useEffect(() => {
@@ -123,53 +124,74 @@ export default function FloatingWidget() {
             {isOpen && (
                 <div className="accessibility-panel glass-card-static fade-in">
                     <div className="accessibility-panel-header">
-                        <h4>Acessibilidade</h4>
+                        <h4>{t("Acessibilidade")}</h4>
                     </div>
 
                     <div className="accessibility-panel-body">
                         {/* Controle de Fonte */}
                         <div className="accessibility-control-group">
-                            <span className="control-group-title">Zoom do Texto</span>
+                            <span className="control-group-title">{t("Zoom do Texto")}</span>
                             <div className="zoom-buttons-row">
-                                <button onClick={handleZoomOut} className="zoom-btn" title="Diminuir Fonte">A-</button>
-                                <button onClick={handleZoomReset} className="zoom-btn reset" title="Resetar Fonte">100%</button>
-                                <button onClick={handleZoomIn} className="zoom-btn" title="Aumentar Fonte">A+</button>
+                                <button onClick={handleZoomOut} className="zoom-btn" title={t("Diminuir Fonte")}>A-</button>
+                                <button onClick={handleZoomReset} className="zoom-btn reset" title={t("Resetar Fonte")}>{fontSize}%</button>
+                                <button onClick={handleZoomIn} className="zoom-btn" title={t("Aumentar Fonte")}>A+</button>
                             </div>
                         </div>
 
                         {/* Alternar Fonte para Dislexia */}
                         <div className="accessibility-control-group flex-row">
-                            <span className="control-group-title">Fonte Alternativa</span>
+                            <span className="control-group-title">{t("Fonte Alternativa")}</span>
                             <button
                                 className={`toggle-switch-btn ${dyslexic ? 'active' : ''}`}
                                 onClick={() => setDyslexic(prev => !prev)}
                             >
-                                {dyslexic ? 'Ativado' : 'Desativado'}
+                                {dyslexic ? t("Ativado") : t("Desativado")}
                             </button>
                         </div>
 
                         {/* Alternar Alto Contraste */}
                         <div className="accessibility-control-group flex-row">
-                            <span className="control-group-title">Alto Contraste</span>
+                            <span className="control-group-title">{t("Alto Contraste")}</span>
                             <button
                                 className={`toggle-switch-btn ${highContrast ? 'active' : ''}`}
                                 onClick={() => setHighContrast(prev => !prev)}
                             >
-                                {highContrast ? 'Ativado' : 'Desativado'}
+                                {highContrast ? t("Ativado") : t("Desativado")}
                             </button>
                         </div>
 
                         {/* Leitor de Voz */}
                         <div className="accessibility-control-group flex-row">
-                            <span className="control-group-title">Leitor por Voz (Hover)</span>
+                            <span className="control-group-title">{t("Leitor por Voz (Hover)")}</span>
                             <button
                                 className={`toggle-switch-btn speech-btn ${speechEnabled ? 'active' : ''}`}
                                 onClick={() => setSpeechEnabled(prev => !prev)}
-                                title="Lê os textos ao passar o mouse ou focar no elemento"
+                                title={t("Lê os textos ao passar o mouse ou focar no elemento")}
                             >
                                 {speechEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
-                                <span style={{ marginLeft: '4px' }}>{speechEnabled ? 'Ligado' : 'Desligado'}</span>
+                                <span style={{ marginLeft: '4px' }}>{speechEnabled ? t("Ligado") : t("Desligado")}</span>
                             </button>
+                        </div>
+
+                        {/* Seletor de Idioma */}
+                        <div className="accessibility-control-group flex-row">
+                            <span className="control-group-title">{t("Idioma / Language")}</span>
+                            <div className="lang-buttons-row">
+                                <button
+                                    className={`lang-btn ${language === 'pt' ? 'active' : ''}`}
+                                    onClick={() => setLanguage('pt')}
+                                    title="Português"
+                                >
+                                    PT
+                                </button>
+                                <button
+                                    className={`lang-btn ${language === 'en' ? 'active' : ''}`}
+                                    onClick={() => setLanguage('en')}
+                                    title="English"
+                                >
+                                    EN
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -180,7 +202,7 @@ export default function FloatingWidget() {
                 <button
                     onClick={toggleTheme}
                     className="widget-float-btn theme-toggle"
-                    title={theme === 'light' ? 'Mudar para Tema Escuro' : 'Mudar para Tema Claro'}
+                    title={theme === 'light' ? t("Mudar para Tema Escuro") : t("Mudar para Tema Claro")}
                 >
                     {theme === 'light' ? <Moon size={18} strokeWidth={2} /> : <Sun size={18} strokeWidth={2} />}
                 </button>
@@ -188,7 +210,7 @@ export default function FloatingWidget() {
                 <button
                     onClick={() => setIsOpen(prev => !prev)}
                     className={`widget-float-btn accessibility-toggle ${isOpen ? 'active' : ''}`}
-                    title="Opções de Acessibilidade"
+                    title={t("Opções de Acessibilidade")}
                 >
                     <Accessibility size={20} strokeWidth={2} />
                 </button>

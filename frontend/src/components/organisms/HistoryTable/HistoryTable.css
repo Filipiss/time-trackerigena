@@ -4,7 +4,7 @@
 
 /* Divisores de Dia na tabela do Histórico */
 .day-group-header-row td {
-  padding: var(--space-3) var(--space-6) !important;
+  padding: var(--space-3) var(--space-6) var(--space-3) 0 !important;
   background: var(--bg-deep) !important;
   border-bottom: 1.5px solid var(--border-default) !important;
   border-top: 1.5px solid var(--border-default) !important;
@@ -24,7 +24,9 @@
   align-items: center;
   width: 100%;
   border-left: 4px solid var(--theme-accent);
-  padding-left: var(--space-3);
+  padding-left: var(--space-5);
+  padding-right: var(--space-6);
+  box-sizing: border-box;
 }
 
 .day-title-area {
@@ -73,14 +75,47 @@
 
 .history-table-wrapper {
   overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
 }
 
 .history-table {
   width: 100%;
   min-width: 720px;
+  table-layout: fixed;
   border-collapse: collapse;
   text-align: left;
   font-size: var(--text-sm);
+}
+
+.history-table th:nth-child(1),
+.history-table td:nth-child(1) {
+  width: 150px;
+}
+
+.history-table th:nth-child(2),
+.history-table td:nth-child(2) {
+  width: 180px;
+}
+
+.history-table th:nth-child(3),
+.history-table td:nth-child(3) {
+  width: 100px;
+}
+
+.history-table th:nth-child(4),
+.history-table td:nth-child(4) {
+  width: 110px;
+}
+
+.history-table th:nth-child(5),
+.history-table td:nth-child(5) {
+  width: auto;
+}
+
+.history-table th:nth-child(6),
+.history-table td:nth-child(6) {
+  width: 90px;
 }
 
 .history-table th {
@@ -169,10 +204,15 @@
 }
 
 .actions-cell {
-  display: flex;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.actions-cell>div {
+  display: inline-flex !important;
   justify-content: center;
   align-items: center;
-  min-height: 38px;
+  gap: var(--space-2);
 }
 
 .edit-action-btn,
@@ -246,21 +286,237 @@
 
 @media (max-width: 767px) {
   .weekday-tab-content {
-    padding: var(--space-4);
-  }
-
-  .history-table {
-    min-width: 640px;
-    font-size: var(--text-xs);
-  }
-
-  .history-table th,
-  .history-table td {
     padding: var(--space-3);
+  }
+
+  .history-table-wrapper {
+    overflow-x: hidden;
+  }
+
+  /* --- Make the table a flex column container --- */
+  .history-table {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    min-width: auto !important;
+    background: transparent !important;
+    border: none !important;
+    table-layout: auto !important;
+  }
+
+  .history-table thead {
+    display: none !important;
+  }
+
+  .history-table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0 !important;
+  }
+
+  /* --- Day group header as full-width block --- */
+  .day-group-header-row {
+    display: block !important;
+    width: 100% !important;
+    margin-top: var(--space-2) !important;
+  }
+
+  .day-group-header-row td {
+    display: block !important;
+    width: 100% !important;
+    padding: var(--space-2) var(--space-3) var(--space-2) 0 !important;
+    box-sizing: border-box;
+    border-radius: var(--radius-md);
+  }
+
+  .day-group-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    border-left: 4px solid var(--theme-accent);
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+    box-sizing: border-box;
+  }
+
+  /* --- Each history row becomes a mobile card --- */
+  .history-table tr.history-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center;
+    padding: var(--space-3) var(--space-4) !important;
+    border: 1px solid var(--border-default) !important;
+    border-radius: var(--radius-md) !important;
+    background: var(--bg-card) !important;
+    box-sizing: border-box !important;
+    margin-bottom: var(--space-2) !important;
+    gap: var(--space-2) !important;
+  }
+
+  /* Reset each td to inline-block so flex can arrange them */
+  .history-table tr.history-row td {
+    display: inline-flex !important;
+    align-items: center;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    vertical-align: middle;
+  }
+
+  /* Col 1 — Project badge: row 1 left */
+  .history-table tr.history-row td:nth-child(1) {
+    flex: 1 1 auto;
+    min-width: 0;
+    order: 1;
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  /* Col 4 — Date: row 1 right */
+  .history-table tr.history-row td:nth-child(4) {
+    flex: 0 0 auto;
+    order: 2;
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+  }
+
+  /* Row break after col 4 — force col 2 to new flex line */
+  .history-table tr.history-row td:nth-child(4)::after {
+    content: '';
+    display: block;
+    flex-basis: 100%;
+    width: 100%;
+  }
+
+  /* Col 2 — Task name: row 2 left */
+  .history-table tr.history-row td:nth-child(2) {
+    flex: 1 1 auto;
+    min-width: 0;
+    order: 3;
+  }
+
+  /* Col 3 — Duration: row 2 right */
+  .history-table tr.history-row td:nth-child(3) {
+    flex: 0 0 auto;
+    order: 4;
+    font-weight: 700;
+    font-size: var(--text-sm);
+  }
+
+  /* Row break after col 3 — force col 5 to new flex line */
+  .history-table tr.history-row td:nth-child(3)::after {
+    content: '';
+    display: block;
+    flex-basis: 100%;
+    width: 100%;
+  }
+
+  /* Col 5 — Notes: row 3 left */
+  .history-table tr.history-row td:nth-child(5) {
+    flex: 1 1 auto;
+    min-width: 0;
+    order: 5;
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+  }
+
+  /* Col 6 — Actions: row 3 right */
+  .history-table tr.history-row td:nth-child(6) {
+    flex: 0 0 auto;
+    order: 6;
   }
 
   .weekday-total-duration {
     width: 100%;
     text-align: center;
+    font-size: var(--text-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .weekday-tab-content {
+    padding: var(--space-2);
+  }
+
+  .history-table tr.history-row {
+    padding: var(--space-2) var(--space-3) !important;
+    gap: var(--space-1) !important;
+  }
+
+  .history-table tr.history-row td:nth-child(1) {
+    font-size: var(--text-xs);
+  }
+
+  .history-table tr.history-row td:nth-child(2) {
+    font-size: var(--text-xs);
+  }
+
+  .history-table tr.history-row td:nth-child(3) {
+    font-size: var(--text-xs);
+  }
+
+  .day-group-header-content {
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+  }
+
+  .day-title {
+    font-size: var(--text-xs);
+  }
+
+  .day-date {
+    font-size: 10px;
+  }
+
+  .day-total {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
+}
+
+@media (max-width: 360px) {
+  .weekday-tab-content {
+    padding: var(--space-1);
+  }
+
+  .history-table tr.history-row {
+    padding: var(--space-2) !important;
+    gap: 4px !important;
+  }
+
+  .history-table tr.history-row td:nth-child(1),
+  .history-table tr.history-row td:nth-child(2),
+  .history-table tr.history-row td:nth-child(3),
+  .history-table tr.history-row td:nth-child(4),
+  .history-table tr.history-row td:nth-child(5) {
+    font-size: 10px;
+  }
+
+  .day-group-header-row td {
+    padding: var(--space-2) var(--space-1) var(--space-2) 0 !important;
+  }
+
+  .day-group-header-content {
+    padding-left: var(--space-2);
+    padding-right: var(--space-1);
+  }
+
+  .day-title {
+    font-size: 10px;
+  }
+
+  .day-date,
+  .day-total {
+    font-size: 9px;
+  }
+
+  .action-btn,
+  .edit-action-btn,
+  .delete-action-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
   }
 }

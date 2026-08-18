@@ -1,5 +1,6 @@
 ﻿import CurrencySelect from '../../molecules/CurrencySelect/CurrencySelect';
 import { CURRENCY_SYMBOLS } from '../../../utils/currency';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import { Pencil } from 'lucide-react';
 import './BillingTable.css';
 
@@ -14,37 +15,39 @@ export default function BillingTable({
   convertCurrency,
   onEdit,
 }) {
+  const { t } = useLanguage();
+
   return (
     <div className="values-section-card glass-card-static fade-in">
       <div className="values-section-header">
         <div className="values-header-title-wrapper">
-          <h3 className="values-header-title">Faturamento & Câmbio de Moedas</h3>
+          <h3 className="values-header-title">{t("Faturamento & Câmbio de Moedas")}</h3>
         </div>
         <div className="exchange-rate-input-wrapper">
-          <label className="exchange-label">Mostrar Total em</label>
+          <label className="exchange-label">{t("Mostrar Total em")}</label>
           <CurrencySelect className="font-mono" value={targetCurrency} onChange={(event) => setTargetCurrency(event.target.value)} disabled={exchangeRateLoading} />
           <span className="exchange-rate-hint">
             {exchangeRateLoading
-              ? 'Atualizando cotação...'
-              : `Câmbio: 1€ = R$ ${exchangeRates.EURBRL.toFixed(2)} · 1US$ = R$ ${exchangeRates.USDBRL.toFixed(2)}`}
+              ? t('Atualizando cotação...')
+              : `${t("Câmbio")}: 1€ = R$ ${exchangeRates.EURBRL.toFixed(2)} · 1US$ = R$ ${exchangeRates.USDBRL.toFixed(2)}`}
           </span>
         </div>
       </div>
 
       {taskTotalsList.length === 0 ? (
-        <div className="no-values-message">Nenhum registro para calcular valores.</div>
+        <div className="no-values-message">{t("Nenhum registro para calcular valores.")}</div>
       ) : (
         <div className="values-content">
           <table className="values-table">
             <thead>
               <tr>
-                <th>Projeto</th>
-                <th>Tarefa</th>
-                <th>Horas Trabalhadas</th>
-                <th>Valor/Hora</th>
-                <th>Lucro da Task</th>
-                <th>Total ({targetCurrency})</th>
-                <th>Ações</th>
+                <th>{t("Projeto")}</th>
+                <th>{t("Tarefa")}</th>
+                <th>{t("Horas Trabalhadas")}</th>
+                <th>{t("Valor/Hora")}</th>
+                <th>{t("Saldo da Tarefa")}</th>
+                <th>{t("Total")} ({targetCurrency})</th>
+                <th>{t("Ações")}</th>
               </tr>
             </thead>
             <tbody>
@@ -57,7 +60,7 @@ export default function BillingTable({
 
                 return (
                   <tr key={index} className="values-row">
-                    <td>{item.projectName || 'Sem Projeto'}</td>
+                    <td>{t(item.projectName || 'Sem Projeto')}</td>
                     <td>
                       <div className="task-cell">
                         <span className="task-color-dot" style={{ backgroundColor: item.color }} />
@@ -74,7 +77,7 @@ export default function BillingTable({
                     </td>
                     <td className="font-mono value-eur-highlight">{CURRENCY_SYMBOLS[targetCurrency]} {totalConverted.toFixed(2)}</td>
                     <td>
-                      <button className="btn-icon" onClick={() => onEdit?.(item)} title="Editar Horas e Valor/Hora">
+                      <button className="btn-icon" onClick={() => onEdit?.(item)} title={t("Editar Horas e Valor/Hora")}>
                         <Pencil size={16} strokeWidth={1.5} />
                       </button>
                     </td>
@@ -82,7 +85,7 @@ export default function BillingTable({
                 );
               })}
               <tr className="values-totals-row">
-                <td colSpan={5} className="totals-label-cell">Total Geral</td>
+                <td colSpan={5} className="totals-label-cell">{t("Total Geral")}</td>
                 <td className="font-mono overall-eur-total">{CURRENCY_SYMBOLS[targetCurrency]} {totalInTargetCurrency.toFixed(2)}</td>
               </tr>
             </tbody>

@@ -4,6 +4,7 @@ import TabButton from '../../molecules/TabButton/TabButton';
 import TaskCard from '../../molecules/TaskCard/TaskCard';
 import { Folder, Briefcase } from 'lucide-react';
 import { fetchProjects, fetchTasks } from '../../../api';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import './TaskSelectorPanel.css';
 
 const CATEGORY_LABELS = {
@@ -12,6 +13,7 @@ const CATEGORY_LABELS = {
 };
 
 export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshTrigger }) {
+  const { t } = useLanguage();
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -90,7 +92,7 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
     return (
       <div className="task-selector glass-card-static task-selector-shell">
         <div className="task-selector-loading">
-          <Spinner label="Carregando..." />
+          <Spinner label={t("Carregando...")} />
         </div>
       </div>
     );
@@ -99,18 +101,18 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
   return (
     <div className="task-selector glass-card-static task-selector-shell">
       <div className="task-selector-header">
-        <h3 className="task-selector-title">Opções do Timer</h3>
+        <h3 className="task-selector-title">{t("Opções do Timer")}</h3>
       </div>
 
       {projects.length === 0 ? (
         <div className="task-selector-empty">
-          <p>Nenhum projeto encontrado. Crie projetos e tasks na aba Tasks!</p>
+          <p>{t("Nenhum projeto encontrado. Vá para a página de tarefas para criar um.")}</p>
         </div>
       ) : (
         <>
           <div className="selector-filter-group">
             <div className="selector-filter-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Briefcase size={14} strokeWidth={1.5} /> Categoria
+              <Briefcase size={14} strokeWidth={1.5} /> {t("Categoria")}
             </div>
             <div className="selector-tabs-scroll">
               <div className="selector-tabs">
@@ -136,10 +138,10 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
           </div>
 
           <div className="selector-filter-group">
-            <div className="selector-filter-label">Projeto</div>
+            <div className="selector-filter-label">{t("Projeto")}</div>
             {projectsInCategory.length === 0 ? (
               <div className="task-selector-empty selector-inline-empty">
-                <p>Nenhum projeto nesta categoria.</p>
+                <p>{t("Nenhum projeto nesta categoria.")}</p>
               </div>
             ) : (
               <div className="selector-tabs-scroll">
@@ -160,10 +162,10 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
           </div>
 
           <div className="selector-filter-group">
-            <div className="selector-filter-label">✨ Task</div>
+            <div className="selector-filter-label">✨ {t("Tarefa")}</div>
             {tasksInProject.length === 0 ? (
               <div className="task-selector-empty selector-inline-empty">
-                <p>Nenhuma task neste projeto. Crie tasks na aba Tasks!</p>
+                <p>{t("Nenhuma task neste projeto. Crie tasks na aba Tasks!")}</p>
               </div>
             ) : (
               <div className="task-selector-grid">

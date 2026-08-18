@@ -242,3 +242,9 @@
 .rule-fail {
     color: #555;
 }
+
+@media (max-width: 480px) {
+    .modal-box {
+        padding: 24px 20px;
+    }
+}

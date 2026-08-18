@@ -194,3 +194,27 @@ def create_user_admin():
         return jsonify({"error": str(e)}), 500
     finally:
         db.close()
+
+@admin_required()
+def get_audit_logs():
+    """GET /api/admin/logs"""
+    db = get_db_session()
+    try:
+        from models.audit_log import AuditLog
+        action = request.args.get("action")
+        username = request.args.get("username")
+        limit = request.args.get("limit", 100, type=int)
+        
+        query = db.query(AuditLog)
+        
+        if action:
+            query = query.filter(AuditLog.action == action)
+        if username:
+            query = query.filter(AuditLog.username.ilike(f"%{username}%"))
+            
+        logs = query.order_by(AuditLog.created_at.desc()).limit(limit).all()
+        return jsonify([log.to_dict() for log in logs]), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        db.close()

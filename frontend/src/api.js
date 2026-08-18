@@ -79,7 +79,7 @@ export async function apiGetProfile(token) {
 }
 
 export async function updateSettings(data) {
-  return request('/api/admin/settings', {
+  return request('/api/settings', {
     method: 'PUT',
     body: JSON.stringify(data),
   });
@@ -452,4 +452,12 @@ export async function fetchSettings() {
   // Public route, but requiresAuth=false so it doesn't bounce to Guest mock
   // Added a cache breaker to ensure polling ignores 304 Not Modified browser caching
   return request(`/api/settings?t=${Date.now()}`, {}, false);
+}
+
+export async function fetchAuditLogs(filters = {}) {
+  const query = new URLSearchParams();
+  if (filters.action) query.set('action', filters.action);
+  if (filters.username) query.set('username', filters.username);
+  if (filters.limit) query.set('limit', filters.limit);
+  return request(`/api/admin/logs?${query.toString()}`);
 }

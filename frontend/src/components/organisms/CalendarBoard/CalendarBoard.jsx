@@ -1,4 +1,5 @@
 ﻿import StatusLegend from '../../molecules/StatusLegend/StatusLegend';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import './CalendarBoard.css';
 
 function toISODate(date) {
@@ -22,19 +23,21 @@ export default function CalendarBoard({
   onCreateDeadline,
   onEditEvent,
 }) {
+  const { t, language } = useLanguage();
   const legendItems = Object.entries(statusConfig).map(([key, config]) => ({ key, ...config }));
-  const monthLabel = monthDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  const monthLocale = language === 'en' ? 'en-US' : 'pt-BR';
+  const monthLabel = monthDate.toLocaleDateString(monthLocale, { month: 'long', year: 'numeric' });
 
   return (
     <div className="calendar-page fade-in">
       <div className="calendar-header">
-        <h2 className="calendar-title gradient-text">📅 Calendário de Compromissos</h2>
+        <h2 className="calendar-title gradient-text">📅 {t("Calendário de Compromissos")}</h2>
 
         <div className="calendar-nav">
-          <button className="btn btn-ghost calendar-nav-btn" onClick={onPrevMonth} title="Mês anterior">‹</button>
-          <button className="btn btn-ghost calendar-today-btn" onClick={onToday}>Hoje</button>
+          <button className="btn btn-ghost calendar-nav-btn" onClick={onPrevMonth} title={t("Mês anterior")}>‹</button>
+          <button className="btn btn-ghost calendar-today-btn" onClick={onToday}>{t("Hoje")}</button>
           <span className="calendar-month-label">{monthLabel}</span>
-          <button className="btn btn-ghost calendar-nav-btn" onClick={onNextMonth} title="Próximo mês">›</button>
+          <button className="btn btn-ghost calendar-nav-btn" onClick={onNextMonth} title={t("Próximo mês")}>›</button>
         </div>
       </div>
 
@@ -59,7 +62,7 @@ export default function CalendarBoard({
                 <div key={iso} className={`calendar-day-cell ${isCurrentMonth ? '' : 'other-month'} ${isToday ? 'today' : ''}`}>
                   <div className="calendar-day-cell-header">
                     <span className="calendar-day-number">{cellDate.getDate()}</span>
-                    <button className="calendar-add-btn" onClick={() => onCreateDeadline(iso)} title="Adicionar status/compromisso neste dia">+</button>
+                    <button className="calendar-add-btn" onClick={() => onCreateDeadline(iso)} title={t("Adicionar status/compromisso neste dia")}>+</button>
                   </div>
                   <div className="calendar-day-projects">
                     {dayEvents.map((event) => {

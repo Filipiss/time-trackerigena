@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow import ValidationError
 from utils.database import get_db_session
 from utils.responses import success_response, error_response
+from utils.audit_logger import log_action
 from services.project_service import ProjectService
 from schemas.project_schema import ProjectSchema, ProjectUpdateSchema, ProjectDeadlineHistorySchema, ProjectAttachmentSchema
 from routes.project_routes import project_bp
@@ -67,6 +68,7 @@ def create_project():
     db = get_db_session()
     try:
         project = ProjectService.create_project(db, data)
+        log_action(db, "CREATE_PROJECT", "PROJECT", project.id, f"Created project '{project.name}'.")
         return success_response(project_schema.dump(project), 201)
     finally:
         db.close()
@@ -87,6 +89,7 @@ def update_project(project_id):
         if not project or project.user_id != user_id:
             return error_response("Projeto não encontrado", 404)
         project = ProjectService.update_project(db, project_id, data)
+        log_action(db, "UPDATE_PROJECT", "PROJECT", project.id, f"Updated project '{project.name}'.")
         return success_response(project_schema.dump(project))
     finally:
         db.close()
@@ -117,6 +120,7 @@ def delete_project(project_id):
         if not project or project.user_id != user_id:
             return error_response("Projeto não encontrado", 404)
         ProjectService.delete_project(db, project_id)
+        log_action(db, "DELETE_PROJECT", "PROJECT", project_id, f"Deleted project '{project.name}' (ID {project_id}).")
         return "", 204
     finally:
         db.close()

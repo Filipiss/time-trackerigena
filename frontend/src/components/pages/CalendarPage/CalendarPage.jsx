@@ -3,17 +3,25 @@ import Spinner from '../../atoms/Spinner/Spinner';
 import CalendarBoard from '../../organisms/CalendarBoard/CalendarBoard';
 import DeadlineModal from '../../organisms/DeadlineModal/DeadlineModal';
 import { fetchProjects, fetchTasks, getCalendarEvents, createCalendarEvent, updateCalendarEvent, deleteCalendarEvent } from '../../../api';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import './CalendarPage.css';
 
-const STATUS_CONFIG = {
+const STATUS_CONFIG_PT = {
   aguardando_cliente: { label: 'Aguardando Cliente', color: '#3b82f6' },
   em_andamento: { label: 'Em Andamento', color: '#8b5cf6' },
   em_revisao: { label: 'Em Revisão', color: '#f59e0b' },
   deadline: { label: 'Deadline', color: '#ef4444' },
   completo: { label: 'Entregue', color: '#10b981' },
 };
-
-const WEEKDAY_LABELS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const STATUS_CONFIG_EN = {
+  aguardando_cliente: { label: 'Awaiting Client', color: '#3b82f6' },
+  em_andamento: { label: 'In Progress', color: '#8b5cf6' },
+  em_revisao: { label: 'Under Review', color: '#f59e0b' },
+  deadline: { label: 'Deadline', color: '#ef4444' },
+  completo: { label: 'Delivered', color: '#10b981' },
+};
+const WEEKDAY_LABELS_PT = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const WEEKDAY_LABELS_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 function toISODate(date) {
   const year = date.getFullYear();
@@ -40,6 +48,9 @@ function buildMonthGrid(monthDate) {
 }
 
 export default function CalendarPage() {
+  const { language } = useLanguage();
+  const STATUS_CONFIG = language === 'en' ? STATUS_CONFIG_EN : STATUS_CONFIG_PT;
+  const WEEKDAY_LABELS = language === 'en' ? WEEKDAY_LABELS_EN : WEEKDAY_LABELS_PT;
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [calendarEvents, setCalendarEvents] = useState([]);
