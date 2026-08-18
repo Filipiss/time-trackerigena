@@ -1,23 +1,56 @@
-import { useState, useCallback, useEffect } from 'react';
-import Timer from './components/Timer';
-import TaskSelector from './components/TaskSelector';
-import TaskManager from './components/TaskManager';
-import Dashboard from './components/Dashboard';
-import TimeHistory from './components/TimeHistory';
+﻿import { useCallback, useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { fetchSettings } from './api';
+import ReactGA from 'react-ga4';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { LanguageProvider } from './contexts/LanguageContext';
+import MainLayout from './components/templates/MainLayout/MainLayout';
+import CalendarPage from './components/pages/CalendarPage/CalendarPage';
+import DashboardPage from './components/pages/DashboardPage/DashboardPage';
+import HistoryPage from './components/pages/HistoryPage/HistoryPage';
+import TasksPage from './components/pages/TasksPage/TasksPage';
+import TimerPage from './components/pages/TimerPage/TimerPage';
+import ProfilePage from './components/pages/ProfilePage/ProfilePage';
+import ActivatePage from './components/pages/ActivatePage/ActivatePage';
+import ResetPasswordModal from './components/organisms/ResetPasswordModal/ResetPasswordModal';
+import AdminLayout from './components/templates/AdminLayout/AdminLayout';
+import AdminDashboardPage from './components/pages/AdminPages/AdminDashboardPage';
+import UsersManagementPage from './components/pages/AdminPages/UsersManagementPage';
+import AdminSettingsPage from './components/pages/AdminPages/AdminSettingsPage';
+import SupportPage from './components/pages/SupportPage/SupportPage';
+import AdminSupportPage from './components/pages/AdminPages/AdminSupportPage';
+import AdminLogsPage from './components/pages/AdminPages/AdminLogsPage';
+import FloatingWidget from './components/organisms/FloatingWidget/FloatingWidget';
 import './App.css';
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState('timer'); // 'timer', 'tasks', 'dashboard', 'history'
-  const [historySubTab, setHistorySubTab] = useState(null);
-  
+ReactGA.initialize('G-GYLWC1S1J3');
+
+function AppRoutes() {
+  const { user } = useAuth();
+  const [settings, setSettings] = useState(null);
+
   const [selectedTask, setSelectedTask] = useState(() => {
     try {
       const saved = localStorage.getItem('tracker_selectedTask');
       return saved ? JSON.parse(saved) : null;
-    } catch (e) {
+    } catch {
       return null;
     }
   });
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const location = useLocation();
+
+  useEffect(() => {
+    fetchSettings().then(setSettings).catch(console.error);
+    const interval = setInterval(() => {
+      fetchSettings().then(setSettings).catch(console.error);
+    }, 10000); // Poll a cada 10 segundos
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search });
+  }, [location]);
 
   useEffect(() => {
     if (selectedTask) {
@@ -27,130 +60,88 @@ export default function App() {
     }
   }, [selectedTask]);
 
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-
   const handleRefresh = useCallback(() => {
-    setRefreshTrigger((prev) => prev + 1);
+    setRefreshTrigger((previous) => previous + 1);
   }, []);
 
-  const handleTaskChange = useCallback(() => {
-    handleRefresh();
-  }, [handleRefresh]);
+  const handleTaskChange = useCallback(() => { handleRefresh(); }, [handleRefresh]);
+  const handleSaveSuccess = useCallback(() => { handleRefresh(); }, [handleRefresh]);
 
-  const handleSaveSuccess = useCallback(() => {
-    handleRefresh();
-  }, [handleRefresh]);
-
-  const navigateToHistoryWithTab = useCallback((subTab) => {
-    setHistorySubTab(subTab);
-    setActiveTab('history');
-  }, []);
-
-  useEffect(() => {
-    if (activeTab !== 'history') {
-      setHistorySubTab(null);
-    }
-  }, [activeTab]);
+  if (settings?.maintenance_mode && !user?.is_admin && !location.pathname.startsWith('/admin')) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0f172a', color: '#f8fafc', padding: '2rem', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '3rem', marginBottom: '1rem', background: 'linear-gradient(to right, #3b82f6, #a855f7)', WebkitBackgroundClip: 'text', color: 'transparent' }}>Voltamos logo!</h1>
+        <p style={{ fontSize: '1.2rem', color: '#94a3b8', maxWidth: '500px' }}>O Time Trackerígena está passando por uma manutenção essencial para melhorar sua experiência. Retorne em breve.</p>
+        <button onClick={() => window.location.reload()} style={{ marginTop: '2rem', padding: '0.8rem 2rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Tentar novamente</button>
+      </div>
+    );
+  }
 
   return (
-    <div className="app-layout">
-      {/* Sidebar para Desktop / Navbar Inferior para Mobile */}
-      <aside className="app-sidebar glass-card-static">
-        <div className="sidebar-brand">
-          <span className="brand-logo">👽</span>
-          <h1 className="brand-title gradient-text">Time Trackerígena</h1>
-        </div>
+    <Routes>
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<AdminDashboardPage />} />
+        <Route path="users" element={<UsersManagementPage />} />
+        <Route path="settings" element={<AdminSettingsPage />} />
+        <Route path="support" element={<AdminSupportPage />} />
+        <Route path="logs" element={<AdminLogsPage />} />
+      </Route>
+      <Route element={<MainLayout settings={settings} />}>
+        <Route path="/timer" element={<TimerPage selectedTask={selectedTask} onSelectTask={setSelectedTask} refreshTrigger={refreshTrigger} onSaveSuccess={handleSaveSuccess} />} />
+        <Route path="/tasks" element={<TasksPage onTaskChange={handleTaskChange} />} />
+        <Route path="/dashboard" element={<DashboardPage refreshTrigger={refreshTrigger} />} />
+        <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/history" element={<HistoryPage key={location.search} refreshTrigger={refreshTrigger} onRefresh={handleRefresh} />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/support" element={<SupportPage />} />
+        <Route path="/" element={<Navigate to="/timer" replace />} />
+        <Route path="*" element={<Navigate to="/timer" replace />} />
+      </Route>
+    </Routes>
+  );
+}
 
-        <nav className="sidebar-nav">
-          <button
-            className={`nav-item ${activeTab === 'timer' ? 'active' : ''}`}
-            onClick={() => setActiveTab('timer')}
-          >
-            <span className="nav-icon">⏱️</span>
-            <span className="nav-label">Timer</span>
-          </button>
+export default function App() {
+  const params = new URLSearchParams(window.location.search);
+  const activationToken = params.get('token');
+  const resetToken = params.get('reset_token');
+  const isActivatePage = window.location.pathname === '/activate' && activationToken;
 
-          <button
-            className={`nav-item ${activeTab === 'tasks' ? 'active' : ''}`}
-            onClick={() => setActiveTab('tasks')}
-          >
-            <span className="nav-icon">📋</span>
-            <span className="nav-label">Tasks</span>
-          </button>
+  // Limpa o token da URL após detectá-lo (sem recarregar)
+  const [activeResetToken] = useState(resetToken);
+  useEffect(() => {
+    if (resetToken) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('reset_token');
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, [resetToken]);
 
-          <button
-            className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dashboard')}
-          >
-            <span className="nav-icon">📊</span>
-            <span className="nav-label">Dashboard</span>
-          </button>
+  function handleResetClose() {
+    window.location.href = '/';
+  }
 
-          <button
-            className={`nav-item ${activeTab === 'history' ? 'active' : ''}`}
-            onClick={() => setActiveTab('history')}
-          >
-            <span className="nav-icon">📜</span>
-            <span className="nav-label">Histórico</span>
-          </button>
-        </nav>
-
-        <div className="sidebar-footer">
-          <div className="footer-status">
-            <span className="status-dot running" />
-            <span className="status-text">Online</span>
-          </div>
-          <div className="footer-version">v1.0.0</div>
-        </div>
-      </aside>
-
-      {/* Conteúdo Principal */}
-      <main className="app-main">
-        <div className="content-container">
-          {activeTab === 'timer' && (
-            <div className="timer-tab-content fade-in">
-              <div className="timer-section">
-                <Timer
-                  selectedTask={selectedTask}
-                  onSaveSuccess={handleSaveSuccess}
-                />
-              </div>
-              <div className="selector-section">
-                <TaskSelector
-                  selectedTask={selectedTask}
-                  onSelectTask={setSelectedTask}
-                  refreshTrigger={refreshTrigger}
-                />
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'tasks' && (
-            <div className="fade-in">
-              <TaskManager 
-                onTaskChange={handleTaskChange} 
-                onNavigateToHistory={navigateToHistoryWithTab} 
+  return (
+    <BrowserRouter>
+      <LanguageProvider>
+        <AuthProvider>
+          {isActivatePage ? (
+            <ActivatePage token={activationToken} />
+          ) : activeResetToken ? (
+            <>
+              <AppRoutes />
+              <ResetPasswordModal
+                token={activeResetToken}
+                onClose={handleResetClose}
+                onSwitchToLogin={handleResetClose}
               />
-            </div>
+            </>
+          ) : (
+            <AppRoutes />
           )}
-
-          {activeTab === 'dashboard' && (
-            <div className="fade-in">
-              <Dashboard refreshTrigger={refreshTrigger} />
-            </div>
-          )}
-
-          {activeTab === 'history' && (
-            <div className="fade-in">
-              <TimeHistory
-                refreshTrigger={refreshTrigger}
-                onRefresh={handleRefresh}
-                initialTab={historySubTab}
-              />
-            </div>
-          )}
-        </div>
-      </main>
-    </div>
+          <FloatingWidget />
+        </AuthProvider>
+      </LanguageProvider>
+    </BrowserRouter>
   );
 }

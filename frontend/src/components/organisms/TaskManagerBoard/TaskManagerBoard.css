@@ -1,0 +1,289 @@
+﻿.task-manager {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.task-manager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-manager-title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  margin: 0;
+}
+
+.forms-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.task-form {
+  padding: var(--space-6);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.task-form-title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+  letter-spacing: 0.02em;
+}
+
+.task-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.task-form-label {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.task-form-spacing {
+  margin-top: 10px;
+}
+
+.task-form-submit {
+  margin-top: auto;
+}
+
+.task-form-inline-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+  align-items: end;
+}
+
+.task-form-inline-field {
+  min-width: 0;
+}
+
+.input-centered {
+  text-align: center;
+}
+
+.task-form-currency-field {
+  min-width: 0;
+}
+
+.task-color-field {
+  min-width: 0;
+}
+
+.category-badges-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.category-admin-badge {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  max-width: 100%;
+}
+
+.color-picker {
+  appearance: none;
+  width: 44px;
+  height: 43px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.color-picker::-webkit-color-swatch {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.color-picker::-moz-color-swatch {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.category-tabs-scroll {
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.category-tabs {
+  display: flex;
+  gap: var(--space-2);
+  min-width: min-content;
+}
+
+.tab-btn {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-highlight);
+}
+
+.tab-btn.active-loco {
+  background: var(--theme-accent-subtle);
+  border-color: var(--theme-accent);
+  color: var(--theme-accent);
+  box-shadow: none;
+}
+
+.projects-grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.project-folder {
+  display: flex;
+  flex-direction: column;
+}
+
+.project-folder-tab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border-default);
+  border-bottom: none;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.project-folder-body {
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  padding: var(--space-4);
+}
+
+.task-cards-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+  gap: var(--space-3);
+}
+
+.empty-msg {
+  color: var(--text-muted);
+}
+
+.task-list-empty {
+  font-size: 0.85rem;
+}
+
+.spin-animation {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1366px) {
+  .forms-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1200px) {
+  .task-form-inline-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .task-form-inline-field:last-of-type {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 1024px) {
+  .forms-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .category-tabs {
+    flex-wrap: nowrap;
+  }
+}
+
+@media (max-width: 880px) {
+  .task-form {
+    padding: var(--space-5);
+  }
+}
+
+@media (max-width: 767px) {
+  .task-form {
+    padding: var(--space-4);
+  }
+
+  .task-form-inline-row {
+    grid-template-columns: 1fr;
+  }
+
+  .project-folder-tab,
+  .project-folder-body {
+    padding-inline: var(--space-4);
+  }
+
+  .project-folder-tab>span:first-child {
+    max-width: 60%;
+  }
+}
+
+.project-folder-tab>span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 75%;
+}
+
+@media (max-width: 360px) {
+
+  .project-folder-tab,
+  .project-folder-body {
+    padding-inline: var(--space-3);
+  }
+
+  .project-folder-tab>span:first-child {
+    font-size: var(--text-xs);
+    max-width: 55%;
+  }
+
+  .task-form {
+    padding: var(--space-3);
+  }
+}

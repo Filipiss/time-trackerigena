@@ -1,0 +1,286 @@
+.container {
+    padding: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.header p {
+    color: var(--text-muted);
+}
+
+@media (max-width: 767px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .content {
+        padding: 1rem;
+    }
+
+    .header h1 {
+        font-size: 1.5rem;
+    }
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-default);
+    padding-bottom: 5px;
+}
+
+.tab {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+}
+
+.tab:hover {
+    background: var(--bg-card-hover);
+}
+
+.activeTab {
+    color: var(--theme-accent);
+    background: var(--theme-accent-subtle);
+}
+
+.content {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    min-height: 400px;
+}
+
+.formGroup {
+    margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.formGroup input,
+.formGroup textarea {
+    width: 100%;
+    padding: 12px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+.btnPrimary {
+    background: var(--theme-accent);
+    color: var(--text-inverse);
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btnPrimary:hover {
+    background: var(--theme-accent-hover);
+}
+
+.btnPrimary:disabled {
+    background: var(--text-placeholder);
+    cursor: not-allowed;
+}
+
+.ticketList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ticketCard {
+    background: var(--bg-surface);
+    padding: 15px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    border: 1px solid var(--border-default);
+    transition: all 0.2s;
+}
+
+.ticketCard:hover {
+    border-color: var(--theme-accent);
+    background: var(--bg-card-hover);
+}
+
+.ticketHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.ticketHeader h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.open {
+    background: rgba(3, 169, 244, 0.1);
+    color: var(--theme-accent);
+}
+
+.answered {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--color-warning);
+}
+
+.resolved {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--color-success);
+}
+
+.ticketDate {
+    color: var(--text-muted);
+}
+
+/* Chat styles */
+.chatWindow {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 500px;
+}
+
+.chatHeader {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-default);
+}
+
+.chatHeader h2 {
+    margin: 0;
+    flex-grow: 1;
+    color: var(--text-primary);
+}
+
+.btnBack {
+    background: transparent;
+    border: 1px solid var(--border-default);
+    color: var(--text-secondary);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.chatMessages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.messageWrap {
+    display: flex;
+    width: 100%;
+}
+
+.alignRight {
+    justify-content: flex-end;
+}
+
+.alignLeft {
+    justify-content: flex-start;
+}
+
+.messageBubble {
+    max-width: 70%;
+    padding: 12px 18px;
+    border-radius: 12px;
+}
+
+.bubbleMe {
+    background: var(--theme-accent);
+    color: var(--text-inverse);
+    border-bottom-right-radius: 4px;
+}
+
+.bubbleThem {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+    border-bottom-left-radius: 4px;
+    border: 1px solid var(--border-default);
+}
+
+.msgMeta {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 5px;
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.msgText {
+    line-height: 1.4;
+    white-space: pre-wrap;
+}
+
+.chatClosedNotice {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+    padding: 15px;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.chatForm {
+    display: flex;
+    gap: 10px;
+}
+
+.chatForm textarea {
+    flex-grow: 1;
+    padding: 12px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    resize: none;
+    font-family: inherit;
+}

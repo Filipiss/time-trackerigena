@@ -1,32 +1,70 @@
 from flask import request
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow import ValidationError
 from utils.database import get_db_session
 from utils.responses import success_response, error_response
+from utils.audit_logger import log_action
 from services.task_service import TaskService
-from schemas.task_schema import TaskSchema, TaskUpdateSchema
+from services.project_service import ProjectService
+from schemas.task_schema import TaskSchema, TaskUpdateSchema, TaskDeadlineHistorySchema
 from routes.task_routes import task_bp
 
 task_schema = TaskSchema()
 tasks_schema = TaskSchema(many=True)
 task_update_schema = TaskUpdateSchema()
+task_deadline_history_schema = TaskDeadlineHistorySchema(many=True)
+
+from models.project import Project
+from models.task import Task
+
+@task_bp.route("/reorder", methods=["PATCH"])
+@jwt_required()
+def reorder_tasks():
+    data = request.json
+    if not isinstance(data, list):
+        return error_response("Payload precisa ser uma lista de objetos {id, sort_order}", 400)
+    
+    db = get_db_session()
+    user_id = int(get_jwt_identity())
+    try:
+        for item in data:
+            task_id = item.get("id")
+            order = item.get("sort_order", 0)
+            if task_id is not None:
+                # Segurança: garantir que a task pertence a projeto cujo dono é o usuario
+                task = db.query(Task).join(Project).filter(Task.id == task_id, Project.user_id == user_id).first()
+                if task:
+                    task.sort_order = order
+        db.commit()
+        return success_response({"msg": "Tarefas reordenadas com sucesso."})
+    except Exception as e:
+        return error_response(str(e), 500)
+    finally:
+        db.close()
+
 
 @task_bp.route("/", methods=["GET"])
+@jwt_required()
 def list_tasks():
     category = request.args.get("category")
     project_id = request.args.get("project_id", type=int)
-    
+    user_id = int(get_jwt_identity())
+
     if category and category not in ("Loco", "Freelas"):
         return error_response("Categoria deve ser 'Loco' ou 'Freelas'", 400)
-        
+
     db = get_db_session()
     try:
-        tasks = TaskService.get_all_tasks(db, category, project_id)
+        tasks = TaskService.get_all_tasks(db, category, project_id, user_id=user_id)
         return success_response(tasks_schema.dump(tasks))
     finally:
         db.close()
 
+
 @task_bp.route("/", methods=["POST"])
+@jwt_required()
 def create_task():
+    user_id = int(get_jwt_identity())
     try:
         data = task_schema.load(request.json)
     except ValidationError as err:
@@ -34,38 +72,78 @@ def create_task():
 
     db = get_db_session()
     try:
+        # Verifica que o projeto pertence ao user
+        project = ProjectService.get_project(db, data.get("project_id"))
+        if not project or project.user_id != user_id:
+            return error_response("Projeto não encontrado", 404)
         task = TaskService.create_task(db, data)
+        log_action(db, "CREATE_TASK", "TASK", task.id, f"Created task '{task.name}'.")
         return success_response(task_schema.dump(task), 201)
     except ValueError as e:
         return error_response(str(e), 404)
     finally:
         db.close()
 
+
 @task_bp.route("/<int:task_id>", methods=["PUT"])
+@jwt_required()
 def update_task(task_id):
+    user_id = int(get_jwt_identity())
     try:
-        data = task_update_schema.load(request.json)
+        data = task_update_schema.load(request.json, partial=True)
     except ValidationError as err:
         return error_response(err.messages, 422)
 
     db = get_db_session()
     try:
-        task = TaskService.update_task(db, task_id, data)
+        task = TaskService.get_task(db, task_id)
         if not task:
             return error_response("Tarefa não encontrada", 404)
+        # Verifica ownership via project
+        project = ProjectService.get_project(db, task.project_id)
+        if not project or project.user_id != user_id:
+            return error_response("Tarefa não encontrada", 404)
+        task = TaskService.update_task(db, task_id, data)
+        log_action(db, "UPDATE_TASK", "TASK", task.id, f"Updated task '{task.name}'.")
         return success_response(task_schema.dump(task))
     except ValueError as e:
         return error_response(str(e), 404)
     finally:
         db.close()
 
-@task_bp.route("/<int:task_id>", methods=["DELETE"])
-def delete_task(task_id):
+
+@task_bp.route("/<int:task_id>/deadline-history", methods=["GET"])
+@jwt_required()
+def get_task_deadline_history(task_id):
+    user_id = int(get_jwt_identity())
     db = get_db_session()
     try:
-        success = TaskService.delete_task(db, task_id)
-        if not success:
+        task = TaskService.get_task(db, task_id)
+        if not task:
             return error_response("Tarefa não encontrada", 404)
+        project = ProjectService.get_project(db, task.project_id)
+        if not project or project.user_id != user_id:
+            return error_response("Tarefa não encontrada", 404)
+        history = TaskService.get_deadline_history(db, task_id)
+        return success_response(task_deadline_history_schema.dump(history))
+    finally:
+        db.close()
+
+
+@task_bp.route("/<int:task_id>", methods=["DELETE"])
+@jwt_required()
+def delete_task(task_id):
+    user_id = int(get_jwt_identity())
+    db = get_db_session()
+    try:
+        task = TaskService.get_task(db, task_id)
+        if not task:
+            return error_response("Tarefa não encontrada", 404)
+        project = ProjectService.get_project(db, task.project_id)
+        if not project or project.user_id != user_id:
+            return error_response("Tarefa não encontrada", 404)
+        TaskService.delete_task(db, task_id)
+        log_action(db, "DELETE_TASK", "TASK", task_id, f"Deleted task '{task.name}' (ID {task_id}).")
         return "", 204
     finally:
         db.close()

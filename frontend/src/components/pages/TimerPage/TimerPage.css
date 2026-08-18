@@ -1,0 +1,42 @@
+﻿.timer-page {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.timer-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  width: 100%;
+}
+
+.timer-section {
+  width: 100%;
+}
+
+.tracker-layout-columns {
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (max-width: 1200px) {
+  .tracker-layout-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .selector-column {
+    order: -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .timer-tab-content {
+    gap: var(--space-4);
+  }
+
+  .tracker-layout-columns {
+    gap: var(--space-4);
+  }
+}

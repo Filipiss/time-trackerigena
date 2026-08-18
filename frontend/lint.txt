@@ -1,0 +1,8 @@
+
+D:\Projetos\Projetos Pessoais\time trackerigena\frontend\src\utils\guestMock.js
+   74:33  error  'id' is defined but never used                                  no-unused-vars
+  195:16  error  'pathAndQuery' is assigned a value but never used               no-unused-vars
+  235:9   error  There is no `cause` attached to the symptom error being thrown  preserve-caught-error
+
+✖ 3 problems (3 errors, 0 warnings)
+

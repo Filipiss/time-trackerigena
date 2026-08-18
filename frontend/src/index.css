@@ -1,45 +1,75 @@
-/* ============================================
+﻿/* ============================================
    TIME TRACKERÍGENA — Design System Global
    ============================================ */
 
+/* Breakpoints: Desktop ≥1367px | Laptop ≤1366px | Tablet Extra ≤1200px | Tablet ≤1024px | Mobile Extra ≤880px | Mobile ≤767px */
+
 /* ---- CSS Custom Properties ---- */
 :root {
-  /* Cores principais */
-  --bg-deep: #0a0a1a;
-  --bg-surface: #0f0f2a;
-  --bg-card: rgba(255, 255, 255, 0.05);
-  --bg-card-hover: rgba(255, 255, 255, 0.08);
-  --bg-card-active: rgba(255, 255, 255, 0.1);
+  /* =====================================================================
+     THEME TOKENS - Light Theme (SaaS Slate / Clockify Reference)
+     ===================================================================== */
 
-  /* Gradientes */
-  --gradient-primary: linear-gradient(135deg, #06b6d4, #8b5cf6);
-  --gradient-primary-hover: linear-gradient(135deg, #22d3ee, #a78bfa);
-  --gradient-loco: linear-gradient(135deg, #10b981, #34d399);
-  --gradient-freelas: linear-gradient(135deg, #f59e0b, #fbbf24);
-  --gradient-danger: linear-gradient(135deg, #ef4444, #f87171);
+  /* Fundos */
+  --bg-deep: #f8fafc;
+  /* Slate 50 - Fundo principal da página */
+  --bg-surface: #ffffff;
+  /* Superfície Principal */
+  --bg-card: #ffffff;
+  /* Cards */
+  --bg-card-hover: #f1f5f9;
+  /* Hover */
+  --bg-card-active: #e2e8f0;
+  /* Active */
+  --bg-input: #ffffff;
 
-  /* Cores de categoria */
-  --color-loco: #10b981;
-  --color-loco-soft: rgba(16, 185, 129, 0.15);
-  --color-freelas: #f59e0b;
-  --color-freelas-soft: rgba(245, 158, 11, 0.15);
+  /* Sidebar Design Tokens */
+  --sidebar-bg: var(--bg-surface);
+  --sidebar-border: var(--border-default);
+  --sidebar-text-title: var(--text-primary);
+  --sidebar-text: var(--text-secondary);
+  --sidebar-hover-bg: var(--bg-card-hover);
+  --sidebar-hover-text: var(--text-primary);
 
-  /* Texto */
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
+  /* Bordas */
+  --border-subtle: #f1f5f9;
+  --border-default: #e2e8f0;
+  --border-highlight: #cbd5e1;
+
+  /* Textos */
+  --text-primary: #0f172a;
+  /* Slate 900 */
+  --text-secondary: #475569;
+  /* Slate 600 */
   --text-muted: #64748b;
-  --text-white: #ffffff;
+  /* Slate 500 */
+  --text-placeholder: #94a3b8;
+  /* Slate 400 */
+  --text-inverse: #ffffff;
+
+  /* Accent Blue (Clockify Brand) */
+  --theme-accent: #03a9f4;
+  --theme-accent-hover: #0288d1;
+  --theme-accent-subtle: rgba(3, 169, 244, 0.08);
+
+  /* Variáveis legadas remapeadas para o novo Accent */
+  --gradient-primary: var(--theme-accent);
+  --gradient-primary-hover: var(--theme-accent-hover);
+  --gradient-loco: #64748b;
+  --gradient-freelas: #f97316;
+  --gradient-danger: #ef4444;
+
+  /* Cores de Categoria (Neutras e profissionais) */
+  --color-loco: #0288d1;
+  --color-loco-soft: rgba(2, 136, 209, 0.08);
+  --color-freelas: #f97316;
+  --color-freelas-soft: rgba(249, 115, 22, 0.08);
 
   /* Status */
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
-  --color-info: #06b6d4;
-
-  /* Bordas */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.1);
-  --border-highlight: rgba(255, 255, 255, 0.15);
+  --color-info: #3b82f6;
 
   /* Tipografia */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -47,7 +77,7 @@
 
   /* Tamanhos */
   --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
+  --text-sm: 0.85rem;
   --text-base: 1rem;
   --text-lg: 1.125rem;
   --text-xl: 1.25rem;
@@ -67,26 +97,60 @@
   --space-12: 3rem;
   --space-16: 4rem;
 
-  /* Bordas arredondadas */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
+  /* Bordas arredondadas (Estrutura UI mais chique e sóbria) */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
   --radius-full: 9999px;
 
-  /* Sombras */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-glow-primary: 0 0 20px rgba(6, 182, 212, 0.3), 0 0 40px rgba(139, 92, 246, 0.15);
-  --shadow-glow-success: 0 0 20px rgba(16, 185, 129, 0.3);
-  --shadow-glow-warning: 0 0 20px rgba(245, 158, 11, 0.3);
-  --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.3);
+  /* Sombras Clean */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --shadow-glow-primary: none;
+  --shadow-glow-success: none;
+  --shadow-glow-warning: none;
+  --shadow-glow-danger: none;
 
   /* Transições */
-  --transition-fast: 0.15s ease;
-  --transition-base: 0.3s ease;
-  --transition-slow: 0.5s ease;
+  --transition-fast: 0.1s ease-out;
+  --transition-base: 0.2s ease-out;
+  --transition-slow: 0.3s ease;
+}
+
+/* ---- Dark Theme Overrides ---- */
+:root[data-theme='dark'] {
+  --bg-deep: #0f172a;
+  --bg-surface: #1e293b;
+  --bg-card: #1e293b;
+  --bg-card-hover: #334155;
+  --bg-card-active: #475569;
+  --bg-input: #0f172a;
+
+  /* Sidebar Design Tokens */
+  --sidebar-bg: #0f172a;
+  --sidebar-border: #1e293b;
+  --sidebar-text-title: #f8fafc;
+  --sidebar-text: #94a3b8;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
+  --sidebar-hover-text: #ffffff;
+
+  --border-subtle: #1e293b;
+  --border-default: #334155;
+  --border-highlight: #475569;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-placeholder: #475569;
+
+  --theme-accent: #38bdf8;
+  --theme-accent-hover: #0ea5e9;
+  --theme-accent-subtle: rgba(56, 189, 248, 0.15);
+
+  --gradient-primary: var(--theme-accent);
+  --gradient-primary-hover: var(--theme-accent-hover);
 }
 
 /* ---- CSS Reset ---- */
@@ -113,7 +177,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Fundo com partículas sutis */
+/* Fundo limpo e corporativo */
 body::before {
   content: '';
   position: fixed;
@@ -121,10 +185,7 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background:
-    radial-gradient(ellipse at 20% 50%, rgba(6, 182, 212, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
+  background: var(--bg-deep);
   pointer-events: none;
   z-index: 0;
 }
@@ -140,7 +201,8 @@ a {
   text-decoration: none;
 }
 
-ul, ol {
+ul,
+ol {
   list-style: none;
 }
 
@@ -149,7 +211,10 @@ img {
   display: block;
 }
 
-input, button, textarea, select {
+input,
+button,
+textarea,
+select {
   font: inherit;
   color: inherit;
 }
@@ -179,33 +244,29 @@ input, button, textarea, select {
   scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
 
-/* ---- Glass Card ---- */
+/* ---- SaaS Card ---- */
 .glass-card {
   background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
   transition: all var(--transition-base);
 }
 
 .glass-card:hover {
   background: var(--bg-card-hover);
   border-color: var(--border-highlight);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .glass-card-static {
   background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
 }
 
-/* ---- Botões ---- */
+/* ---- BotÃµes ---- */
 button {
   cursor: pointer;
   border: none;
@@ -248,8 +309,10 @@ button {
 
 .btn-primary {
   background: var(--gradient-primary);
-  color: var(--text-white);
+  color: var(--text-inverse);
+  /* High contrast */
   box-shadow: var(--shadow-sm);
+  font-weight: 700;
 }
 
 .btn-primary:hover {
@@ -357,7 +420,7 @@ button {
 .input {
   width: 100%;
   padding: var(--space-3) var(--space-4);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-input);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   color: var(--text-primary);
@@ -367,13 +430,21 @@ button {
 }
 
 .input::placeholder {
-  color: var(--text-muted);
+  color: var(--text-placeholder);
+}
+
+.input::-webkit-calendar-picker-indicator {
+  filter: none;
+}
+
+:root[data-theme='dark'] .input::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) sepia(1) hue-rotate(180deg) saturate(0) brightness(1.2);
 }
 
 .input:focus {
-  border-color: #06b6d4;
-  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--theme-accent-hover);
+  box-shadow: 0 0 0 2px var(--theme-accent-subtle);
+  background: var(--bg-card);
 }
 
 .input:hover:not(:focus) {
@@ -385,12 +456,15 @@ textarea.input {
   min-height: 80px;
 }
 
-/* ---- Animações Keyframes ---- */
+/* ---- AnimaÃ§Ãµes Keyframes ---- */
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.7;
     transform: scale(1.05);
@@ -398,9 +472,12 @@ textarea.input {
 }
 
 @keyframes pulseGlow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(16, 185, 129, 0.2), 0 0 40px rgba(16, 185, 129, 0.1);
   }
+
   50% {
     box-shadow: 0 0 30px rgba(16, 185, 129, 0.4), 0 0 60px rgba(16, 185, 129, 0.2);
   }
@@ -410,6 +487,7 @@ textarea.input {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -420,6 +498,7 @@ textarea.input {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -431,6 +510,7 @@ textarea.input {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -438,9 +518,12 @@ textarea.input {
 }
 
 @keyframes glow {
-  0%, 100% {
+
+  0%,
+  100% {
     filter: brightness(1);
   }
+
   50% {
     filter: brightness(1.3);
   }
@@ -450,6 +533,7 @@ textarea.input {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -459,21 +543,25 @@ textarea.input {
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
 }
 
 @keyframes borderGlow {
-  0%, 100% {
+
+  0%,
+  100% {
     border-color: rgba(6, 182, 212, 0.3);
   }
+
   50% {
     border-color: rgba(139, 92, 246, 0.5);
   }
 }
 
-/* ---- Utilitários ---- */
+/* ---- UtilitÃ¡rios ---- */
 .fade-in {
   animation: fadeIn 0.4s ease forwards;
 }

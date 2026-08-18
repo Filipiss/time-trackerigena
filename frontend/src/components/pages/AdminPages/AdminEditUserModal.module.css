@@ -1,0 +1,127 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    width: 95%;
+    max-width: 500px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-default);
+    overflow: hidden;
+}
+
+.header {
+    background: var(--bg-card-hover);
+    padding: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-default);
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.closeBtn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.closeBtn:hover {
+    color: var(--text-primary);
+}
+
+.formBody {
+    padding: 1.5rem;
+}
+
+.formGroup {
+    margin-bottom: 1.15rem;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.formGroup input {
+    width: 100%;
+    padding: 0.7rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: inherit;
+}
+
+.formGroup input:focus {
+    border-color: var(--theme-accent);
+    outline: none;
+}
+
+.alert {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    color: var(--color-warning);
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btnCancel,
+.btnSave {
+    padding: 0.65rem 1.25rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.btnCancel {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-default);
+}
+
+.btnCancel:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+}
+
+.btnSave {
+    background: var(--theme-accent);
+    color: var(--text-inverse);
+    border: none;
+}
+
+.btnSave:hover {
+    background: var(--theme-accent-hover);
+}

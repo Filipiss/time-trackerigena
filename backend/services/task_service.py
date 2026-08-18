@@ -6,13 +6,17 @@ from repositories.time_entry_repository import TimeEntryRepository
 
 class TaskService:
     @staticmethod
-    def get_all_tasks(db: Session, category: str = None, project_id: int = None):
-        tasks = TaskRepository.list_all(db, category, project_id)
+    def get_all_tasks(db: Session, category: str = None, project_id: int = None, user_id: int = None):
+        tasks = TaskRepository.list_all(db, category, project_id, user_id=user_id)
         for task in tasks:
             task.total_time = TimeEntryRepository.get_total_time_for_task(db, task.id)
             task.project_name = task.project.name if task.project else None
             task.project_category = task.project.category if task.project else None
         return tasks
+
+    @staticmethod
+    def get_task(db: Session, task_id: int):
+        return TaskRepository.get_by_id(db, task_id)
 
     @staticmethod
     def create_task(db: Session, data: dict) -> Task:
@@ -51,3 +55,7 @@ class TaskService:
             return False
         TaskRepository.delete(db, task)
         return True
+
+    @staticmethod
+    def get_deadline_history(db: Session, task_id: int):
+        return TaskRepository.get_deadline_history(db, task_id)

@@ -1,0 +1,9 @@
+﻿.calendar-page-shell {
+  width: 100%;
+}
+
+.calendar-loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-16);
+}

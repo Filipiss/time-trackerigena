@@ -1,0 +1,164 @@
+﻿.task-selector-shell {
+  padding: var(--space-6);
+}
+
+.task-selector {
+  animation: slideUp 0.4s ease;
+}
+
+.task-selector-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.task-selector-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.selector-filter-group {
+  margin-bottom: var(--space-5);
+}
+
+.selector-filter-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.selector-tabs-scroll {
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.selector-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.selector-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  transition: all var(--transition-base);
+  white-space: nowrap;
+}
+
+.selector-tab:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-highlight);
+}
+
+.selector-tab.active {
+  border-color: var(--theme-accent);
+  color: var(--theme-accent);
+  background: var(--theme-accent-subtle);
+  box-shadow: none;
+}
+
+.task-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-2);
+}
+
+.task-selector-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  color: var(--text-muted);
+}
+
+.task-selector-empty {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.selector-inline-empty {
+  padding: var(--space-4);
+}
+
+@media (max-width: 1200px) {
+  .task-selector-shell {
+    padding: var(--space-5);
+  }
+}
+
+@media (max-width: 1024px) {
+  .selector-tabs {
+    flex-wrap: nowrap;
+  }
+}
+
+@media (max-width: 880px) {
+  .task-selector-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .task-selector-shell {
+    padding: var(--space-4);
+  }
+
+  .task-selector-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .selector-tab {
+    padding-inline: var(--space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .task-selector-shell {
+    padding: var(--space-3);
+  }
+
+  .selector-tab {
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-2);
+  }
+}
+
+@media (max-width: 360px) {
+  .task-selector-shell {
+    padding: var(--space-2);
+  }
+
+  .task-selector-title {
+    font-size: var(--text-base);
+  }
+
+  .selector-filter-group {
+    margin-bottom: var(--space-3);
+  }
+
+  .selector-tab {
+    font-size: 10px;
+    padding: 2px var(--space-2);
+  }
+
+  .task-selector-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+}

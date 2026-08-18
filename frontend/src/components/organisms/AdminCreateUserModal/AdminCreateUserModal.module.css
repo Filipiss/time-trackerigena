@@ -1,0 +1,116 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: var(--bg-surface);
+    padding: 2rem;
+    border-radius: var(--radius-md);
+    width: 90%;
+    max-width: 500px;
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-lg);
+}
+
+.modalContent h2 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.modalContent p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.formGroup {
+    margin-bottom: 1.25rem;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.formGroup input[type="text"],
+.formGroup input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+}
+
+.checkBoxGroup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+    background: var(--theme-accent-subtle);
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--theme-accent);
+}
+
+.checkBoxGroup label {
+    color: var(--theme-accent);
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btnPrimary {
+    background: var(--theme-accent);
+    color: var(--text-inverse);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btnPrimary:hover {
+    background: var(--theme-accent-hover);
+}
+
+.btnSecondary {
+    background: var(--bg-card-hover);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-default);
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.btnSecondary:hover {
+    background: var(--bg-card-active);
+    color: var(--text-primary);
+}
+
+.error {
+    background: rgba(239, 68, 68, 0.08);
+    color: var(--color-danger);
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 15px;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}

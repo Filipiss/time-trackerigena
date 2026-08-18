@@ -9,9 +9,16 @@ class TaskSchema(Schema):
     name = fields.Str(required=True)
     color = fields.Str(load_default="#6366f1")
     hourly_rate = fields.Float(load_default=0.0)
+    currency = fields.Str(load_default="EUR")
+    budgeted_hours = fields.Float(load_default=None, allow_none=True)
     is_billed = fields.Bool(load_default=False)
     created_at = fields.DateTime(dump_only=True)
     is_active = fields.Bool(dump_only=True)
+
+    deadline = fields.Str(load_default=None, allow_none=True)
+    status = fields.Str(load_default="em_andamento")
+    notes = fields.Str(load_default=None, allow_none=True)
+    deadline_notified = fields.Bool(dump_only=True)
 
     # Campos extras de leitura (calculados no service/repository)
     total_time = fields.Int(dump_only=True, load_default=0)
@@ -27,4 +34,19 @@ class TaskUpdateSchema(Schema):
     color = fields.Str(load_default=None)
     is_active = fields.Bool(load_default=None)
     hourly_rate = fields.Float(load_default=None)
+    currency = fields.Str(load_default=None)
+    budgeted_hours = fields.Float(load_default=None, allow_none=True)
     is_billed = fields.Bool(load_default=None)
+
+    deadline = fields.Str(load_default=None, allow_none=True)
+    status = fields.Str(load_default=None)
+    notes = fields.Str(load_default=None, allow_none=True)
+
+class TaskDeadlineHistorySchema(Schema):
+    """Schema para serialização de histórico de prazos de Task."""
+
+    id = fields.Int(dump_only=True)
+    task_id = fields.Int(dump_only=True)
+    old_deadline = fields.Str()
+    new_deadline = fields.Str()
+    changed_at = fields.DateTime()

@@ -6,13 +6,15 @@ from repositories.task_repository import TaskRepository
 
 class TimeEntryService:
     @staticmethod
-    def get_all_entries(db: Session, task_id: int = None, category: str = None, limit: int = 50, start_date: str = None, end_date: str = None):
-        entries = TimeEntryRepository.list_all(db, task_id, category, limit, start_date, end_date)
+    def get_all_entries(db: Session, task_id: int = None, category: str = None, limit: int = 50, start_date: str = None, end_date: str = None, user_id: int = None):
+        entries = TimeEntryRepository.list_all(db, task_id, category, limit, start_date, end_date, user_id=user_id)
         for entry in entries:
             entry.task_name = entry.task.name if entry.task else None
             entry.task_category = entry.task.project.category if (entry.task and entry.task.project) else None
             entry.task_color = entry.task.color if entry.task else None
             entry.task_hourly_rate = entry.task.hourly_rate if entry.task else 0.0
+            entry.task_currency = (entry.task.currency or "EUR") if entry.task else "EUR"
+            entry.task_budgeted_hours = entry.task.budgeted_hours if entry.task else None
             entry.project_name = entry.task.project.name if (entry.task and entry.task.project) else None
         return entries
 
@@ -28,12 +30,54 @@ class TimeEntryService:
         entry.task_category = task.project.category if task.project else None
         entry.task_color = task.color
         entry.task_hourly_rate = task.hourly_rate
+        entry.task_currency = task.currency or "EUR"
+        entry.task_budgeted_hours = task.budgeted_hours
         entry.project_name = task.project.name if task.project else None
         return entry
 
     @staticmethod
-    def get_dashboard_stats(db: Session):
-        stats = TimeEntryRepository.get_stats(db)
+    def delete_entry(db: Session, entry_id: int, user_id: int = None) -> bool:
+        entry = TimeEntryRepository.get_by_id(db, entry_id)
+        if not entry:
+            return False
+        if user_id is not None:
+            # Verifica ownership via task->project
+            task = entry.task
+            if not task or not task.project or task.project.user_id != user_id:
+                return False
+        TimeEntryRepository.delete(db, entry)
+        return True
+    @staticmethod
+    def update_entry(db: Session, entry_id: int, data: dict, user_id: int = None) -> TimeEntry:
+        entry = TimeEntryRepository.get_by_id(db, entry_id)
+        if not entry:
+            raise ValueError("Registro não encontrado")
+            
+        if user_id is not None:
+            task = entry.task
+            if not task or not task.project or task.project.user_id != user_id:
+                raise ValueError("Registro não encontrado")
+                
+        # If task_id changed, we update the relationship
+        if "task_id" in data and data["task_id"] != entry.task_id:
+            task = TaskRepository.get_by_id(db, data["task_id"])
+            if not task or (user_id and task.project.user_id != user_id):
+                raise ValueError("Nova Tarefa não encontrada")
+                
+        updated_entry = TimeEntryRepository.update(db, entry, data)
+        updated_entry.task_name = updated_entry.task.name
+        updated_entry.task_category = updated_entry.task.project.category if updated_entry.task.project else None
+        updated_entry.task_color = updated_entry.task.color
+        updated_entry.task_hourly_rate = updated_entry.task.hourly_rate
+        updated_entry.task_currency = updated_entry.task.currency or "EUR"
+        updated_entry.task_budgeted_hours = updated_entry.task.budgeted_hours
+        updated_entry.project_name = updated_entry.task.project.name if updated_entry.task.project else None
+        return updated_entry
+
+    @staticmethod
+    def get_dashboard_stats(db: Session, period: str = "week", start_date: str = None, end_date: str = None, category: str = None, user_id: int = None):
+        days = {"week": 7, "month": 31, "year": 366, "total": 3650}.get(period, 7)
+        stats = TimeEntryRepository.get_stats(db, days, start_date, end_date, category, user_id=user_id)
         
         time_by_category = [
             {"category": row.category, "total_seconds": row.total_seconds}
@@ -50,11 +94,12 @@ class TimeEntryService:
             for row in stats["task_stats"]
         ]
         
-        # Garante array de 7 dias preenchidos
+        # Garante que o gráfico tenha todos os dias do período selecionado.
         day_map = {str(row.day): row.total_seconds for row in stats["day_stats"]}
         time_by_day = []
-        for i in range(7):
-            day = stats["seven_days_ago"] + timedelta(days=i)
+        range_days = (stats["end_day"] - stats["start_day"]).days + 1
+        for i in range(range_days):
+            day = stats["start_day"] + timedelta(days=i)
             day_str = str(day)
             time_by_day.append({
                 "date": day_str, 
@@ -64,5 +109,6 @@ class TimeEntryService:
         return {
             "time_by_category": time_by_category,
             "time_by_task": time_by_task,
-            "time_by_day": time_by_day
+            "time_by_day": time_by_day,
+            "total_seconds": stats["total_seconds"]
         }
