@@ -25,6 +25,7 @@ export default function AdminLayout() {
                         <div className={styles.divider}></div>
                         <li><Link to="/admin">Dashboard Geral</Link></li>
                         <li><Link to="/admin/users">Gerenciar Usuários</Link></li>
+                        <li><Link to="/admin/support">Helpdesk / Suporte</Link></li>
                         <li><Link to="/admin/settings">Configurações Base</Link></li>
                     </ul>
                 </nav>

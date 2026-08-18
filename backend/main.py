@@ -26,6 +26,7 @@ from models.task import Task
 from models.user import User  # noqa: F401
 from models.calendar_event import CalendarEvent # noqa: F401
 from models.system_setting import SystemSetting # noqa: F401
+from models.ticket import Ticket, TicketMessage # noqa: F401
 
 load_dotenv()
 
@@ -140,6 +141,10 @@ def create_app():
     CORS(app, origins=origins, supports_credentials=True)
 
     # ── Blueprints ────────────────────────────────────────────────────────────
+    from routes.admin_routes import admin_bp
+    from routes.settings_routes import settings_bp
+    from routes.support_routes import support_bp
+
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(project_bp)
@@ -149,6 +154,7 @@ def create_app():
     app.register_blueprint(calendar_event_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(settings_bp)
+    app.register_blueprint(support_bp)
 
     @app.route("/", methods=["GET"])
     def root():

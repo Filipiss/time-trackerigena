@@ -16,6 +16,8 @@ import AdminLayout from './components/templates/AdminLayout/AdminLayout';
 import AdminDashboardPage from './components/pages/AdminPages/AdminDashboardPage';
 import UsersManagementPage from './components/pages/AdminPages/UsersManagementPage';
 import AdminSettingsPage from './components/pages/AdminPages/AdminSettingsPage';
+import SupportPage from './components/pages/SupportPage/SupportPage';
+import AdminSupportPage from './components/pages/AdminPages/AdminSupportPage';
 import './App.css';
 
 ReactGA.initialize('G-GYLWC1S1J3');
@@ -75,9 +77,10 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<AdminDashboardPage />} />
         <Route path="users" element={<UsersManagementPage />} />
         <Route path="settings" element={<AdminSettingsPage />} />
-        <Route path="" element={<AdminDashboardPage />} />
+        <Route path="support" element={<AdminSupportPage />} />
       </Route>
       <Route element={<MainLayout settings={settings} />}>
         <Route path="/timer" element={<TimerPage selectedTask={selectedTask} onSelectTask={setSelectedTask} refreshTrigger={refreshTrigger} onSaveSuccess={handleSaveSuccess} />} />
@@ -86,6 +89,7 @@ function AppRoutes() {
         <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/history" element={<HistoryPage refreshTrigger={refreshTrigger} onRefresh={handleRefresh} />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/support" element={<SupportPage />} />
         <Route path="/" element={<Navigate to="/timer" replace />} />
         <Route path="*" element={<Navigate to="/timer" replace />} />
       </Route>

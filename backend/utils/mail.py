@@ -82,3 +82,33 @@ def send_deadline_notification_email(app, recipient_email: str, username: str, e
             """,
         )
         mail.send(msg)
+
+
+def send_new_ticket_email_to_admins(app, admin_emails: list, ticket_subject: str, username: str):
+    """Envia alerta de novo ticket de suporte para os administradores."""
+    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+    
+    with app.app_context():
+        if not admin_emails:
+            return
+            
+        msg = Message(
+            subject=f"🚨 Novo Chamado de Suporte: {ticket_subject}",
+            bcc=admin_emails, # Oculta os emails dos outros admins
+            html=f"""
+            <div style="font-family:sans-serif;max-width:500px;margin:auto;padding:32px;background:#0f0f14;color:#e0e0e0;border-radius:12px">
+              <h1 style="color:#f59f00;margin-bottom:8px">Novo Ticket de Suporte</h1>
+              <p>O usuário <strong>{username}</strong> acabou de abrir um novo chamado.</p>
+              <div style="background:rgba(255,255,255,0.05);padding:16px;border-left:4px solid #f59f00;margin:20px 0;border-radius:4px">
+                <p style="margin:4px 0 0 0;font-size:18px;font-weight:bold;color:#fff">{ticket_subject}</p>
+              </div>
+              <a href="{frontend_url}/admin/support"
+                 style="display:inline-block;background:#f59f00;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;margin:16px 0">
+                Acessar Helpdesk
+              </a>
+            </div>
+            """,
+        )
+        # O sender é o padrão mapeado no Flask-Mail config
+        mail.send(msg)
+

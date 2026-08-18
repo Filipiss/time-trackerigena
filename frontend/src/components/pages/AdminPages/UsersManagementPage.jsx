@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { fetchAllUsers, toggleAdminRole, deleteAdminUser, updateUserProfile } from '../../../api';
 import AdminEditUserModal from './AdminEditUserModal';
+import AdminCreateUserModal from '../../organisms/AdminCreateUserModal/AdminCreateUserModal';
 import styles from './UsersManagementPage.module.css';
 
 export default function UsersManagementPage() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editingUser, setEditingUser] = useState(null);
+    const [isCreatingUser, setIsCreatingUser] = useState(false);
 
     useEffect(() => {
         loadUsers();
@@ -60,6 +62,12 @@ export default function UsersManagementPage() {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h1>Gerenciamento de Usuários</h1>
+                <button
+                    className={styles.btnCreate}
+                    onClick={() => setIsCreatingUser(true)}
+                >
+                    + Criar Novo Usuário
+                </button>
             </div>
 
             <table className={styles.table}>
@@ -121,6 +129,16 @@ export default function UsersManagementPage() {
                     user={editingUser}
                     onClose={() => setEditingUser(null)}
                     onSave={handleSaveUser}
+                />
+            )}
+
+            {isCreatingUser && (
+                <AdminCreateUserModal
+                    onClose={() => setIsCreatingUser(false)}
+                    onSuccess={() => {
+                        setIsCreatingUser(false);
+                        loadUsers();
+                    }}
                 />
             )}
         </div>

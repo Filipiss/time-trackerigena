@@ -78,6 +78,41 @@ export async function apiGetProfile(token) {
   }, false);
 }
 
+export async function updateSettings(data) {
+  return request('/api/admin/settings', {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
+// ==========================================
+// Helpdesk Support API
+// ==========================================
+
+export async function createTicket(subject, message) {
+  return request('/api/support', { method: 'POST', body: JSON.stringify({ subject, message }) });
+}
+
+export async function fetchMyTickets() {
+  return request('/api/support', { method: 'GET' });
+}
+
+export async function fetchTicketMessages(ticketId) {
+  return request(`/api/support/${ticketId}/messages`, { method: 'GET' });
+}
+
+export async function replyTicket(ticketId, message) {
+  return request(`/api/support/${ticketId}/messages`, { method: 'POST', body: JSON.stringify({ message }) });
+}
+
+export async function fetchAllTicketsAdmin() {
+  return request('/api/admin/support', { method: 'GET' });
+}
+
+export async function updateTicketStatusAdmin(ticketId, status) {
+  return request(`/api/admin/support/${ticketId}/status`, { method: 'PUT', body: JSON.stringify({ status }) });
+}
+
 export async function apiUpdateProfile(data) {
   return request('/api/users/profile', {
     method: 'PUT',
@@ -384,6 +419,13 @@ export async function fetchAllUsers() {
   return request('/api/admin/users');
 }
 
+export async function createAdminUser(data) {
+  return request('/api/admin/users', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
 export async function toggleAdminRole(userId, isAdmin) {
   return request(`/api/admin/users/${userId}/role`, {
     method: 'PUT',
@@ -393,6 +435,10 @@ export async function toggleAdminRole(userId, isAdmin) {
 
 export async function deleteAdminUser(userId) {
   return request(`/api/admin/users/${userId}`, { method: 'DELETE' });
+}
+
+export async function deleteTicketAdmin(ticketId) {
+  return request(`/api/admin/support/${ticketId}`, { method: 'DELETE' });
 }
 
 export async function updateUserProfile(userId, profileData) {
@@ -406,12 +452,4 @@ export async function fetchSettings() {
   // Public route, but requiresAuth=false so it doesn't bounce to Guest mock
   // Added a cache breaker to ensure polling ignores 304 Not Modified browser caching
   return request(`/api/settings?t=${Date.now()}`, {}, false);
-}
-
-export async function updateSettings(data) {
-  // Admin route, must use token
-  return request('/api/settings', {
-    method: 'PUT',
-    body: JSON.stringify(data),
-  });
 }

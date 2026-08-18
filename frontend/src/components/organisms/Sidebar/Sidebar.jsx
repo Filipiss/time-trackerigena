@@ -1,7 +1,7 @@
 import NavItem from '../../molecules/NavItem/NavItem';
 import UserWidget from '../../molecules/UserWidget/UserWidget';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Clock, CheckSquare, LayoutDashboard, Calendar, ScrollText } from 'lucide-react';
+import { Clock, CheckSquare, LayoutDashboard, Calendar, ScrollText, LifeBuoy } from 'lucide-react';
 import './Sidebar.css';
 
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { id: '/dashboard', icon: <LayoutDashboard size={20} strokeWidth={1.5} />, label: 'Dashboard', exact: false },
   { id: '/calendar', icon: <Calendar size={20} strokeWidth={1.5} />, label: 'Calendário', exact: false },
   { id: '/history', icon: <ScrollText size={20} strokeWidth={1.5} />, label: 'Histórico', exact: false },
+  { id: '/support', icon: <LifeBuoy size={20} strokeWidth={1.5} />, label: 'Suporte', exact: false },
 ];
 
 export default function Sidebar() {
@@ -31,15 +32,21 @@ export default function Sidebar() {
       )}
 
       <nav className="sidebar-nav">
-        {NAV_ITEMS.map((item) => (
-          <NavItem
-            key={item.id}
-            icon={item.icon}
-            label={item.label}
-            to={item.id}
-            end={item.exact}
-          />
-        ))}
+        {NAV_ITEMS.map((item) => {
+          // Bloqueia o menu 'Suporte' de aparecer para Visitantes (not user) ou Administradores 
+          if (item.id === '/support' && (!user || user.is_admin)) {
+            return null;
+          }
+          return (
+            <NavItem
+              key={item.id}
+              icon={item.icon}
+              label={item.label}
+              to={item.id}
+              end={item.exact}
+            />
+          );
+        })}
       </nav>
 
       <div className="sidebar-footer">

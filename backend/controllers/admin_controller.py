@@ -143,3 +143,53 @@ def delete_user(user_id):
         return jsonify({"error": str(e)}), 500
     finally:
         db.close()
+
+@admin_required()
+def create_user_admin():
+    """Cria um usuário 'boneco' de teste instantaneamente sem necessidade de ativação por e-mail."""
+    data = request.get_json()
+    if not data or not data.get("username"):
+        return jsonify({"error": "Preencha pelo menos o Nome de Usuário (username)."}), 400
+        
+    db = get_db_session()
+    try:
+        from models.user import User
+        import bcrypt
+        import uuid
+        
+        username = data["username"].strip().lower()
+        
+        if db.query(User).filter(User.username == username).first():
+            return jsonify({"error": "Esse username já existe."}), 400
+            
+        email = data.get("email")
+        if not email or not email.strip():
+            random_hex = uuid.uuid4().hex[:6]
+            email = f"test_{username.lower().replace(' ', '')}_{random_hex}@dummy.local"
+        else:
+            email = email.strip().lower()
+            if db.query(User).filter(User.email == email).first():
+                return jsonify({"error": "Esse e-mail já existe."}), 400
+            
+        password = data.get("password")
+        if not password or not password.strip():
+            password = "123456"
+            
+        password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+        
+        new_test_user = User(
+            username=username,
+            email=email,
+            password_hash=password_hash,
+            is_active=True,
+            is_admin=bool(data.get("is_admin", False))
+        )
+        
+        db.add(new_test_user)
+        db.commit()
+        return jsonify({"message": "Usuário criado com sucesso!"}), 201
+    except Exception as e:
+        db.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        db.close()
