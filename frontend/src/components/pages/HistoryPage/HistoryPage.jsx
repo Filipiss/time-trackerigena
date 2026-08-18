@@ -7,7 +7,7 @@ import TabButton from '../../molecules/TabButton/TabButton';
 import EditModal from '../../organisms/EditModal/EditModal';
 import { deleteTimeEntry, fetchCategories, fetchTimeEntries, updateTimeEntry, updateTask } from '../../../api';
 import { convertCurrency, fetchExchangeRates } from '../../../utils/currency';
-import { Building2, Palmtree, Home, ScrollText, Clock, BarChart3 } from 'lucide-react';
+import { Clock, BarChart3, List, ScrollText } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import './HistoryPage.css';
 
@@ -19,12 +19,12 @@ function formatDuration(totalSeconds) {
 }
 
 function formatDurationShort(totalSeconds) {
-  if (!totalSeconds) return '0m';
+  if (!totalSeconds) return '0 min';
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const parts = [];
-  if (hours > 0) parts.push(`${hours}h`);
-  if (minutes > 0 || parts.length === 0) parts.push(`${minutes}m`);
+  if (hours > 0) parts.push(`${hours} h`);
+  if (minutes > 0 || parts.length === 0) parts.push(`${minutes} min`);
   return parts.join(' ');
 }
 
@@ -41,17 +41,37 @@ function formatDate(dateStr) {
   }
 }
 
-const WEEKDAY_CONFIG = {
-  1: { name: 'Segunda', icon: <Building2 size={16} strokeWidth={1.5} /> },
-  2: { name: 'Terça', icon: <Building2 size={16} strokeWidth={1.5} /> },
-  3: { name: 'Quarta', icon: <Building2 size={16} strokeWidth={1.5} /> },
-  4: { name: 'Quinta', icon: <Building2 size={16} strokeWidth={1.5} /> },
-  5: { name: 'Sexta', icon: <Building2 size={16} strokeWidth={1.5} /> },
-  6: { name: 'Sábado', icon: <Palmtree size={16} strokeWidth={1.5} /> },
-  0: { name: 'Domingo', icon: <Home size={16} strokeWidth={1.5} /> },
-};
+function getWeeksOfMonth(year, month) {
+  const weeks = [];
+  let current = new Date(Date.UTC(year, month, 1));
+  const end = new Date(Date.UTC(year, month + 1, 0));
 
-const DISPLAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
+  const day = current.getUTCDay();
+  const diff = current.getUTCDate() - day + (day === 0 ? -6 : 1);
+  current = new Date(Date.UTC(year, month, diff));
+
+  while (current <= end) {
+    const monday = new Date(current);
+    const sunday = new Date(current);
+    sunday.setUTCDate(sunday.getUTCDate() + 6);
+
+    weeks.push({
+      start: monday,
+      end: sunday,
+      label: `${formatDayMonth(monday)} - ${formatDayMonth(sunday)}`,
+      key: monday.toISOString().split('T')[0]
+    });
+
+    current.setUTCDate(current.getUTCDate() + 7);
+  }
+  return weeks;
+}
+
+function formatDayMonth(date) {
+  const d = date.getUTCDate();
+  const m = date.getUTCMonth() + 1;
+  return `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}`;
+}
 
 export default function HistoryPage({ refreshTrigger, onRefresh }) {
   const location = useLocation();
@@ -67,13 +87,15 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
   const [exchangeRates, setExchangeRates] = useState({ EURBRL: 6.25, USDBRL: 5.4 });
   const [exchangeRateLoading, setExchangeRateLoading] = useState(true);
   const [targetCurrency, setTargetCurrency] = useState('BRL');
-  const [activeTab, setActiveTab] = useState(initialTab || null);
+
+  const [viewMode, setViewMode] = useState(() => initialTab === 'faturamento' ? 'faturamento' : 'registros');
+  const [selectedWeek, setSelectedWeek] = useState('all');
+  const [selectedDay, setSelectedDay] = useState('all');
+
   const [editingItem, setEditingItem] = useState(null);
   const [editForm, setEditForm] = useState({ task_name: '', start_date: '', duration: '', hourly_rate: 0, notes: '' });
 
-  useEffect(() => {
-    setActiveTab(initialTab || null);
-  }, [initialTab]);
+
 
   useEffect(() => {
     let active = true;
@@ -164,7 +186,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
 
   const handleEditClick = (item) => {
     setEditingItem(item);
-    const isFaturamento = activeTab === 'faturamento';
+    const isFaturamento = viewMode === 'faturamento';
     setEditForm({
       task_name: item.task_name || item.name || '',
       start_date: item.start_time ? item.start_time.slice(0, 10) : (item.start_date ? item.start_date.slice(0, 10) : ''),
@@ -178,7 +200,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
     try {
       if (!editingItem) return;
       const isGroup = Array.isArray(editingItem.ids);
-      const isFaturamento = activeTab === 'faturamento';
+      const isFaturamento = viewMode === 'faturamento';
 
       let newDurationSec;
       if (isFaturamento) {
@@ -196,7 +218,6 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
       }
 
       if (isGroup) {
-        // Just update one entry's duration to make up difference, or first entry
         const entryId = editingItem.ids[0];
         const diff = newDurationSec - editingItem.duration_seconds;
         const entry = entries.find(e => e.id === entryId);
@@ -221,28 +242,123 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
     }
   };
 
-  const groupedByWeekday = useMemo(() => {
-    const groups = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 0: [] };
-    entries.forEach((entry) => {
-      const dayNum = new Date(entry.start_time).getDay();
-      if (groups[dayNum]) {
-        groups[dayNum].push(entry);
+  // 1. Calcular a lista de semanas para o mês selecionado
+  const weeksList = useMemo(() => {
+    if (!monthFilter) return [];
+    const [year, month] = monthFilter.split('-').map(Number);
+    return getWeeksOfMonth(year, month - 1);
+  }, [monthFilter]);
+
+  // 2. Dias úteis da semana atual selecionada (Segunda a Domingo)
+  const weekDaysList = useMemo(() => {
+    if (selectedWeek === 'all') return [];
+    const days = [];
+    const monday = new Date(selectedWeek + 'T12:00:00Z');
+    const WEEKDAYS_SHORT = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    const WEEKDAYS_FULL = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+
+    for (let i = 0; i < 7; i++) {
+      const current = new Date(monday);
+      current.setDate(monday.getDate() + i);
+
+      const y = current.getFullYear();
+      const m = String(current.getMonth() + 1).padStart(2, '0');
+      const d = String(current.getDate()).padStart(2, '0');
+      const dateStr = `${y}-${m}-${d}`;
+
+      days.push({
+        dateStr,
+        weekdayShort: WEEKDAYS_SHORT[current.getDay()],
+        weekdayFull: WEEKDAYS_FULL[current.getDay()],
+        label: `${d}/${m}`
+      });
+    }
+    return days;
+  }, [selectedWeek]);
+
+  // Validadores para prevenir efeitos colaterais caso a semana/dia selecionado fiquem órfãos quando mudar o mês
+  const safeSelectedWeek = useMemo(() => {
+    if (selectedWeek === 'all') return 'all';
+    const isValid = weeksList.some(w => w.key === selectedWeek);
+    return isValid ? selectedWeek : 'all';
+  }, [selectedWeek, weeksList]);
+
+  const safeSelectedDay = useMemo(() => {
+    if (selectedDay === 'all') return 'all';
+    if (safeSelectedWeek === 'all') return 'all';
+    const isValid = weekDaysList.some(d => d.dateStr === selectedDay);
+    return isValid ? selectedDay : 'all';
+  }, [selectedDay, safeSelectedWeek, weekDaysList]);
+
+  // 3. Filtrar entries baseando-se na semana e no dia específico
+  const filteredEntries = useMemo(() => {
+    let result = entries;
+
+    // Filtro de Semana
+    if (safeSelectedWeek !== 'all') {
+      const start = new Date(safeSelectedWeek + 'T00:00:00');
+      const end = new Date(safeSelectedWeek + 'T23:59:59');
+      end.setDate(end.getDate() + 6);
+
+      result = result.filter((entry) => {
+        const d = new Date(entry.start_time);
+        return d >= start && d <= end;
+      });
+    }
+
+    // Filtro de Dia Específico
+    if (safeSelectedDay !== 'all') {
+      result = result.filter((entry) => {
+        const local = new Date(entry.start_time);
+        const y = local.getFullYear();
+        const m = String(local.getMonth() + 1).padStart(2, '0');
+        const d = String(local.getDate()).padStart(2, '0');
+        const dateStr = `${y}-${m}-${d}`;
+        return dateStr === safeSelectedDay;
+      });
+    }
+
+    return result;
+  }, [entries, safeSelectedWeek, safeSelectedDay]);
+
+  // 4. Agrupar filteredEntries por dia para exibição estilo Clockify
+  const groupedByDayList = useMemo(() => {
+    const groups = {};
+    filteredEntries.forEach((entry) => {
+      const local = new Date(entry.start_time);
+      const y = local.getFullYear();
+      const m = String(local.getMonth() + 1).padStart(2, '0');
+      const d = String(local.getDate()).padStart(2, '0');
+      const dateStr = `${y}-${m}-${d}`;
+
+      if (!groups[dateStr]) {
+        const WEEKDAYS_FULL = [
+          'Domingo',
+          'Segunda-feira',
+          'Terça-feira',
+          'Quarta-feira',
+          'Quinta-feira',
+          'Sexta-feira',
+          'Sábado',
+        ];
+        groups[dateStr] = {
+          dateStr,
+          weekdayLabel: WEEKDAYS_FULL[local.getDay()],
+          entries: [],
+          totalDuration: 0,
+        };
       }
+      groups[dateStr].entries.push(entry);
+      groups[dateStr].totalDuration += entry.duration_seconds;
     });
-    return groups;
-  }, [entries]);
 
-  const weekdayTotals = useMemo(() => {
-    const totals = {};
-    DISPLAY_ORDER.forEach((dayNum) => {
-      totals[dayNum] = groupedByWeekday[dayNum].reduce((sum, entry) => sum + entry.duration_seconds, 0);
-    });
-    return totals;
-  }, [groupedByWeekday]);
+    return Object.values(groups).sort((a, b) => b.dateStr.localeCompare(a.dateStr));
+  }, [filteredEntries]);
 
+  // 5. Totalizar tarefas para a BillingTable com base nas entries filtradas!
   const taskTotalsList = useMemo(() => {
     const taskTotals = {};
-    entries.forEach((entry) => {
+    filteredEntries.forEach((entry) => {
       if (!entry.task_id) return;
       if (!taskTotals[entry.task_id]) {
         taskTotals[entry.task_id] = {
@@ -262,7 +378,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
       taskTotals[entry.task_id].ids.push(entry.id);
     });
     return Object.values(taskTotals);
-  }, [entries]);
+  }, [filteredEntries]);
 
   const totalInTargetCurrency = useMemo(
     () => taskTotalsList.reduce((sum, item) => {
@@ -273,16 +389,14 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
     [exchangeRates, targetCurrency, taskTotalsList],
   );
 
-  const handleTabClick = (tab) => {
-    setActiveTab((current) => (current === tab ? null : tab));
-  };
-
   return (
     <div className="time-history">
       <div className="time-history-header">
-        <h2 className="time-history-title gradient-text"><ScrollText size={20} strokeWidth={1.5} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} /> Histórico de Sessões</h2>
+        <h2 className="time-history-title gradient-text">
+          <ScrollText size={20} strokeWidth={1.5} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} />
+          Histórico de Sessões
+        </h2>
         <div className="history-filters">
-          <Input type="month" value={monthFilter} onChange={(event) => setMonthFilter(event.target.value)} className="filter-month-input" />
           <TabButton className={`filter-btn ${categoryFilter === 'all' ? 'active' : ''}`} isActive={categoryFilter === 'all'} onClick={() => setCategoryFilter('all')}>Todos</TabButton>
           {categories.map((category) => {
             const key = category.name.toLowerCase();
@@ -302,6 +416,15 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
         </div>
       </div>
 
+      <div className="view-mode-tabs" style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-default)', paddingBottom: '12px' }}>
+        <TabButton isActive={viewMode === 'registros'} onClick={() => setViewMode('registros')} icon={<List size={16} strokeWidth={1.5} />}>
+          Registros
+        </TabButton>
+        <TabButton isActive={viewMode === 'faturamento'} onClick={() => setViewMode('faturamento')} icon={<BarChart3 size={16} strokeWidth={1.5} />}>
+          Faturamento
+        </TabButton>
+      </div>
+
       {loading ? (
         <div className="loading-container"><Spinner /></div>
       ) : entries.length === 0 ? (
@@ -318,47 +441,80 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
         </div>
       ) : (
         <div className="history-content-layout fade-in">
-          <div className="horizontal-tabs-scroll">
-            <div className="horizontal-tabs-container">
-              {DISPLAY_ORDER.map((dayNum) => {
-                const dayEntries = groupedByWeekday[dayNum];
-                if (dayEntries.length === 0) return null;
-                return (
-                  <TabButton
-                    key={dayNum}
-                    className={`horizontal-tab-btn ${activeTab === dayNum ? 'active' : ''}`}
-                    isActive={activeTab === dayNum}
-                    icon={WEEKDAY_CONFIG[dayNum].icon}
-                    badge={dayEntries.length}
-                    onClick={() => handleTabClick(dayNum)}
-                  >
-                    {WEEKDAY_CONFIG[dayNum].name}
-                  </TabButton>
-                );
-              })}
-              <TabButton className={`horizontal-tab-btn faturamento-tab ${activeTab === 'faturamento' ? 'active' : ''}`} isActive={activeTab === 'faturamento'} icon={<BarChart3 size={16} strokeWidth={1.5} />} onClick={() => handleTabClick('faturamento')}>Faturamento</TabButton>
+          <div className="period-dropdowns-container">
+            <div className="filter-group">
+              <label className="filter-label">Mês</label>
+              <Input
+                type="month"
+                value={monthFilter}
+                onChange={(event) => {
+                  setMonthFilter(event.target.value);
+                  setSelectedWeek('all');
+                  setSelectedDay('all');
+                }}
+                className="filter-select text-center"
+                style={{ width: '100%', minWidth: '150px' }}
+              />
             </div>
+
+            <div className="filter-group">
+              <label className="filter-label">Semana</label>
+              <select
+                value={safeSelectedWeek}
+                onChange={(e) => {
+                  setSelectedWeek(e.target.value);
+                  setSelectedDay('all');
+                }}
+                className="filter-select"
+              >
+                <option value="all">Todas as Semanas</option>
+                {weeksList.map((week) => (
+                  <option key={week.key} value={week.key}>
+                    Semana {week.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {safeSelectedWeek !== 'all' && viewMode === 'registros' && (
+              <div className="filter-group">
+                <label className="filter-label">Dia da Semana</label>
+                <select
+                  value={safeSelectedDay}
+                  onChange={(e) => setSelectedDay(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="all">Todos da Semana</option>
+                  {weekDaysList.map((d) => (
+                    <option key={d.dateStr} value={d.dateStr}>
+                      {d.weekdayFull} ({d.label})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           <div className="active-tab-content">
-            {DISPLAY_ORDER.includes(activeTab) ? (
-              <HistoryTable
-                weekdayLabel={WEEKDAY_CONFIG[activeTab].name}
-                weekdayDateLabel={groupedByWeekday[activeTab][0] ? formatDate(groupedByWeekday[activeTab][0].created_at) : ''}
-                weekdayEntries={groupedByWeekday[activeTab]}
-                categoryFilter={categoryFilter}
-                weekdayTotal={weekdayTotals[activeTab]}
-                formatDate={formatDate}
-                formatDuration={formatDuration}
-                formatDurationShort={formatDurationShort}
-                deletingId={deletingId}
-                setDeletingId={setDeletingId}
-                onDeleteGroup={handleDeleteGroup}
-                onEdit={handleEditClick}
-              />
-            ) : null}
-
-            {activeTab === 'faturamento' ? (
+            {viewMode === 'registros' ? (
+              groupedByDayList.length === 0 ? (
+                <div className="glass-card-static empty-card" style={{ padding: '2rem', textAlign: 'center' }}>
+                  Nenhum registro no período ou dia selecionado.
+                </div>
+              ) : (
+                <HistoryTable
+                  groupedByDayList={groupedByDayList}
+                  categoryFilter={categoryFilter}
+                  formatDate={formatDate}
+                  formatDuration={formatDuration}
+                  formatDurationShort={formatDurationShort}
+                  deletingId={deletingId}
+                  setDeletingId={setDeletingId}
+                  onDeleteGroup={handleDeleteGroup}
+                  onEdit={handleEditClick}
+                />
+              )
+            ) : (
               <BillingTable
                 taskTotalsList={taskTotalsList}
                 targetCurrency={targetCurrency}
@@ -370,13 +526,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
                 convertCurrency={convertCurrency}
                 onEdit={handleEditClick}
               />
-            ) : null}
-
-            {activeTab === null ? (
-              <div className="no-tab-selected-message">
-                <p>Selecione um dia da semana ou a aba de faturamento acima para visualizar os dados.</p>
-              </div>
-            ) : null}
+            )}
           </div>
         </div>
       )}
@@ -400,19 +550,19 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
             </div>
           </>
         )}
-        {activeTab !== 'faturamento' && (
+        {viewMode !== 'faturamento' && (
           <div className="edit-modal-field">
             <label className="edit-modal-label">Data (Resumo)</label>
             <Input type="date" value={editForm.start_date} onChange={e => setEditForm({ ...editForm, start_date: e.target.value })} />
           </div>
         )}
         <div className="edit-modal-field">
-          <label className="edit-modal-label">{activeTab === 'faturamento' ? 'Horas Trabalhadas (Decimal)' : 'Duração (HH:MM:SS)'}</label>
+          <label className="edit-modal-label">{viewMode === 'faturamento' ? 'Horas Trabalhadas (Decimal)' : 'Duração (HH:MM:SS)'}</label>
           <Input
             value={editForm.duration}
             onChange={e => setEditForm({ ...editForm, duration: e.target.value })}
-            type={activeTab === 'faturamento' ? 'number' : 'text'}
-            step={activeTab === 'faturamento' ? '0.01' : undefined}
+            type={viewMode === 'faturamento' ? 'number' : 'text'}
+            step={viewMode === 'faturamento' ? '0.01' : undefined}
           />
         </div>
         {!Array.isArray(editingItem?.ids) && (

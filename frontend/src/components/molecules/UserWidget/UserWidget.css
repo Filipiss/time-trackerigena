@@ -143,3 +143,28 @@
         margin-top: 0;
     }
 }
+
+/* Light Theme Overrides */
+:root[data-theme='light'] .user-widget-trigger {
+    background: var(--bg-card-hover);
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+}
+
+:root[data-theme='light'] .user-widget-trigger:hover {
+    background: var(--bg-card-active);
+}
+
+:root[data-theme='light'] .user-dropdown {
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-lg);
+}
+
+:root[data-theme='light'] .dropdown-item {
+    color: var(--text-primary);
+}
+
+:root[data-theme='light'] .dropdown-item:hover {
+    background: var(--bg-card-hover);
+}

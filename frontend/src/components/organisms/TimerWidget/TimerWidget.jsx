@@ -1,8 +1,6 @@
 ﻿import { useCallback, useEffect, useRef, useState } from 'react';
-import ColorDot from '../../atoms/ColorDot/ColorDot';
-import Input from '../../atoms/Input/Input';
 import { createTimeEntry } from '../../../api';
-import { Play, Pause, Square, RotateCcw, Save, Zap } from 'lucide-react';
+import { Play, Pause, RotateCcw } from 'lucide-react';
 import './TimerWidget.css';
 
 function formatTime(ms) {
@@ -19,17 +17,6 @@ function formatTime(ms) {
   };
 }
 
-function formatDurationHuman(ms) {
-  const totalSeconds = Math.floor(ms / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  const parts = [];
-  if (hours > 0) parts.push(`${hours}h`);
-  if (minutes > 0) parts.push(`${minutes}m`);
-  if (seconds > 0 || parts.length === 0) parts.push(`${seconds}s`);
-  return parts.join(' ');
-}
 
 const TIMER_STATES = {
   STOPPED: 'stopped',
@@ -47,7 +34,6 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
   const intervalRef = useRef(null);
 
   const [elapsedTime, setElapsedTime] = useState(initialAccumulated);
-  const [showSaveArea, setShowSaveArea] = useState(false);
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -109,24 +95,6 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
     persistState(TIMER_STATES.PAUSED, accumulatedRef.current, startTimeRef.current);
   }, [persistState, timerState]);
 
-  const handleStop = useCallback(() => {
-    if (timerState === TIMER_STATES.STOPPED) return;
-
-    if (timerState === TIMER_STATES.RUNNING && startTimeRef.current) {
-      accumulatedRef.current += Date.now() - startTimeRef.current;
-    }
-
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-
-    startTimeRef.current = null;
-    setElapsedTime(accumulatedRef.current);
-    setTimerState(TIMER_STATES.STOPPED);
-    persistState(TIMER_STATES.STOPPED, accumulatedRef.current, startTimeRef.current);
-  }, [persistState, timerState]);
-
   const handleRestart = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -137,7 +105,6 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
     accumulatedRef.current = 0;
     setElapsedTime(0);
     setTimerState(TIMER_STATES.STOPPED);
-    setShowSaveArea(false);
     setNotes('');
     persistState(TIMER_STATES.STOPPED, 0, null);
   }, [persistState]);
@@ -145,16 +112,14 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
   // Se a task for deletada globalmente (selectedTask === null) e o timer tiver algo, reseta forçadamente
   useEffect(() => {
     if (!selectedTask && (timerState !== TIMER_STATES.STOPPED || elapsedTime > 0)) {
-      handleRestart();
+      const timer = setTimeout(() => {
+        handleRestart();
+      }, 0);
+      return () => clearTimeout(timer);
     }
+    return undefined;
   }, [selectedTask, timerState, elapsedTime, handleRestart]);
 
-  const handleSaveClick = useCallback(() => {
-    if (timerState === TIMER_STATES.RUNNING) {
-      handlePause();
-    }
-    setShowSaveArea(true);
-  }, [handlePause, timerState]);
 
   const handleSave = useCallback(async () => {
     if (!selectedTask || elapsedTime < 1000) return;
@@ -179,7 +144,6 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
       setElapsedTime(0);
       setTimerState(TIMER_STATES.STOPPED);
       persistState(TIMER_STATES.STOPPED, 0, null);
-      setShowSaveArea(false);
       setNotes('');
       onSaveSuccess?.();
     } catch (error) {
@@ -192,88 +156,65 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
 
   const time = formatTime(elapsedTime);
   const canStart = timerState !== TIMER_STATES.RUNNING && !!selectedTask;
-  const canPause = timerState === TIMER_STATES.RUNNING;
-  const canStop = timerState !== TIMER_STATES.STOPPED;
   const canSave = elapsedTime >= 1000 && selectedTask;
 
   return (
-    <div className="timer-container">
-      {selectedTask ? (
-        <div className="timer-selected-task">
-          <div className="task-label">CRONOMETRANDO</div>
-          <div className="task-name">
-            <ColorDot className="task-color-dot" color={selectedTask.color || '#06b6d4'} size="10px" />
-            {selectedTask.project_name ? `[${selectedTask.project_name}] ` : ''}
-            {selectedTask.name}
-          </div>
-        </div>
-      ) : (
-        <div className="timer-no-task"><Zap size={16} strokeWidth={1.5} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} /> Para começar a cronometrar, selecione ou crie uma nova Task.</div>
-      )}
-
-      <div className={`timer-display-wrapper ${timerState}`}>
-        <div className="timer-status-indicator">
-          <span className={`status-dot ${timerState}`} />
-          <span className={`status-label ${timerState}`}>
-            {timerState === TIMER_STATES.RUNNING && 'Rodando'}
-            {timerState === TIMER_STATES.PAUSED && 'Pausado'}
-            {timerState === TIMER_STATES.STOPPED && 'Parado'}
-          </span>
-        </div>
-
-        <div className={`timer-digits ${timerState}`}>
-          {time.hours}
-          <span className="separator">:</span>
-          {time.minutes}
-          <span className="separator">:</span>
-          {time.seconds}
-        </div>
+    <div className="timer-bar-container">
+      {/* 1. Descrição ou Nota atual */}
+      <div className="timer-bar-input-section">
+        <input
+          type="text"
+          className="timer-bar-notes-input"
+          placeholder={selectedTask ? "O que você está fazendo?" : "Selecione uma Task abaixo para começar..."}
+          value={notes}
+          onChange={(event) => setNotes(event.target.value)}
+          disabled={!selectedTask}
+        />
       </div>
 
-      <div className="timer-controls">
-        <button className="timer-btn timer-btn-start" onClick={handleStart} disabled={!canStart} title="Iniciar">
-          <Play size={22} fill="currentColor" strokeWidth={1.5} />
-        </button>
-        <button className="timer-btn timer-btn-pause" onClick={handlePause} disabled={!canPause} title="Pausar">
-          <Pause size={22} fill="currentColor" strokeWidth={1.5} />
-        </button>
-        <button className="timer-btn timer-btn-stop" onClick={handleStop} disabled={!canStop} title="Parar">
-          <Square size={20} fill="currentColor" strokeWidth={1.5} />
-        </button>
-        <button
-          className="timer-btn timer-btn-restart"
-          onClick={handleRestart}
-          disabled={timerState === TIMER_STATES.STOPPED && elapsedTime === 0}
-          title="Reiniciar"
-        >
-          <RotateCcw size={20} strokeWidth={1.5} />
-        </button>
-        <button className="timer-btn timer-btn-save" onClick={handleSaveClick} disabled={!canSave} title="Salvar">
-          <Save size={18} strokeWidth={1.5} style={{ marginRight: '6px' }} /> Salvar
-        </button>
+      {/* 2. Task Selecionada (Indicador Visual) */}
+      <div className="timer-bar-task-badge">
+        {selectedTask ? (
+          <div className="timer-bar-task-info">
+            <span className="task-color-dot" style={{ backgroundColor: selectedTask.color || '#03a9f4' }} />
+            <span className="task-badge-project">{selectedTask.project_name || 'Sem Projeto'}</span>
+            <span className="task-badge-divider">/</span>
+            <span className="task-badge-name">{selectedTask.name}</span>
+          </div>
+        ) : (
+          <div className="timer-bar-task-placeholder">
+            Nenhuma Task selecionada
+          </div>
+        )}
       </div>
 
-      {showSaveArea ? (
-        <div className="timer-save-area">
-          <div className="save-area-inner">
-            <div className="save-area-title">💾 Salvar Registro de Tempo</div>
-            <div className="save-duration">⏱ Duração: {formatDurationHuman(elapsedTime)} ({time.formatted})</div>
-            <Input
-              as="textarea"
-              placeholder="Notas sobre o que foi feito (opcional)..."
-              value={notes}
-              onChange={(event) => setNotes(event.target.value)}
-              rows={3}
-            />
-            <div className="save-area-actions">
-              <button className="btn btn-ghost" onClick={() => setShowSaveArea(false)}>Cancelar</button>
-              <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
-                {saving ? 'Salvando...' : 'Confirmar e Salvar'}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      {/* 3. Cronômetro / Tempo Decorrido */}
+      <div className={`timer-bar-display ${timerState}`}>
+        <span className="timer-digits-mono">
+          {time.hours}:{time.minutes}:{time.seconds}
+        </span>
+      </div>
+
+      {/* 4. Controles de Ação */}
+      <div className="timer-bar-controls">
+        {timerState !== TIMER_STATES.RUNNING ? (
+          <button className="timer-bar-btn start" onClick={handleStart} disabled={!canStart} title="Iniciar">
+            <Play size={16} fill="currentColor" /> Iniciar
+          </button>
+        ) : (
+          <button className="timer-bar-btn pause" onClick={handlePause} title="Pausar">
+            <Pause size={16} fill="currentColor" /> Pausar
+          </button>
+        )}
+
+        <button className="timer-bar-btn restart" onClick={handleRestart} disabled={timerState === TIMER_STATES.STOPPED && elapsedTime === 0} title="Resetar">
+          <RotateCcw size={14} />
+        </button>
+
+        <button className="timer-bar-btn save" onClick={handleSave} disabled={!canSave || saving} title="Salvar Registro">
+          {saving ? '...' : 'Salvar'}
+        </button>
+      </div>
     </div>
   );
 }

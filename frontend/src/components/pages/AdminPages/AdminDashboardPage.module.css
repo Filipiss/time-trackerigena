@@ -2,14 +2,14 @@
     padding: 1rem;
 }
 
-.header h1 {
+.header .header h1 {
     font-size: 2rem;
     margin-bottom: 0.5rem;
-    color: #f1f5f9;
+    color: var(--text-primary);
 }
 
 .header p {
-    color: #94a3b8;
+    color: var(--text-secondary);
     margin-bottom: 2rem;
 }
 
@@ -21,24 +21,24 @@
 }
 
 .card {
-    background: var(--surface-card, #1e293b);
-    border: 1px solid var(--border-color, #334155);
-    border-radius: 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
     padding: 1.5rem;
     display: flex;
     align-items: center;
     gap: 1rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all var(--transition-fast);
 }
 
 .card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-md);
 }
 
 .cardIcon {
     font-size: 2.5rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-card-hover);
     padding: 0.8rem;
     border-radius: 50%;
     display: flex;
@@ -50,7 +50,7 @@
 
 .cardInfo h3 {
     font-size: 0.9rem;
-    color: #94a3b8;
+    color: var(--text-muted);
     margin-bottom: 0.3rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -59,24 +59,24 @@
 .cardInfo p {
     font-size: 1.8rem;
     font-weight: bold;
-    color: #e2e8f0;
+    color: var(--text-primary);
 }
 
 .recentActivity {
-    background: var(--surface-card, #1e293b);
-    border: 1px solid var(--border-color, #334155);
-    border-radius: 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
     padding: 2rem;
 }
 
 .recentActivity h2 {
     font-size: 1.4rem;
     margin-bottom: 1rem;
-    color: #f1f5f9;
+    color: var(--text-primary);
 }
 
 .recentActivity p {
-    color: #cbd5e1;
+    color: var(--text-secondary);
     line-height: 1.5;
 }
 
@@ -85,6 +85,6 @@
     justify-content: center;
     align-items: center;
     height: 200px;
-    color: #a0aab2;
+    color: var(--text-muted);
     font-size: 1.1rem;
 }

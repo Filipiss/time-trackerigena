@@ -1,35 +1,58 @@
 ﻿.weekday-tab-content {
-  padding: var(--space-6);
+  padding: 0;
 }
 
-.weekday-tab-header {
+/* Divisores de Dia na tabela do Histórico */
+.day-group-header-row td {
+  padding: var(--space-3) var(--space-6) !important;
+  background: var(--bg-deep) !important;
+  border-bottom: 1.5px solid var(--border-default) !important;
+  border-top: 1.5px solid var(--border-default) !important;
+}
+
+:root[data-theme='light'] .day-group-header-row td {
+  background: #f1f5f9 !important;
+}
+
+.day-group-header-row:first-child td {
+  border-top: none !important;
+}
+
+.day-group-header-content {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--space-4);
-  margin-bottom: var(--space-4);
-  flex-wrap: wrap;
+  align-items: center;
+  width: 100%;
+  border-left: 4px solid var(--theme-accent);
+  padding-left: var(--space-3);
 }
 
-.weekday-title-area h3 {
-  margin: 0;
-  font-size: var(--text-xl);
+.day-title-area {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: 700;
 }
 
-.weekday-date {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin-top: 4px;
-}
-
-.weekday-total-duration {
+.day-title {
   font-size: var(--text-sm);
-  color: var(--text-secondary);
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.03);
-  padding: var(--space-1) var(--space-3);
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.day-date {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.day-total {
+  font-size: var(--text-xs);
+  color: var(--theme-accent);
+  font-weight: 700;
+  background: var(--bg-card-hover);
+  padding: 2px 8px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-default);
 }
 
 .history-table-wrapper {
@@ -46,10 +69,10 @@
 
 .history-table th {
   padding: var(--space-4) var(--space-6);
-  background: rgba(255, 255, 255, 0.01);
+  background: var(--bg-deep);
   color: var(--text-secondary);
   font-weight: 600;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-default);
   text-transform: uppercase;
   font-size: var(--text-xs);
   letter-spacing: 0.05em;
@@ -57,7 +80,7 @@
 
 .history-table td {
   padding: var(--space-4) var(--space-6);
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-default);
   color: var(--text-primary);
   vertical-align: middle;
 }
@@ -67,11 +90,11 @@
 }
 
 .history-row:hover {
-  background-color: rgba(255, 255, 255, 0.01);
+  background-color: var(--bg-card-hover);
 }
 
 .history-row:last-child td {
-  border-bottom: none;
+  border-bottom: 1px solid var(--border-default);
 }
 
 .task-cell {
@@ -86,7 +109,6 @@
   height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 0 8px currentColor;
 }
 
 .task-name-text {
@@ -98,15 +120,16 @@
 
 .group-count-badge {
   font-size: 0.75rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-card-hover);
   padding: 2px 6px;
   border-radius: 10px;
+  color: var(--text-secondary);
 }
 
 .duration-cell {
   font-family: var(--font-mono);
   font-weight: 700;
-  color: var(--text-white);
+  color: var(--text-primary);
   font-size: var(--text-base);
   letter-spacing: 0.05em;
 }
@@ -136,14 +159,37 @@
   min-height: 38px;
 }
 
-.delete-btn {
+.edit-action-btn,
+.delete-action-btn,
+.confirm-delete-btn,
+.cancel-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.edit-action-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--border-highlight);
+}
+
+.delete-action-btn {
   color: var(--text-muted);
 }
 
-.delete-btn:hover {
+.delete-action-btn:hover {
+  background: rgba(239, 68, 68, 0.08);
   color: var(--color-danger);
-  border-color: rgba(239, 68, 68, 0.3);
-  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
 }
 
 .delete-confirm {
@@ -154,19 +200,21 @@
 .confirm-delete-btn {
   background: var(--color-danger);
   color: var(--text-white);
+  border-color: var(--color-danger);
 }
 
 .confirm-delete-btn:hover {
-  background: #f87171;
+  background: #ef4444;
+  border-color: #ef4444;
 }
 
 .cancel-delete-btn {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-card-hover);
   color: var(--text-primary);
 }
 
 .cancel-delete-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--bg-deep);
 }
 
 @media (max-width: 880px) {

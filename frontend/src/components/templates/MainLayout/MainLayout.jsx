@@ -12,13 +12,15 @@ export default function MainLayout({ settings }) {
       setDismissedBanner(settings.global_banner);
       sessionStorage.setItem('dismissed_banner', settings.global_banner);
     }
-  }, [settings?.global_banner]);
+  }, [settings]);
 
   useEffect(() => {
     // Se o admin deletou a mensagem, limpa a memória de bloqueio da sessão
     if (settings && !settings.global_banner?.trim()) {
-      setDismissedBanner('');
-      sessionStorage.removeItem('dismissed_banner');
+      setTimeout(() => {
+        setDismissedBanner('');
+        sessionStorage.removeItem('dismissed_banner');
+      }, 0);
     }
   }, [settings]);
 
@@ -41,7 +43,9 @@ export default function MainLayout({ settings }) {
         {/* Barra superior com botões de auth no canto direito */}
         <header className="app-topbar">
           <div className="topbar-spacer" />
-          <AuthButtons />
+          <div className="topbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <AuthButtons />
+          </div>
         </header>
 
         {showBanner && (

@@ -8,48 +8,49 @@
     margin-bottom: 2rem;
 }
 
-.header h1 {
+.header .header h1 {
     font-size: 1.8rem;
     margin-bottom: 0.5rem;
-    color: #e9ecef;
+    color: var(--text-primary);
 }
 
 .header p {
-    color: #a0aab2;
+    color: var(--text-muted);
 }
 
 .tabs {
     display: flex;
     gap: 10px;
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid #373a40;
+    border-bottom: 1px solid var(--border-default);
     padding-bottom: 5px;
 }
 
 .tab {
     background: transparent;
     border: none;
-    color: #a0aab2;
+    color: var(--text-secondary);
     padding: 10px 15px;
     cursor: pointer;
     font-size: 1rem;
     font-weight: 500;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     transition: all 0.2s;
 }
 
 .tab:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-card-hover);
 }
 
 .activeTab {
-    color: #4dabf7;
-    background: rgba(77, 171, 247, 0.1);
+    color: var(--theme-accent);
+    background: var(--theme-accent-subtle);
 }
 
 .content {
-    background: #1e1e24;
-    border-radius: 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
     padding: 1.5rem;
     min-height: 400px;
 }
@@ -61,7 +62,7 @@
 .formGroup label {
     display: block;
     margin-bottom: 0.5rem;
-    color: #ced4da;
+    color: var(--text-secondary);
     font-weight: 500;
 }
 
@@ -69,31 +70,31 @@
 .formGroup textarea {
     width: 100%;
     padding: 12px;
-    background: #141517;
-    border: 1px solid #373A40;
-    border-radius: 6px;
-    color: #f1f3f5;
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
     font-family: inherit;
     font-size: 0.95rem;
 }
 
 .btnPrimary {
-    background: #3b82f6;
-    color: white;
+    background: var(--theme-accent);
+    color: var(--text-inverse);
     border: none;
     padding: 12px 24px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s;
 }
 
 .btnPrimary:hover {
-    background: #2563eb;
+    background: var(--theme-accent-hover);
 }
 
 .btnPrimary:disabled {
-    background: #495057;
+    background: var(--text-placeholder);
     cursor: not-allowed;
 }
 
@@ -104,16 +105,17 @@
 }
 
 .ticketCard {
-    background: #2c2e33;
+    background: var(--bg-surface);
     padding: 15px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    border: 1px solid transparent;
-    transition: border-color 0.2s;
+    border: 1px solid var(--border-default);
+    transition: all 0.2s;
 }
 
 .ticketCard:hover {
-    border-color: #3b82f6;
+    border-color: var(--theme-accent);
+    background: var(--bg-card-hover);
 }
 
 .ticketHeader {
@@ -126,7 +128,7 @@
 .ticketHeader h3 {
     margin: 0;
     font-size: 1.1rem;
-    color: #f1f3f5;
+    color: var(--text-primary);
 }
 
 .badge {
@@ -138,22 +140,22 @@
 }
 
 .open {
-    background: rgba(59, 130, 246, 0.2);
-    color: #3b82f6;
+    background: rgba(3, 169, 244, 0.1);
+    color: var(--theme-accent);
 }
 
 .answered {
-    background: rgba(245, 159, 0, 0.2);
-    color: #fcc419;
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--color-warning);
 }
 
 .resolved {
-    background: rgba(34, 197, 94, 0.2);
-    color: #22c55e;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--color-success);
 }
 
 .ticketDate {
-    color: #868e96;
+    color: var(--text-muted);
 }
 
 /* Chat styles */
@@ -170,20 +172,21 @@
     gap: 15px;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 1px solid #373a40;
+    border-bottom: 1px solid var(--border-default);
 }
 
 .chatHeader h2 {
     margin: 0;
     flex-grow: 1;
+    color: var(--text-primary);
 }
 
 .btnBack {
     background: transparent;
-    border: 1px solid #495057;
-    color: #ced4da;
+    border: 1px solid var(--border-default);
+    color: var(--text-secondary);
     padding: 8px 12px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
 }
 
@@ -217,15 +220,16 @@
 }
 
 .bubbleMe {
-    background: #3b82f6;
-    color: white;
+    background: var(--theme-accent);
+    color: var(--text-inverse);
     border-bottom-right-radius: 4px;
 }
 
 .bubbleThem {
-    background: #343a40;
-    color: #e9ecef;
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
     border-bottom-left-radius: 4px;
+    border: 1px solid var(--border-default);
 }
 
 .msgMeta {
@@ -243,12 +247,12 @@
 }
 
 .chatClosedNotice {
-    background: rgba(240, 62, 62, 0.1);
-    color: #ff8787;
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
     padding: 15px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     text-align: center;
-    border: 1px solid rgba(240, 62, 62, 0.3);
+    border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .chatForm {
@@ -259,10 +263,10 @@
 .chatForm textarea {
     flex-grow: 1;
     padding: 12px;
-    background: #141517;
-    border: 1px solid #373A40;
-    border-radius: 6px;
-    color: #f1f3f5;
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
     resize: none;
     font-family: inherit;
 }

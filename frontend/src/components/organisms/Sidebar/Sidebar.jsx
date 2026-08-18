@@ -20,10 +20,10 @@ export default function Sidebar() {
   const navigate = useNavigate();
 
   return (
-    <aside className="app-sidebar glass-card-static">
+    <aside className="app-sidebar">
       <div className="sidebar-brand">
-        <span className="brand-logo">👽</span>
-        <h1 className="brand-title gradient-text">Time Trackerígena</h1>
+        <span className="brand-logo" style={{ fontSize: '24px', marginRight: '8px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}>👽</span>
+        <h1 className="brand-title">Time Trackerígena</h1>
       </div>
 
       {/* Widget do usuário — visível só quando logado */}

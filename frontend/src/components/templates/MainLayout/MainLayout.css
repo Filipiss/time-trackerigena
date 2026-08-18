@@ -14,15 +14,13 @@
   min-width: 0;
 }
 
-/* Topbar com botões de auth */
 .app-topbar {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   padding: 12px 32px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(10, 10, 20, 0.4);
-  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-surface);
   position: sticky;
   top: 0;
   z-index: 50;

@@ -1,394 +1,187 @@
-﻿.timer-container {
+﻿.timer-bar-container {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: var(--space-8);
-  padding: var(--space-10);
-  animation: fadeIn 0.6s ease;
-}
-
-.timer-display-wrapper {
+  width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  gap: var(--space-4);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-6);
   position: relative;
-  padding: var(--space-12) var(--space-16);
-  border-radius: var(--radius-xl);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border-subtle);
-  transition: all var(--transition-slow);
-  max-width: 100%;
+  box-sizing: border-box;
 }
 
-.timer-display-wrapper.running {
-  border-color: rgba(16, 185, 129, 0.3);
-  animation: pulseGlow 2s ease-in-out infinite;
+.timer-bar-input-section {
+  flex: 2;
+  min-width: 200px;
 }
 
-.timer-display-wrapper.paused {
-  border-color: rgba(245, 158, 11, 0.3);
-  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+.timer-bar-notes-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  padding: var(--space-2) 0;
 }
 
-.timer-display-wrapper.stopped {
-  opacity: 0.6;
+.timer-bar-notes-input::placeholder {
+  color: var(--text-placeholder);
 }
 
-.timer-status-indicator {
+.timer-bar-task-badge {
+  flex: 1.5;
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+  border-left: 1px solid var(--border-default);
+  border-right: 1px solid var(--border-default);
+  padding: 0 var(--space-4);
+  height: 32px;
+}
+
+.timer-bar-task-info {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  position: absolute;
-  top: var(--space-4);
-  right: var(--space-4);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  font-size: var(--text-sm);
 }
 
-.status-dot {
+.timer-bar-task-info .task-color-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  transition: all var(--transition-base);
+  flex-shrink: 0;
 }
 
-.status-dot.running {
-  background: var(--color-success);
-  box-shadow: 0 0 8px var(--color-success);
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-.status-dot.paused {
-  background: var(--color-warning);
-  box-shadow: 0 0 8px var(--color-warning);
-}
-
-.status-dot.stopped {
-  background: var(--text-muted);
-}
-
-.status-label {
-  color: var(--text-muted);
-}
-
-.status-label.running {
-  color: var(--color-success);
-}
-
-.status-label.paused {
-  color: var(--color-warning);
-}
-
-.timer-selected-task {
-  text-align: center;
-  margin-bottom: var(--space-2);
-}
-
-.timer-selected-task .task-label {
-  font-size: var(--text-xs);
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: var(--space-1);
-}
-
-.timer-selected-task .task-name {
-  font-size: var(--text-lg);
+.task-badge-project {
   font-weight: 600;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  flex-wrap: wrap;
-}
-
-.timer-no-task {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: var(--text-sm);
-  padding: var(--space-2) var(--space-4);
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.15);
-  border-radius: var(--radius-md);
-}
-
-.timer-digits {
-  font-family: var(--font-mono);
-  font-size: 4rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
-  user-select: none;
-  transition: all var(--transition-base);
+  color: var(--text-secondary);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.timer-digits.paused {
-  animation: glow 1.5s ease-in-out infinite;
+.task-badge-divider {
+  color: var(--text-placeholder);
 }
 
-.timer-digits.stopped {
-  opacity: 0.4;
-  background: none;
-  -webkit-text-fill-color: var(--text-muted);
-}
-
-.timer-digits .separator {
-  opacity: 0.5;
-  margin: 0 2px;
-}
-
-.timer-controls {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.timer-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px;
-  min-width: 56px;
-  height: 56px;
-  border-radius: var(--radius-lg);
-  font-size: 1.4rem;
-  border: 1px solid var(--border-subtle);
-  transition: all var(--transition-base);
-  position: relative;
+.task-badge-name {
+  color: var(--text-primary);
+  max-width: 120px;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.timer-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity var(--transition-base);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.timer-btn:hover::before {
-  opacity: 1;
-}
-
-.timer-btn:active {
-  transform: scale(0.92);
-}
-
-.timer-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-.timer-btn:disabled:hover::before {
-  opacity: 0;
-}
-
-.timer-btn-start {
-  background: rgba(16, 185, 129, 0.15);
-  border-color: rgba(16, 185, 129, 0.3);
-  color: var(--color-success);
-}
-
-.timer-btn-start:hover:not(:disabled) {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: var(--shadow-glow-success);
-}
-
-.timer-btn-pause {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: rgba(245, 158, 11, 0.3);
-  color: var(--color-warning);
-}
-
-.timer-btn-pause:hover:not(:disabled) {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: var(--shadow-glow-warning);
-}
-
-.timer-btn-stop {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: var(--color-danger);
-}
-
-.timer-btn-stop:hover:not(:disabled) {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: var(--shadow-glow-danger);
-}
-
-.timer-btn-restart {
-  background: rgba(6, 182, 212, 0.15);
-  border-color: rgba(6, 182, 212, 0.3);
-  color: var(--color-info);
-}
-
-.timer-btn-restart:hover:not(:disabled) {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
-}
-
-.timer-btn-save {
-  background: var(--gradient-primary);
-  border-color: transparent;
-  color: white;
-  width: auto;
-  padding: 0 var(--space-6);
-  gap: var(--space-2);
+.timer-bar-task-placeholder {
+  color: var(--text-placeholder);
   font-size: var(--text-sm);
-  font-weight: 600;
 }
 
-.timer-btn-save:hover:not(:disabled) {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: var(--shadow-glow-primary);
-}
-
-.timer-save-area {
-  width: 100%;
-  max-width: 500px;
-  animation: slideDown 0.3s ease;
-}
-
-.timer-save-area .save-area-inner {
+.timer-bar-display {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-6);
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--space-2);
 }
 
-.timer-save-area .save-area-title {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.timer-save-area .save-area-actions {
-  display: flex;
-  gap: var(--space-2);
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-
-.timer-save-area .save-duration {
+.timer-digits-mono {
   font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--text-muted);
-  padding: var(--space-2) var(--space-3);
-  background: rgba(255, 255, 255, 0.03);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.05em;
+}
+
+.timer-bar-display.running .timer-digits-mono {
+  color: var(--theme-accent);
+}
+
+.timer-bar-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.timer-bar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-xs);
   border-radius: var(--radius-sm);
-  text-align: center;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
 }
 
-@media (max-width: 1366px) {
-  .timer-container {
-    padding: var(--space-8);
-  }
-
-  .timer-digits {
-    font-size: 3.7rem;
-  }
+.timer-bar-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
 }
 
-@media (max-width: 1200px) {
-  .timer-display-wrapper {
-    padding: var(--space-10) var(--space-12);
-  }
+.timer-bar-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
-  .timer-digits {
-    font-size: 3.35rem;
-  }
+.timer-bar-btn.start {
+  background: var(--theme-accent);
+  color: var(--text-inverse);
+  border-color: var(--theme-accent);
+}
+
+.timer-bar-btn.start:hover:not(:disabled) {
+  background: var(--theme-accent-hover);
+  border-color: var(--theme-accent-hover);
+}
+
+.timer-bar-btn.pause {
+  background: var(--color-warning);
+  color: var(--text-inverse);
+  border-color: var(--color-warning);
+}
+
+.timer-bar-btn.stop {
+  background: var(--color-danger);
+  color: var(--text-inverse);
+  border-color: var(--color-danger);
+}
+
+.timer-bar-btn.save {
+  background: var(--theme-accent);
+  color: var(--text-inverse);
+  border-color: var(--theme-accent);
+}
+
+.timer-bar-btn.save:hover:not(:disabled) {
+  background: var(--theme-accent-hover);
+  border-color: var(--theme-accent-hover);
 }
 
 @media (max-width: 1024px) {
-  .timer-container {
-    padding: var(--space-6);
-    gap: var(--space-6);
+  .timer-bar-container {
+    flex-wrap: wrap;
+    gap: var(--space-3);
   }
 
-  .timer-digits {
-    font-size: 3rem;
-  }
-}
-
-@media (max-width: 880px) {
-  .timer-display-wrapper {
-    padding: var(--space-8) var(--space-8);
-  }
-
-  .timer-digits {
-    font-size: 2.65rem;
-  }
-
-  .timer-btn {
-    width: 50px;
-    min-width: 50px;
-    height: 50px;
-    font-size: 1.2rem;
-  }
-
-  .timer-btn-save {
-    min-width: 132px;
-    padding-inline: var(--space-4);
-  }
-}
-
-@media (max-width: 767px) {
-  .timer-container {
-    padding: var(--space-4) 0;
-  }
-
-  .timer-display-wrapper {
+  .timer-bar-input-section {
     width: 100%;
-    padding: var(--space-7) var(--space-4);
-  }
-
-  .timer-status-indicator {
-    position: static;
-    justify-content: center;
-    margin-bottom: var(--space-4);
-  }
-
-  .timer-digits {
-    font-size: 2.2rem;
-    text-align: center;
-    letter-spacing: 0.02em;
-  }
-
-  .timer-controls {
-    width: 100%;
-    gap: var(--space-2);
-  }
-
-  .timer-btn {
-    width: 46px;
-    min-width: 46px;
-    height: 46px;
-    font-size: 1.05rem;
-  }
-
-  .timer-btn-save {
     flex: 1 1 100%;
-    min-height: 46px;
   }
 
-  .timer-save-area .save-area-inner {
-    padding: var(--space-4);
-  }
-
-  .timer-save-area .save-area-actions > * {
-    flex: 1 1 100%;
+  .timer-bar-task-badge {
+    border-left: none;
+    padding-left: 0;
   }
 }

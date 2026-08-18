@@ -18,6 +18,7 @@ import UsersManagementPage from './components/pages/AdminPages/UsersManagementPa
 import AdminSettingsPage from './components/pages/AdminPages/AdminSettingsPage';
 import SupportPage from './components/pages/SupportPage/SupportPage';
 import AdminSupportPage from './components/pages/AdminPages/AdminSupportPage';
+import FloatingWidget from './components/organisms/FloatingWidget/FloatingWidget';
 import './App.css';
 
 ReactGA.initialize('G-GYLWC1S1J3');
@@ -87,7 +88,7 @@ function AppRoutes() {
         <Route path="/tasks" element={<TasksPage onTaskChange={handleTaskChange} />} />
         <Route path="/dashboard" element={<DashboardPage refreshTrigger={refreshTrigger} />} />
         <Route path="/calendar" element={<CalendarPage />} />
-        <Route path="/history" element={<HistoryPage refreshTrigger={refreshTrigger} onRefresh={handleRefresh} />} />
+        <Route path="/history" element={<HistoryPage key={location.search} refreshTrigger={refreshTrigger} onRefresh={handleRefresh} />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/support" element={<SupportPage />} />
         <Route path="/" element={<Navigate to="/timer" replace />} />
@@ -134,6 +135,7 @@ export default function App() {
         ) : (
           <AppRoutes />
         )}
+        <FloatingWidget />
       </AuthProvider>
     </BrowserRouter>
   );

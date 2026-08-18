@@ -62,14 +62,13 @@
 .selector-tab:hover {
   background: var(--bg-card-hover);
   border-color: var(--border-highlight);
-  transform: translateY(-1px);
 }
 
 .selector-tab.active {
-  border-color: #06b6d4;
-  color: #06b6d4;
-  background: rgba(6, 182, 212, 0.08);
-  box-shadow: 0 0 12px rgba(6, 182, 212, 0.12);
+  border-color: var(--theme-accent);
+  color: var(--theme-accent);
+  background: var(--theme-accent-subtle);
+  box-shadow: none;
 }
 
 .task-selector-grid {
