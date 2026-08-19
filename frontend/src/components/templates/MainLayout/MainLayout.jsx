@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+﻿import { Outlet } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import AuthButtons from '../../molecules/AuthButtons/AuthButtons';
 import Sidebar from '../../organisms/Sidebar/Sidebar';
@@ -36,13 +36,13 @@ export default function MainLayout({ settings }) {
 
   const showBanner = settings?.global_banner?.trim() && settings.global_banner !== dismissedBanner;
   return (
-    <div className="app-layout">
+    <div className="l-app">
       <Sidebar />
 
-      <div className="app-content-wrapper">
+      <div className="l-app__content">
         {/* Barra superior com botões de auth no canto direito */}
-        <header className="app-topbar">
-          <div className="topbar-spacer" />
+        <header className="l-app__topbar">
+          <div className="l-app__topbar-spacer" />
           <div className="topbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <AuthButtons />
           </div>
@@ -62,8 +62,8 @@ export default function MainLayout({ settings }) {
           </div>
         )}
 
-        <main className="app-main">
-          <div className="content-container">
+        <main className="l-app__main">
+          <div className="l-content">
             <Outlet />
           </div>
         </main>

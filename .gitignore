@@ -25,3 +25,9 @@ backend/.git-history-backup/
 # Seed files
 backend/seed.py
 seed.py
+
+# Temporary scripts and logs generated during refactoring
+rename_classes.ps1
+diff_timer.txt
+*.log
+

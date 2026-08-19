@@ -19,7 +19,7 @@
   margin: 0;
 }
 
-.history-filters {
+.l-history-page__filters {
   display: flex;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border-subtle);
@@ -33,7 +33,7 @@
   min-width: 155px;
 }
 
-.filter-btn {
+.c-filter-btn {
   padding: var(--space-2) var(--space-4);
   font-size: var(--text-sm);
   font-weight: 500;
@@ -43,27 +43,15 @@
   white-space: nowrap;
 }
 
-.filter-btn:hover:not(.active):not(.active-loco):not(.active-freelas) {
+.c-filter-btn:hover:not(.is-active) {
   color: var(--text-primary);
   background: rgba(255, 255, 255, 0.05);
 }
 
-.filter-btn.active {
+.c-filter-btn.is-active {
   background: var(--gradient-primary);
   color: var(--text-white);
   box-shadow: 0 2px 8px rgba(6, 182, 212, 0.2);
-}
-
-.filter-btn-loco.active-loco {
-  background: var(--gradient-loco);
-  color: var(--text-white);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
-}
-
-.filter-btn-freelas.active-freelas {
-  background: var(--gradient-freelas);
-  color: #1a1a2e;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
 }
 
 .history-content-layout {
@@ -72,17 +60,17 @@
   gap: var(--space-6);
 }
 
-.horizontal-tabs-scroll {
+.c-horizontal-tabs__scroll {
   overflow-x: auto;
 }
 
-.horizontal-tabs-container {
+.c-horizontal-tabs {
   display: flex;
   gap: var(--space-2);
   min-width: min-content;
 }
 
-.horizontal-tab-btn {
+.c-horizontal-tabs__btn {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
@@ -98,26 +86,26 @@
   cursor: pointer;
 }
 
-.horizontal-tab-btn:hover {
+.c-horizontal-tabs__btn:hover {
   background: var(--bg-card-hover);
   color: var(--text-primary);
   border-color: var(--border-highlight);
 }
 
-.horizontal-tab-btn.active {
+.horizontal-tab-btn.is-active {
   background: var(--theme-accent-subtle);
   border-color: var(--theme-accent);
   color: var(--theme-accent);
 }
 
-.faturamento-tab.active {
+.faturamento-tab.is-active {
   background: rgba(139, 92, 246, 0.08);
   border-color: #8b5cf6;
   color: #a78bfa;
 }
 
 /* ---- Filtros de Periodo do Histórico (Dropdowns) ---- */
-.period-dropdowns-container {
+.c-period-filter {
   display: flex;
   align-items: center;
   gap: var(--space-4);
@@ -129,13 +117,13 @@
   border: 1px solid var(--border-default);
 }
 
-.filter-group {
+.c-filter-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.filter-label {
+.c-filter-label {
   font-size: var(--text-xs);
   font-weight: 600;
   color: var(--text-muted);
@@ -143,7 +131,7 @@
   letter-spacing: 0.05em;
 }
 
-.filter-select {
+.c-filter-select {
   padding: 8px 12px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-default);
@@ -157,12 +145,12 @@
   min-width: 200px;
 }
 
-.filter-select:hover {
+.c-filter-select:hover {
   border-color: var(--border-highlight);
   background: var(--bg-card-hover);
 }
 
-.filter-select:focus {
+.c-filter-select:focus {
   border-color: var(--theme-accent);
   box-shadow: 0 0 0 2px var(--theme-accent-subtle);
 }
@@ -178,19 +166,19 @@
 }
 
 @media (max-width: 1024px) {
-  .horizontal-tabs-container {
+  .c-horizontal-tabs {
     flex-wrap: nowrap;
   }
 }
 
 @media (max-width: 880px) {
-  .history-filters {
+  .l-history-page__filters {
     width: 100%;
   }
 }
 
 @media (max-width: 767px) {
-  .history-filters {
+  .l-history-page__filters {
     flex-wrap: nowrap !important;
     overflow-x: auto !important;
     width: 100%;
@@ -199,19 +187,19 @@
     gap: var(--space-2);
   }
 
-  .filter-btn {
+  .c-filter-btn {
     width: auto !important;
     flex-shrink: 0;
   }
 
-  .period-dropdowns-container {
+  .c-period-filter {
     flex-direction: column;
     align-items: stretch;
     gap: var(--space-3) !important;
     padding: var(--space-3);
   }
 
-  .filter-group {
+  .c-filter-group {
     width: 100%;
   }
 
@@ -226,29 +214,29 @@
     min-width: 0 !important;
   }
 
-  .filter-select {
+  .c-filter-select {
     width: 100%;
     min-width: 0 !important;
   }
 
-  .horizontal-tab-btn {
+  .c-horizontal-tabs__btn {
     padding-inline: var(--space-3);
   }
 }
 
 @media (max-width: 360px) {
-  .horizontal-tab-btn {
+  .c-horizontal-tabs__btn {
     font-size: var(--text-xs);
     padding: var(--space-1) var(--space-2);
     gap: var(--space-1);
   }
 
-  .period-dropdowns-container {
+  .c-period-filter {
     padding: var(--space-2);
   }
 
   .filter-group>div>select,
-  .filter-select {
+  .c-filter-select {
     font-size: var(--text-xs);
     padding: var(--space-1);
   }

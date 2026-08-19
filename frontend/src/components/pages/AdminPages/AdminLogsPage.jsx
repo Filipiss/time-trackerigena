@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { fetchAuditLogs } from '../../../api';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import styles from './AdminLogsPage.module.css';
@@ -153,7 +153,7 @@ export default function AdminLogsPage() {
                                         </span>
                                     </td>
                                     <td>
-                                        <span className={`${styles.badge} ${getActionBadgeClass(log.action)}`}>
+                                        <span className={`${styles['o-badge']} ${getActionBadgeClass(log.action)}`}>
                                             {log.action}
                                         </span>
                                     </td>

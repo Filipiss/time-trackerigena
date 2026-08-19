@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import Spinner from '../../atoms/Spinner/Spinner';
 import CalendarBoard from '../../organisms/CalendarBoard/CalendarBoard';
 import DeadlineModal from '../../organisms/DeadlineModal/DeadlineModal';
@@ -210,7 +210,7 @@ export default function CalendarPage() {
   }
 
   return (
-    <div className="calendar-page-shell fade-in">
+    <div className="calendar-page-shell u-fade-in">
       <CalendarBoard
         monthDate={monthDate}
         monthGrid={monthGrid}

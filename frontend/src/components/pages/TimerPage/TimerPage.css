@@ -1,20 +1,20 @@
-﻿.timer-page {
+﻿.l-timer-page {
   width: 100%;
   overflow-x: hidden;
 }
 
-.timer-tab-content {
+.l-timer-page__content {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
   width: 100%;
 }
 
-.timer-section {
+.l-timer-page__section {
   width: 100%;
 }
 
-.tracker-layout-columns {
+.l-timer-page__columns {
   display: grid;
   grid-template-columns: 1.35fr 0.65fr;
   gap: var(--space-6);
@@ -22,21 +22,21 @@
 }
 
 @media (max-width: 1200px) {
-  .tracker-layout-columns {
+  .l-timer-page__columns {
     grid-template-columns: 1fr;
   }
 
-  .selector-column {
+  .l-timer-page__selector-col {
     order: -1;
   }
 }
 
 @media (max-width: 480px) {
-  .timer-tab-content {
+  .l-timer-page__content {
     gap: var(--space-4);
   }
 
-  .tracker-layout-columns {
+  .l-timer-page__columns {
     gap: var(--space-4);
   }
 }

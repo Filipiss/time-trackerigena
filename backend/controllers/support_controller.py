@@ -12,7 +12,7 @@ from utils.mail import send_new_ticket_email_to_admins
 
 @jwt_required()
 def create_ticket():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.get_json()
     
     if not data or not data.get("subject") or not data.get("message"):
@@ -57,7 +57,7 @@ def create_ticket():
 
 @jwt_required()
 def get_my_tickets():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     db = get_db_session()
     try:
         tickets = db.query(Ticket).filter(Ticket.user_id == user_id).order_by(Ticket.updated_at.desc()).all()
@@ -76,7 +76,7 @@ def get_my_tickets():
 
 @jwt_required()
 def get_ticket_messages(ticket_id):
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     db = get_db_session()
     try:
         # User is either the owner OR an admin
@@ -116,7 +116,7 @@ def get_ticket_messages(ticket_id):
 
 @jwt_required()
 def reply_ticket(ticket_id):
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.get_json()
     
     if not data or not data.get("message"):

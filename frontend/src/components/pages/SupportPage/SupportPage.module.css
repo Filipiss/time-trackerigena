@@ -1,4 +1,4 @@
-.container {
+﻿.container {
     padding: 2rem;
     max-width: 1000px;
     margin: 0 auto;
@@ -145,7 +145,7 @@
     color: var(--text-primary);
 }
 
-.badge {
+.o-badge {
     padding: 4px 8px;
     border-radius: 4px;
     font-size: 0.8rem;

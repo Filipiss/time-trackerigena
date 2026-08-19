@@ -46,7 +46,7 @@ export default function TimerPage({ selectedTask, onSelectTask, refreshTrigger, 
   const loadTodayEntries = useCallback(async () => {
     try {
       setLoading(true);
-      const todayStr = new Date().toISOString().split('T')[0];
+      const todayStr = new Date().toLocaleDateString('en-CA');
       const data = await fetchTimeEntries({
         start_date: todayStr,
         end_date: todayStr,
@@ -97,20 +97,20 @@ export default function TimerPage({ selectedTask, onSelectTask, refreshTrigger, 
   ];
 
   return (
-    <div className="timer-page fade-in">
-      <div className="timer-tab-content">
-        <div className="timer-section">
+    <div className="l-timer-page u-fade-in">
+      <div className="l-timer-page__content">
+        <div className="l-timer-page__section">
           <TimerWidget selectedTask={selectedTask} onSaveSuccess={handleSaveSuccessLocal} />
         </div>
 
-        <div className="tracker-layout-columns">
-          <div className="recent-logs-column">
+        <div className="l-timer-page__columns">
+          <div className="l-timer-page__logs-col">
             {loading ? (
-              <div className="weekday-tab-content glass-card-static" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+              <div className="c-history-panel o-card--static" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
                 {t("Carregando registros de hoje...")}
               </div>
             ) : entries.length === 0 ? (
-              <div className="weekday-tab-content glass-card-static" style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+              <div className="c-history-panel o-card--static" style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-muted)' }}>
                 {t("Nenhum registro cronometrado hoje. Escolha uma tarefa ao lado e inicie o cronômetro!")}
               </div>
             ) : (
@@ -128,7 +128,7 @@ export default function TimerPage({ selectedTask, onSelectTask, refreshTrigger, 
             )}
           </div>
 
-          <div className="selector-column">
+          <div className="l-timer-page__selector-col">
             <TaskSelectorPanel selectedTask={selectedTask} onSelectTask={onSelectTask} refreshTrigger={refreshTrigger + localRefresh} />
           </div>
         </div>

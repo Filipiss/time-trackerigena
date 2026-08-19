@@ -1,4 +1,4 @@
-.modal-overlay {
+﻿.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -160,7 +160,7 @@
   color: var(--color-danger);
 }
 
-.btn-primary {
+.c-btn--primary {
   background: var(--theme-accent);
   color: var(--text-inverse);
   border: none;
@@ -174,11 +174,11 @@
   width: 100%;
 }
 
-.btn-primary:hover:not(:disabled) {
+.c-btn--primary:hover:not(:disabled) {
   background: var(--theme-accent-hover);
 }
 
-.btn-primary:disabled {
+.c-btn--primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }

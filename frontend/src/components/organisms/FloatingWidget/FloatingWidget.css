@@ -1,4 +1,4 @@
-/* ── Widget container ── */
+﻿/* ── Widget container ── */
 .floating-accessibility-widget {
     position: fixed;
     right: 24px;
@@ -38,7 +38,7 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
 }
 
-.widget-float-btn.accessibility-toggle.active {
+.widget-float-btn.accessibility-toggle.is-active {
     background: var(--theme-accent);
     color: var(--text-inverse);
     border-color: var(--theme-accent);
@@ -171,7 +171,7 @@
     background: var(--bg-card-hover);
 }
 
-.toggle-switch-btn.active {
+.toggle-switch-btn.is-active {
     background: var(--theme-accent);
     color: var(--text-inverse);
     border-color: var(--theme-accent);
@@ -206,13 +206,13 @@
     letter-spacing: 0.04em;
 }
 
-.lang-btn.active {
+.lang-btn.is-active {
     background: var(--theme-accent);
     color: var(--text-inverse);
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
 }
 
-.lang-btn:not(.active):hover {
+.lang-btn:not(.is-active):hover {
     color: var(--text-primary);
 }
 

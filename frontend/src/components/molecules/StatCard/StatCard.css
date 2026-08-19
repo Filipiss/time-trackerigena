@@ -1,4 +1,4 @@
-.summary-card {
+.c-stat-card {
   display: flex;
   align-items: center;
   gap: var(--space-4);
@@ -10,25 +10,25 @@
   transition: all var(--transition-base);
 }
 
-.summary-card:hover {
+.c-stat-card:hover {
   transform: translateY(-3px);
   border-color: var(--border-highlight);
   box-shadow: var(--shadow-md);
 }
 
-.overall-card:hover {
+.c-stat-card.overall-card:hover {
   box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
 }
 
-.loco-card:hover {
+.c-stat-card.loco-card:hover {
   box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
 }
 
-.freelas-card:hover {
+.c-stat-card.freelas-card:hover {
   box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
 }
 
-.card-icon {
+.c-stat-card__icon {
   font-size: 2.25rem;
   display: flex;
   align-items: center;
@@ -39,13 +39,13 @@
   background: rgba(255, 255, 255, 0.03);
 }
 
-.card-info {
+.c-stat-card__info {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
 }
 
-.card-label {
+.c-stat-card__label {
   font-size: var(--text-xs);
   color: var(--text-secondary);
   font-weight: 500;
@@ -53,7 +53,7 @@
   letter-spacing: 0.05em;
 }
 
-.card-value {
+.c-stat-card__value {
   font-size: var(--text-xl);
   font-weight: 700;
   color: var(--text-white);

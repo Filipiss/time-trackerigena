@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { fetchAllTicketsAdmin, fetchTicketMessages, replyTicket, updateTicketStatusAdmin, deleteTicketAdmin } from '../../../api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useLanguage } from '../../../contexts/LanguageContext';
@@ -121,7 +121,7 @@ export default function AdminSupportPage() {
                                     <div key={ticket.id} className={styles.ticketCard} onClick={() => openChat(ticket)}>
                                         <div className={styles.ticketHeader}>
                                             <h3>#{ticket.id} - {ticket.subject}</h3>
-                                            <span className={`${styles.badge} ${styles[ticket.status]}`}>
+                                            <span className={`${styles['o-badge']} ${styles[ticket.status]}`}>
                                                 {ticket.status === 'open' ? t('Novo / Aguardando Admin') : ticket.status === 'answered' ? t('Respondido') : t('Resolvido')}
                                             </span>
                                         </div>

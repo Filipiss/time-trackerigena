@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import NavItem from '../../molecules/NavItem/NavItem';
 import UserWidget from '../../molecules/UserWidget/UserWidget';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -30,7 +30,7 @@ export default function Sidebar() {
       const accumulated = parseInt(localStorage.getItem('tracker_accumulated') || '0', 10);
       const startTime = localStorage.getItem('tracker_startTime') ? parseInt(localStorage.getItem('tracker_startTime'), 10) : null;
 
-      if (state === 'running' && startTime) {
+      if (state === 'is-running' && startTime) {
         const elapsed = accumulated + (Date.now() - startTime);
         const totalSeconds = Math.floor(elapsed / 1000);
         const hours = Math.floor(totalSeconds / 3600);
@@ -57,7 +57,7 @@ export default function Sidebar() {
 
   return (
     <aside className="app-sidebar">
-      <div className="sidebar-brand">
+      <div className="l-sidebar__brand">
         <span className="brand-logo" style={{ fontSize: '24px', marginRight: '8px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}>👽</span>
         <h1 className="brand-title">Time Trackerígena</h1>
       </div>
@@ -67,7 +67,7 @@ export default function Sidebar() {
         <UserWidget onNavigateToProfile={() => navigate('/profile')} />
       )}
 
-      <nav className="sidebar-nav">
+      <nav className="l-sidebar__nav">
         {NAV_ITEMS.map((item) => {
           // Bloqueia o menu 'Suporte' de aparecer para Visitantes (not user) ou Administradores 
           if (item.id === '/support' && (!user || user.is_admin)) {
@@ -90,9 +90,9 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="sidebar-footer">
+      <div className="l-sidebar__footer">
         <div className="footer-status">
-          <span className="sidebar-status-dot running" />
+          <span className="sidebar-status-dot is-running" />
           <span className="status-text">{t("Online")}</span>
         </div>
         <div className="footer-version">BETA v1.0.0</div>

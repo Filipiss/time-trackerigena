@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { Sun, Moon, Accessibility, Volume2, VolumeX } from 'lucide-react';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import './FloatingWidget.css';
@@ -122,7 +122,7 @@ export default function FloatingWidget() {
     return (
         <div className="floating-accessibility-widget" ref={menuRef}>
             {isOpen && (
-                <div className="accessibility-panel glass-card-static fade-in">
+                <div className="accessibility-panel o-card--static u-fade-in">
                     <div className="accessibility-panel-header">
                         <h4>{t("Acessibilidade")}</h4>
                     </div>
@@ -142,7 +142,7 @@ export default function FloatingWidget() {
                         <div className="accessibility-control-group flex-row">
                             <span className="control-group-title">{t("Fonte Alternativa")}</span>
                             <button
-                                className={`toggle-switch-btn ${dyslexic ? 'active' : ''}`}
+                                className={`toggle-switch-btn ${dyslexic ? 'is-active' : ''}`}
                                 onClick={() => setDyslexic(prev => !prev)}
                             >
                                 {dyslexic ? t("Ativado") : t("Desativado")}
@@ -153,7 +153,7 @@ export default function FloatingWidget() {
                         <div className="accessibility-control-group flex-row">
                             <span className="control-group-title">{t("Alto Contraste")}</span>
                             <button
-                                className={`toggle-switch-btn ${highContrast ? 'active' : ''}`}
+                                className={`toggle-switch-btn ${highContrast ? 'is-active' : ''}`}
                                 onClick={() => setHighContrast(prev => !prev)}
                             >
                                 {highContrast ? t("Ativado") : t("Desativado")}
@@ -164,7 +164,7 @@ export default function FloatingWidget() {
                         <div className="accessibility-control-group flex-row">
                             <span className="control-group-title">{t("Leitor por Voz (Hover)")}</span>
                             <button
-                                className={`toggle-switch-btn speech-btn ${speechEnabled ? 'active' : ''}`}
+                                className={`toggle-switch-btn speech-btn ${speechEnabled ? 'is-active' : ''}`}
                                 onClick={() => setSpeechEnabled(prev => !prev)}
                                 title={t("Lê os textos ao passar o mouse ou focar no elemento")}
                             >
@@ -178,14 +178,14 @@ export default function FloatingWidget() {
                             <span className="control-group-title">{t("Idioma / Language")}</span>
                             <div className="lang-buttons-row">
                                 <button
-                                    className={`lang-btn ${language === 'pt' ? 'active' : ''}`}
+                                    className={`lang-btn ${language === 'pt' ? 'is-active' : ''}`}
                                     onClick={() => setLanguage('pt')}
                                     title="Português"
                                 >
                                     PT
                                 </button>
                                 <button
-                                    className={`lang-btn ${language === 'en' ? 'active' : ''}`}
+                                    className={`lang-btn ${language === 'en' ? 'is-active' : ''}`}
                                     onClick={() => setLanguage('en')}
                                     title="English"
                                 >
@@ -209,7 +209,7 @@ export default function FloatingWidget() {
 
                 <button
                     onClick={() => setIsOpen(prev => !prev)}
-                    className={`widget-float-btn accessibility-toggle ${isOpen ? 'active' : ''}`}
+                    className={`widget-float-btn accessibility-toggle ${isOpen ? 'is-active' : ''}`}
                     title={t("Opções de Acessibilidade")}
                 >
                     <Accessibility size={20} strokeWidth={2} />

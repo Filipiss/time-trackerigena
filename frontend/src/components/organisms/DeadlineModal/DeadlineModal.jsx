@@ -50,10 +50,10 @@ export default function DeadlineModal({
 
   return (
     <div className="calendar-modal-overlay" onClick={onClose}>
-      <div className="calendar-modal glass-card-static" onClick={(event) => event.stopPropagation()}>
+      <div className="calendar-modal o-card--static" onClick={(event) => event.stopPropagation()}>
         <div className="calendar-modal-header">
           <h3>{editingEventId ? `✏️ ${t('Editar Compromisso')}` : `📌 ${t('Novo Compromisso')}`}</h3>
-          <button className="btn-icon" onClick={onClose}>✕</button>
+          <button className="c-btn--icon" onClick={onClose}>✕</button>
         </div>
 
         <div className="calendar-modal-body">
@@ -136,12 +136,12 @@ export default function DeadlineModal({
 
         <div className="calendar-modal-actions">
           {editingEventId ? (
-            <button className="btn btn-ghost" onClick={onRemoveDeadline} disabled={saving} style={{ color: 'var(--color-danger)' }}>
+            <button className="c-btn c-btn--ghost" onClick={onRemoveDeadline} disabled={saving} style={{ color: 'var(--color-danger)' }}>
               {t('Remover Compromisso')}
             </button>
           ) : null}
-          <button className="btn btn-ghost" onClick={onClose}>{t('Cancelar')}</button>
-          <button className="btn btn-primary" onClick={onSave} disabled={saving}>{saving ? t('Salvando...') : t('Salvar')}</button>
+          <button className="c-btn c-btn--ghost" onClick={onClose}>{t('Cancelar')}</button>
+          <button className="c-btn c-btn--primary" onClick={onSave} disabled={saving}>{saving ? t('Salvando...') : t('Salvar')}</button>
         </div>
       </div>
     </div>

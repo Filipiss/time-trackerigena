@@ -1,4 +1,4 @@
-.container {
+﻿.container {
     color: var(--text-primary);
     max-width: 1200px;
     margin: 0 auto;
@@ -82,7 +82,7 @@
     border-bottom: none;
 }
 
-.badge {
+.o-badge {
     padding: 4px 10px;
     border-radius: 12px;
     font-size: 0.75rem;
@@ -91,7 +91,7 @@
     text-transform: uppercase;
 }
 
-.active {
+.is-active {
     background-color: rgba(16, 185, 129, 0.15);
     color: var(--color-success);
 }
@@ -116,7 +116,7 @@
     gap: 8px;
 }
 
-.btn {
+.c-btn {
     padding: 6px 14px;
     border: 1px solid var(--border-default);
     border-radius: var(--radius-sm);
@@ -127,7 +127,7 @@
     transition: all var(--transition-fast);
 }
 
-.btn:hover {
+.c-btn:hover {
     background-color: var(--bg-card-hover);
     color: var(--text-primary);
 }

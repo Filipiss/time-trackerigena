@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Eye, EyeOff } from 'lucide-react';
@@ -84,7 +84,7 @@ export default function LoginModal({ onClose, onSwitchToRegister, onForgotPasswo
                         )}
                     </div>
 
-                    <button type="submit" className="btn-primary" disabled={loading}>
+                    <button type="submit" className="c-btn--primary" disabled={loading}>
                         {loading ? 'Entrando…' : 'Entrar'}
                     </button>
                 </form>

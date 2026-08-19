@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { fetchMyTickets, createTicket, fetchTicketMessages, replyTicket } from '../../../api';
 import { useAuth } from '../../../contexts/AuthContext';
 import styles from './SupportPage.module.css';
@@ -147,7 +147,7 @@ export default function SupportPage() {
                                     <div key={t.id} className={styles.ticketCard} onClick={() => openChat(t)}>
                                         <div className={styles.ticketHeader}>
                                             <h3>{t.subject}</h3>
-                                            <span className={`${styles.badge} ${styles[t.status]}`}>
+                                            <span className={`${styles['o-badge']} ${styles[t.status]}`}>
                                                 {t.status === 'open' ? 'Aguardando Atendimento' : t.status === 'answered' ? 'Respondido' : 'Resolvido'}
                                             </span>
                                         </div>
@@ -164,7 +164,7 @@ export default function SupportPage() {
                         <div className={styles.chatHeader}>
                             <button className={styles.btnBack} onClick={() => setSelectedTicket(null)}>⬅ Voltar para lista</button>
                             <h2>{selectedTicket.subject}</h2>
-                            <span className={`${styles.badge} ${styles[selectedTicket.status]}`}>
+                            <span className={`${styles['o-badge']} ${styles[selectedTicket.status]}`}>
                                 {selectedTicket.status === 'open' ? 'Aguardando Atendimento' : selectedTicket.status === 'answered' ? 'Respondido' : 'Resolvido'}
                             </span>
                         </div>
