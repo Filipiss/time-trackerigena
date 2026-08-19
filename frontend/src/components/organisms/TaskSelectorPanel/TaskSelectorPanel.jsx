@@ -19,6 +19,9 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeProjectId, setActiveProjectId] = useState(null);
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [showAllProjects, setShowAllProjects] = useState(false);
+  const [showAllTasks, setShowAllTasks] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -61,6 +64,10 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
     return Array.from(values).filter(Boolean);
   }, [projects]);
 
+  const visibleCategories = useMemo(() => {
+    return showAllCategories ? categories : categories.slice(0, 5);
+  }, [categories, showAllCategories]);
+
   const selectedProject = useMemo(
     () => projects.find((project) => project.id === selectedTask?.project_id) || null,
     [projects, selectedTask],
@@ -71,6 +78,10 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
     () => projects.filter((project) => project.category === effectiveCategory),
     [effectiveCategory, projects],
   );
+
+  const visibleProjects = useMemo(() => {
+    return showAllProjects ? projectsInCategory : projectsInCategory.slice(0, 5);
+  }, [projectsInCategory, showAllProjects]);
 
   const effectiveProjectId =
     activeProjectId ??
@@ -83,9 +94,15 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
     [effectiveProjectId, tasks],
   );
 
+  const visibleTasks = useMemo(() => {
+    return showAllTasks ? tasksInProject : tasksInProject.slice(0, 5);
+  }, [tasksInProject, showAllTasks]);
+
   const handleSelectCategory = (category) => {
     setActiveCategory(category);
     setActiveProjectId(null);
+    setShowAllProjects(false);
+    setShowAllTasks(false);
   };
 
   if (loading) {
@@ -116,10 +133,10 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
             </div>
             <div className="c-selector__tabs-scroll">
               <div className="c-selector__tabs">
-                {categories.map((category) => (
+                {visibleCategories.map((category) => (
                   <TabButton
                     key={category}
-                    className={`c-selector__tab ${effectiveCategory === category ? 'is-active' : ''}`}
+                    className="c-selector__tab"
                     isActive={effectiveCategory === category}
                     dotColor={`var(--color-${category})`}
                     onClick={() => handleSelectCategory(category)}
@@ -128,13 +145,22 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
                         ? { borderColor: `var(--color-${category})`, color: `var(--color-${category})` }
                         : undefined
                     }
+                    icon={<Briefcase size={14} strokeWidth={1.5} />}
                   >
-                    <Briefcase size={14} style={{ marginRight: '6px', display: 'inline-block', verticalAlign: 'middle' }} strokeWidth={1.5} />
                     {CATEGORY_LABELS[category] || category}
                   </TabButton>
                 ))}
               </div>
             </div>
+            {categories.length > 5 && (
+              <button
+                type="button"
+                className="c-selector__toggle-btn"
+                onClick={() => setShowAllCategories(p => !p)}
+              >
+                {showAllCategories ? t("Recolher") : t("Mostrar tudo")}
+              </button>
+            )}
           </div>
 
           <div className="c-selector__filters">
@@ -144,20 +170,34 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
                 <p>{t("Nenhum projeto nesta categoria.")}</p>
               </div>
             ) : (
-              <div className="c-selector__tabs-scroll">
-                <div className="c-selector__tabs">
-                  {projectsInCategory.map((project) => (
-                    <TabButton
-                      key={project.id}
-                      className={`c-selector__tab ${effectiveProjectId === project.id ? 'is-active' : ''}`}
-                      isActive={effectiveProjectId === project.id}
-                      onClick={() => setActiveProjectId(project.id)}
-                    >
-                      <Folder size={14} style={{ marginRight: '6px' }} strokeWidth={1.5} /> {project.name}
-                    </TabButton>
-                  ))}
+              <>
+                <div className="c-selector__tabs-scroll">
+                  <div className="c-selector__tabs">
+                    {visibleProjects.map((project) => (
+                      <TabButton
+                        key={project.id}
+                        className={`c-selector__tab ${effectiveProjectId === project.id ? 'is-active' : ''}`}
+                        isActive={effectiveProjectId === project.id}
+                        onClick={() => {
+                          setActiveProjectId(project.id);
+                          setShowAllTasks(false);
+                        }}
+                      >
+                        <Folder size={14} style={{ marginRight: '6px' }} strokeWidth={1.5} /> {project.name}
+                      </TabButton>
+                    ))}
+                  </div>
                 </div>
-              </div>
+                {projectsInCategory.length > 5 && (
+                  <button
+                    type="button"
+                    className="c-selector__toggle-btn"
+                    onClick={() => setShowAllProjects(p => !p)}
+                  >
+                    {showAllProjects ? t("Recolher") : t("Mostrar tudo")}
+                  </button>
+                )}
+              </>
             )}
           </div>
 
@@ -169,9 +209,18 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
               </div>
             ) : (
               <div className="c-selector__grid">
-                {tasksInProject.map((task) => (
+                {visibleTasks.map((task) => (
                   <TaskCard key={task.id} task={task} selected={selectedTask?.id === task.id} onClick={onSelectTask} />
                 ))}
+                {tasksInProject.length > 5 && (
+                  <button
+                    type="button"
+                    className="c-selector__toggle-btn c-selector__toggle-btn--grid"
+                    onClick={() => setShowAllTasks(p => !p)}
+                  >
+                    {showAllTasks ? t("Recolher") : t("Mostrar tudo")}
+                  </button>
+                )}
               </div>
             )}
           </div>

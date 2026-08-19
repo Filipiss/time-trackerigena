@@ -59,11 +59,11 @@ function SortableCategory({ category, activeTab, setActiveTab }) {
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <TabButton
-        className={`tab-btn ${activeTab === category.name.toLowerCase() ? 'active-loco' : ''}`}
+        className="c-tab-btn"
         isActive={activeTab === category.name.toLowerCase()}
         onClick={() => setActiveTab(category.name.toLowerCase())}
+        icon={<Briefcase size={14} strokeWidth={1.5} />}
       >
-        <Briefcase size={14} style={{ marginRight: '6px', display: 'inline-block', verticalAlign: 'middle' }} strokeWidth={1.5} />
         {category.name}
       </TabButton>
     </div>
@@ -96,6 +96,12 @@ export default function TaskManagerBoard({ onTaskChange }) {
   const [newTaskBudgetedHours, setNewTaskBudgetedHours] = useState('');
   const [creatingTask, setCreatingTask] = useState(false);
   const [activeTab, setActiveTab] = useState('loco');
+  const [categoryPage, setCategoryPage] = useState(1);
+  const [prevCategoriesLength, setPrevCategoriesLength] = useState(categories.length);
+  if (categories.length !== prevCategoriesLength) {
+    setPrevCategoriesLength(categories.length);
+    setCategoryPage(1);
+  }
 
   const [selectedCategoryToManage, setSelectedCategoryToManage] = useState('');
   const [isCategoryNameFocused, setIsCategoryNameFocused] = useState(false);
@@ -443,6 +449,10 @@ export default function TaskManagerBoard({ onTaskChange }) {
     [activeTab, projects],
   );
 
+  const visibleCategories = useMemo(() => {
+    return categories.slice((categoryPage - 1) * 5, categoryPage * 5);
+  }, [categories, categoryPage]);
+
   if (loading) {
     return <div className="c-loading"><Spinner /></div>;
   }
@@ -592,14 +602,36 @@ export default function TaskManagerBoard({ onTaskChange }) {
           </form>
         </div>
 
-        <div className="category-tabs-scroll" style={{ marginBottom: 'var(--space-4)' }}>
-          <SortableContext items={categories.map(c => `cat-${c.id}`)} strategy={horizontalListSortingStrategy}>
-            <div className="category-tabs">
-              {categories.map((category) => (
-                <SortableCategory key={category.id} category={category} activeTab={activeTab} setActiveTab={setActiveTab} />
-              ))}
-            </div>
-          </SortableContext>
+        <div className="category-tabs-wrapper-with-paging" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-4)' }}>
+          {categories.length > 5 && (
+            <button
+              type="button"
+              disabled={categoryPage === 1}
+              onClick={() => setCategoryPage(p => p - 1)}
+              className="c-tab-page-btn"
+            >
+              &larr;
+            </button>
+          )}
+          <div className="category-tabs-scroll" style={{ flex: 1, marginBottom: 0 }}>
+            <SortableContext items={visibleCategories.map(c => `cat-${c.id}`)} strategy={horizontalListSortingStrategy}>
+              <div className="category-tabs">
+                {visibleCategories.map((category) => (
+                  <SortableCategory key={category.id} category={category} activeTab={activeTab} setActiveTab={setActiveTab} />
+                ))}
+              </div>
+            </SortableContext>
+          </div>
+          {categories.length > 5 && (
+            <button
+              type="button"
+              disabled={categoryPage === Math.ceil(categories.length / 5)}
+              onClick={() => setCategoryPage(p => p + 1)}
+              className="c-tab-page-btn"
+            >
+              &rarr;
+            </button>
+          )}
         </div>
 
         <SortableContext items={categoryProjects.map(p => `proj-${p.id}`)} strategy={verticalListSortingStrategy}>

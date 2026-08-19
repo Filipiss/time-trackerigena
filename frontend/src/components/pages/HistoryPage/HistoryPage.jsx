@@ -424,13 +424,19 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
           {t("Histórico de Sessões")}
         </h2>
         <div className="l-history-page__filters">
-          <TabButton className={`filter-btn ${categoryFilter === 'all' ? 'is-active' : ''}`} isActive={categoryFilter === 'all'} onClick={() => setCategoryFilter('all')}>{t("Todos")}</TabButton>
+          <TabButton
+            className="c-filter-btn"
+            isActive={categoryFilter === 'all'}
+            onClick={() => setCategoryFilter('all')}
+          >
+            {t("Todos")}
+          </TabButton>
           {categories.map((category) => {
             const key = category.name.toLowerCase();
             return (
               <TabButton
                 key={category.id}
-                className={`filter-btn ${categoryFilter === key ? 'is-active' : ''}`}
+                className="c-filter-btn"
                 isActive={categoryFilter === key}
                 dotColor={`var(--color-${key})`}
                 onClick={() => setCategoryFilter(key)}

@@ -16,6 +16,14 @@ export default function HistoryTable({
 }) {
   const { t } = useLanguage();
   const [collapsedDays, setCollapsedDays] = useState(new Set());
+  const [currentDayPage, setCurrentDayPage] = useState(1);
+  const [entryPageMap, setEntryPageMap] = useState({});
+
+  const [prevListLength, setPrevListLength] = useState(groupedByDayList.length);
+  if (groupedByDayList.length !== prevListLength) {
+    setPrevListLength(groupedByDayList.length);
+    setCurrentDayPage(1);
+  }
 
   const toggleDay = (dateStr) => {
     setCollapsedDays((prev) => {
@@ -29,10 +37,16 @@ export default function HistoryTable({
     });
   };
 
-  const renderGroupedRows = () => {
+  const totalDayPages = Math.ceil(groupedByDayList.length / 7);
+  const visibleDayGroups = groupedByDayList.slice(
+    (currentDayPage - 1) * 7,
+    currentDayPage * 7
+  );
+
+  const renderGroupedRows = (dayGroups) => {
     const rows = [];
 
-    groupedByDayList.forEach((group) => {
+    dayGroups.forEach((group) => {
       // 1. Push the day header row as a subheader separating the entries
       rows.push(
         <tr key={`header-${group.dateStr}`} className="c-history-table__day-header-row">
@@ -61,10 +75,44 @@ export default function HistoryTable({
 
       // 2. Push entries rows for this day if expanded
       if (!collapsedDays.has(group.dateStr)) {
-        const entries = group.entries;
+        let groupItems = [];
+        if (categoryFilter === 'all') {
+          groupItems = group.entries || [];
+        } else {
+          // Grouped by task/project if filtered by category (original logic)
+          const taskGroups = {};
+          (group.entries || []).forEach((entry) => {
+            const groupKey = entry.task_id ?? `deleted-${entry.id}`;
+            if (!taskGroups[groupKey]) {
+              taskGroups[groupKey] = {
+                task_id: entry.task_id,
+                task_name: entry.task_name,
+                project_name: entry.project_name,
+                task_color: entry.task_color,
+                task_category: entry.task_category,
+                start_time: entry.start_time,
+                duration_seconds: 0,
+                notes: [],
+                ids: [],
+              };
+            }
+            taskGroups[groupKey].duration_seconds += entry.duration_seconds;
+            taskGroups[groupKey].ids.push(entry.id);
+            if (entry.notes?.trim()) {
+              taskGroups[groupKey].notes.push(entry.notes.trim());
+            }
+          });
+          groupItems = Object.values(taskGroups);
+        }
+
+        const totalEntryPages = Math.ceil(groupItems.length / 5);
+        const currentEntryPage = entryPageMap[group.dateStr] || 1;
+        const safeEntryPage = currentEntryPage > totalEntryPages ? 1 : currentEntryPage;
+
+        const visibleEntries = groupItems.slice((safeEntryPage - 1) * 5, safeEntryPage * 5);
 
         if (categoryFilter === 'all') {
-          entries.forEach((entry) => {
+          visibleEntries.forEach((entry) => {
             rows.push(
               <tr key={entry.id} className="c-history-table__row">
                 <td>
@@ -96,31 +144,7 @@ export default function HistoryTable({
             );
           });
         } else {
-          // Grouped by task/project if filtered by category (original logic)
-          const taskGroups = {};
-          entries.forEach((entry) => {
-            const groupKey = entry.task_id ?? `deleted-${entry.id}`;
-            if (!taskGroups[groupKey]) {
-              taskGroups[groupKey] = {
-                task_id: entry.task_id,
-                task_name: entry.task_name,
-                project_name: entry.project_name,
-                task_color: entry.task_color,
-                task_category: entry.task_category,
-                start_time: entry.start_time,
-                duration_seconds: 0,
-                notes: [],
-                ids: [],
-              };
-            }
-            taskGroups[groupKey].duration_seconds += entry.duration_seconds;
-            taskGroups[groupKey].ids.push(entry.id);
-            if (entry.notes?.trim()) {
-              taskGroups[groupKey].notes.push(entry.notes.trim());
-            }
-          });
-
-          Object.values(taskGroups).forEach((tGroup) => {
+          visibleEntries.forEach((tGroup) => {
             const deleteKey = tGroup.task_id ?? tGroup.ids[0];
             rows.push(
               <tr key={`taskGroup-${deleteKey}`} className="c-history-table__row">
@@ -154,6 +178,36 @@ export default function HistoryTable({
             );
           });
         }
+
+        if (totalEntryPages > 1) {
+          rows.push(
+            <tr key={`entry-paging-${group.dateStr}`} className="c-history-table__entry-pagination-row">
+              <td colSpan={6}>
+                <div className="c-entry-pagination">
+                  <button
+                    type="button"
+                    disabled={safeEntryPage === 1}
+                    onClick={() => setEntryPageMap(prev => ({ ...prev, [group.dateStr]: safeEntryPage - 1 }))}
+                    className="c-entry-pagination-btn"
+                  >
+                    &larr;
+                  </button>
+                  <span className="c-entry-pagination-info">
+                    {t("Registros")} {((safeEntryPage - 1) * 5) + 1} - {Math.min(safeEntryPage * 5, groupItems.length)} {t("de")} {groupItems.length}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={safeEntryPage === totalEntryPages}
+                    onClick={() => setEntryPageMap(prev => ({ ...prev, [group.dateStr]: safeEntryPage + 1 }))}
+                    className="c-entry-pagination-btn"
+                  >
+                    &rarr;
+                  </button>
+                </div>
+              </td>
+            </tr>
+          );
+        }
       }
     });
 
@@ -161,8 +215,8 @@ export default function HistoryTable({
   };
 
   return (
-    <div className="c-history-panel o-card--static u-fade-in" style={{ padding: '0', overflow: 'hidden' }}>
-      <div className="c-history-table__wrapper">
+    <div className="c-history-panel o-card--static u-fade-in" style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <div className="c-history-table__wrapper" style={{ flex: 1 }}>
         <table className="c-history-table">
           <thead>
             <tr>
@@ -174,9 +228,32 @@ export default function HistoryTable({
               <th className="c-history-table__actions-col">{t("Ações")}</th>
             </tr>
           </thead>
-          <tbody>{renderGroupedRows()}</tbody>
+          <tbody>{renderGroupedRows(visibleDayGroups)}</tbody>
         </table>
       </div>
+      {totalDayPages > 1 && (
+        <div className="c-history-table__day-pagination">
+          <button
+            type="button"
+            disabled={currentDayPage === 1}
+            onClick={() => setCurrentDayPage(p => p - 1)}
+            className="c-pagination-btn"
+          >
+            &larr; {t("Anteriores")}
+          </button>
+          <span className="c-pagination-info">
+            {t("Página de Dias")} {currentDayPage} {t("de")} {totalDayPages}
+          </span>
+          <button
+            type="button"
+            disabled={currentDayPage === totalDayPages}
+            onClick={() => setCurrentDayPage(p => p + 1)}
+            className="c-pagination-btn"
+          >
+            {t("Próximos")} &rarr;
+          </button>
+        </div>
+      )}
     </div>
   );
 }

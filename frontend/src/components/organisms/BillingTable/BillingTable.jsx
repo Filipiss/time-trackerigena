@@ -1,4 +1,5 @@
-﻿import CurrencySelect from '../../molecules/CurrencySelect/CurrencySelect';
+﻿import { useState } from 'react';
+import CurrencySelect from '../../molecules/CurrencySelect/CurrencySelect';
 import { CURRENCY_SYMBOLS } from '../../../utils/currency';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { Pencil } from 'lucide-react';
@@ -16,6 +17,16 @@ export default function BillingTable({
   onEdit,
 }) {
   const { t } = useLanguage();
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [prevListLength, setPrevListLength] = useState(taskTotalsList.length);
+  if (taskTotalsList.length !== prevListLength) {
+    setPrevListLength(taskTotalsList.length);
+    setCurrentPage(1);
+  }
+
+  const totalPages = Math.ceil(taskTotalsList.length / 5);
+  const visibleTotals = taskTotalsList.slice((currentPage - 1) * 5, currentPage * 5);
 
   return (
     <div className="values-section-card o-card--static u-fade-in">
@@ -51,7 +62,7 @@ export default function BillingTable({
               </tr>
             </thead>
             <tbody>
-              {taskTotalsList.map((item, index) => {
+              {visibleTotals.map((item, index) => {
                 const hours = item.totalSeconds / 3600;
                 const earned = hours * item.hourlyRate;
                 const totalConverted = convertCurrency(earned, item.currency, targetCurrency, exchangeRates);
@@ -84,6 +95,33 @@ export default function BillingTable({
                   </tr>
                 );
               })}
+              {totalPages > 1 && (
+                <tr className="c-billing-table__pagination-row">
+                  <td colSpan={7}>
+                    <div className="c-entry-pagination" style={{ marginBlock: '12px' }}>
+                      <button
+                        type="button"
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage(p => p - 1)}
+                        className="c-entry-pagination-btn"
+                      >
+                        &larr;
+                      </button>
+                      <span className="c-entry-pagination-info">
+                        {t("Tarefas")} {((currentPage - 1) * 5) + 1} - {Math.min(currentPage * 5, taskTotalsList.length)} {t("de")} {taskTotalsList.length}
+                      </span>
+                      <button
+                        type="button"
+                        disabled={currentPage === totalPages}
+                        onClick={() => setCurrentPage(p => p + 1)}
+                        className="c-entry-pagination-btn"
+                      >
+                        &rarr;
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )}
               <tr className="values-totals-row">
                 <td colSpan={5} className="totals-label-cell">{t("Total Geral")}</td>
                 <td className="font-mono overall-eur-total">{CURRENCY_SYMBOLS[targetCurrency]} {totalInTargetCurrency.toFixed(2)}</td>

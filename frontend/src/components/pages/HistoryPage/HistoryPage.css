@@ -43,27 +43,15 @@
   white-space: nowrap;
 }
 
-.c-filter-btn:hover:not(.is-active):not(.active-loco):not(.active-freelas) {
+.c-filter-btn:hover:not(.is-active) {
   color: var(--text-primary);
   background: rgba(255, 255, 255, 0.05);
 }
 
-.filter-btn.is-active {
+.c-filter-btn.is-active {
   background: var(--gradient-primary);
   color: var(--text-white);
   box-shadow: 0 2px 8px rgba(6, 182, 212, 0.2);
-}
-
-.filter-btn-loco.active-loco {
-  background: var(--gradient-loco);
-  color: var(--text-white);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
-}
-
-.filter-btn-freelas.active-freelas {
-  background: var(--gradient-freelas);
-  color: #1a1a2e;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
 }
 
 .history-content-layout {
