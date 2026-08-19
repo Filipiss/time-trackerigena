@@ -1,24 +1,24 @@
-﻿.weekday-tab-content {
+﻿.c-history-panel {
   padding: 0;
 }
 
 /* Divisores de Dia na tabela do Histórico */
-.day-group-header-row td {
+.c-history-table__day-header-row td {
   padding: var(--space-3) var(--space-6) var(--space-3) 0 !important;
   background: var(--bg-deep) !important;
   border-bottom: 1.5px solid var(--border-default) !important;
   border-top: 1.5px solid var(--border-default) !important;
 }
 
-:root[data-theme='light'] .day-group-header-row td {
+:root[data-theme='light'] .c-history-table__day-header-row td {
   background: #f1f5f9 !important;
 }
 
-.day-group-header-row:first-child td {
+.c-history-table__day-header-row:first-child td {
   border-top: none !important;
 }
 
-.day-group-header-content {
+.c-history-table__day-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -29,7 +29,7 @@
   box-sizing: border-box;
 }
 
-.day-title-area {
+.c-history-table__day-title-area {
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -52,18 +52,18 @@
   color: var(--text-primary);
 }
 
-.day-title {
+.c-history-table__day-title {
   font-size: var(--text-sm);
   color: var(--text-primary);
   font-weight: 700;
 }
 
-.day-date {
+.c-history-table__day-date {
   font-size: var(--text-xs);
   color: var(--text-muted);
 }
 
-.day-total {
+.c-history-table__day-total {
   font-size: var(--text-xs);
   color: var(--theme-accent);
   font-weight: 700;
@@ -73,13 +73,13 @@
   border: 1px solid var(--border-default);
 }
 
-.history-table-wrapper {
+.c-history-table__wrapper {
   overflow-x: auto;
   width: 100%;
   max-width: 100%;
 }
 
-.history-table {
+.c-history-table {
   width: 100%;
   min-width: 720px;
   table-layout: fixed;
@@ -88,37 +88,37 @@
   font-size: var(--text-sm);
 }
 
-.history-table th:nth-child(1),
-.history-table td:nth-child(1) {
+.c-history-table th:nth-child(1),
+.c-history-table td:nth-child(1) {
   width: 150px;
 }
 
-.history-table th:nth-child(2),
-.history-table td:nth-child(2) {
+.c-history-table th:nth-child(2),
+.c-history-table td:nth-child(2) {
   width: 180px;
 }
 
-.history-table th:nth-child(3),
-.history-table td:nth-child(3) {
+.c-history-table th:nth-child(3),
+.c-history-table td:nth-child(3) {
   width: 100px;
 }
 
-.history-table th:nth-child(4),
-.history-table td:nth-child(4) {
+.c-history-table th:nth-child(4),
+.c-history-table td:nth-child(4) {
   width: 110px;
 }
 
-.history-table th:nth-child(5),
-.history-table td:nth-child(5) {
+.c-history-table th:nth-child(5),
+.c-history-table td:nth-child(5) {
   width: auto;
 }
 
-.history-table th:nth-child(6),
-.history-table td:nth-child(6) {
+.c-history-table th:nth-child(6),
+.c-history-table td:nth-child(6) {
   width: 90px;
 }
 
-.history-table th {
+.c-history-table th {
   padding: var(--space-4) var(--space-6);
   background: var(--bg-deep);
   color: var(--text-secondary);
@@ -129,22 +129,22 @@
   letter-spacing: 0.05em;
 }
 
-.history-table td {
+.c-history-table td {
   padding: var(--space-4) var(--space-6);
   border-bottom: 1px solid var(--border-default);
   color: var(--text-primary);
   vertical-align: middle;
 }
 
-.history-row {
+.c-history-table__row {
   transition: background-color var(--transition-fast);
 }
 
-.history-row:hover {
+.c-history-table__row:hover {
   background-color: var(--bg-card-hover);
 }
 
-.history-row:last-child td {
+.c-history-table__row:last-child td {
   border-bottom: 1px solid var(--border-default);
 }
 
@@ -155,7 +155,7 @@
   font-weight: 600;
 }
 
-.task-color-dot {
+.o-color-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -198,12 +198,12 @@
   font-style: italic;
 }
 
-.actions-column {
+.c-history-table__actions-col {
   width: 90px;
   text-align: center;
 }
 
-.actions-cell {
+.c-history-table__actions-cell {
   text-align: center;
   vertical-align: middle;
 }
@@ -215,15 +215,15 @@
   gap: var(--space-2);
 }
 
-.edit-action-btn,
-.delete-action-btn,
-.confirm-delete-btn,
-.cancel-delete-btn {
+.c-history-table__edit-btn,
+.c-history-table__delete-btn,
+.c-history-table__confirm-btn,
+.c-history-table__cancel-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-default);
   background: var(--bg-surface);
@@ -232,69 +232,69 @@
   transition: all var(--transition-base);
 }
 
-.edit-action-btn:hover {
+.c-history-table__edit-btn:hover {
   background: var(--bg-card-hover);
   color: var(--text-primary);
   border-color: var(--border-highlight);
 }
 
-.delete-action-btn {
+.c-history-table__delete-btn {
   color: var(--text-muted);
 }
 
-.delete-action-btn:hover {
+.c-history-table__delete-btn:hover {
   background: rgba(239, 68, 68, 0.08);
   color: var(--color-danger);
   border-color: rgba(239, 68, 68, 0.2);
 }
 
-.delete-confirm {
+.c-history-table__delete-confirm {
   display: flex;
   gap: var(--space-1);
 }
 
-.confirm-delete-btn {
+.c-history-table__confirm-btn {
   background: var(--color-danger);
   color: var(--text-white);
   border-color: var(--color-danger);
 }
 
-.confirm-delete-btn:hover {
+.c-history-table__confirm-btn:hover {
   background: #ef4444;
   border-color: #ef4444;
 }
 
-.cancel-delete-btn {
+.c-history-table__cancel-btn {
   background: var(--bg-card-hover);
   color: var(--text-primary);
 }
 
-.cancel-delete-btn:hover {
+.c-history-table__cancel-btn:hover {
   background: var(--bg-deep);
 }
 
 @media (max-width: 880px) {
-  .weekday-tab-content {
+  .c-history-panel {
     padding: var(--space-5);
   }
 
-  .history-table th,
-  .history-table td {
+  .c-history-table th,
+  .c-history-table td {
     padding: var(--space-3) var(--space-4);
   }
 }
 
 @media (max-width: 767px) {
-  .weekday-tab-content {
+  .c-history-panel {
     padding: var(--space-3);
   }
 
-  .history-table-wrapper {
+  .c-history-table__wrapper {
     overflow-x: hidden;
   }
 
   /* --- Make the table a flex column container --- */
-  .history-table {
+  .c-history-table {
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
@@ -304,11 +304,11 @@
     table-layout: auto !important;
   }
 
-  .history-table thead {
+  .c-history-table thead {
     display: none !important;
   }
 
-  .history-table tbody {
+  .c-history-table tbody {
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
@@ -316,13 +316,13 @@
   }
 
   /* --- Day group header as full-width block --- */
-  .day-group-header-row {
+  .c-history-table__day-header-row {
     display: block !important;
     width: 100% !important;
     margin-top: var(--space-2) !important;
   }
 
-  .day-group-header-row td {
+  .c-history-table__day-header-row td {
     display: block !important;
     width: 100% !important;
     padding: var(--space-2) var(--space-3) var(--space-2) 0 !important;
@@ -330,7 +330,7 @@
     border-radius: var(--radius-md);
   }
 
-  .day-group-header-content {
+  .c-history-table__day-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -342,7 +342,7 @@
   }
 
   /* --- Each history row becomes a mobile card --- */
-  .history-table tr.history-row {
+  .c-history-table tr.c-history-table__row {
     display: flex !important;
     flex-wrap: wrap !important;
     align-items: center;
@@ -356,7 +356,7 @@
   }
 
   /* Reset each td to inline-block so flex can arrange them */
-  .history-table tr.history-row td {
+  .c-history-table tr.c-history-table__row td {
     display: inline-flex !important;
     align-items: center;
     padding: 0 !important;
@@ -365,8 +365,8 @@
     vertical-align: middle;
   }
 
-  /* Col 1 — Project badge: row 1 left */
-  .history-table tr.history-row td:nth-child(1) {
+  /* Col 1 — Project o-badge: row 1 left */
+  .c-history-table tr.c-history-table__row td:nth-child(1) {
     flex: 1 1 auto;
     min-width: 0;
     order: 1;
@@ -375,7 +375,7 @@
   }
 
   /* Col 4 — Date: row 1 right */
-  .history-table tr.history-row td:nth-child(4) {
+  .c-history-table tr.c-history-table__row td:nth-child(4) {
     flex: 0 0 auto;
     order: 2;
     font-size: var(--text-xs);
@@ -383,7 +383,7 @@
   }
 
   /* Row break after col 4 — force col 2 to new flex line */
-  .history-table tr.history-row td:nth-child(4)::after {
+  .c-history-table tr.c-history-table__row td:nth-child(4)::after {
     content: '';
     display: block;
     flex-basis: 100%;
@@ -391,14 +391,14 @@
   }
 
   /* Col 2 — Task name: row 2 left */
-  .history-table tr.history-row td:nth-child(2) {
+  .c-history-table tr.c-history-table__row td:nth-child(2) {
     flex: 1 1 auto;
     min-width: 0;
     order: 3;
   }
 
   /* Col 3 — Duration: row 2 right */
-  .history-table tr.history-row td:nth-child(3) {
+  .c-history-table tr.c-history-table__row td:nth-child(3) {
     flex: 0 0 auto;
     order: 4;
     font-weight: 700;
@@ -406,7 +406,7 @@
   }
 
   /* Row break after col 3 — force col 5 to new flex line */
-  .history-table tr.history-row td:nth-child(3)::after {
+  .c-history-table tr.c-history-table__row td:nth-child(3)::after {
     content: '';
     display: block;
     flex-basis: 100%;
@@ -414,7 +414,7 @@
   }
 
   /* Col 5 — Notes: row 3 left */
-  .history-table tr.history-row td:nth-child(5) {
+  .c-history-table tr.c-history-table__row td:nth-child(5) {
     flex: 1 1 auto;
     min-width: 0;
     order: 5;
@@ -423,12 +423,12 @@
   }
 
   /* Col 6 — Actions: row 3 right */
-  .history-table tr.history-row td:nth-child(6) {
+  .c-history-table tr.c-history-table__row td:nth-child(6) {
     flex: 0 0 auto;
     order: 6;
   }
 
-  .weekday-total-duration {
+  .c-history-table__total-duration {
     width: 100%;
     text-align: center;
     font-size: var(--text-xs);
@@ -436,85 +436,85 @@
 }
 
 @media (max-width: 480px) {
-  .weekday-tab-content {
+  .c-history-panel {
     padding: var(--space-2);
   }
 
-  .history-table tr.history-row {
+  .c-history-table tr.c-history-table__row {
     padding: var(--space-2) var(--space-3) !important;
     gap: var(--space-1) !important;
   }
 
-  .history-table tr.history-row td:nth-child(1) {
+  .c-history-table tr.c-history-table__row td:nth-child(1) {
     font-size: var(--text-xs);
   }
 
-  .history-table tr.history-row td:nth-child(2) {
+  .c-history-table tr.c-history-table__row td:nth-child(2) {
     font-size: var(--text-xs);
   }
 
-  .history-table tr.history-row td:nth-child(3) {
+  .c-history-table tr.c-history-table__row td:nth-child(3) {
     font-size: var(--text-xs);
   }
 
-  .day-group-header-content {
+  .c-history-table__day-header {
     padding-left: var(--space-2);
     padding-right: var(--space-2);
   }
 
-  .day-title {
+  .c-history-table__day-title {
     font-size: var(--text-xs);
   }
 
-  .day-date {
+  .c-history-table__day-date {
     font-size: 10px;
   }
 
-  .day-total {
+  .c-history-table__day-total {
     font-size: 10px;
     padding: 1px 6px;
   }
 }
 
 @media (max-width: 360px) {
-  .weekday-tab-content {
+  .c-history-panel {
     padding: var(--space-1);
   }
 
-  .history-table tr.history-row {
+  .c-history-table tr.c-history-table__row {
     padding: var(--space-2) !important;
     gap: 4px !important;
   }
 
-  .history-table tr.history-row td:nth-child(1),
-  .history-table tr.history-row td:nth-child(2),
-  .history-table tr.history-row td:nth-child(3),
-  .history-table tr.history-row td:nth-child(4),
-  .history-table tr.history-row td:nth-child(5) {
+  .c-history-table tr.c-history-table__row td:nth-child(1),
+  .c-history-table tr.c-history-table__row td:nth-child(2),
+  .c-history-table tr.c-history-table__row td:nth-child(3),
+  .c-history-table tr.c-history-table__row td:nth-child(4),
+  .c-history-table tr.c-history-table__row td:nth-child(5) {
     font-size: 10px;
   }
 
-  .day-group-header-row td {
+  .c-history-table__day-header-row td {
     padding: var(--space-2) var(--space-1) var(--space-2) 0 !important;
   }
 
-  .day-group-header-content {
+  .c-history-table__day-header {
     padding-left: var(--space-2);
     padding-right: var(--space-1);
   }
 
-  .day-title {
+  .c-history-table__day-title {
     font-size: 10px;
   }
 
-  .day-date,
-  .day-total {
+  .c-history-table__day-date,
+  .c-history-table__day-total {
     font-size: 9px;
   }
 
-  .action-btn,
-  .edit-action-btn,
-  .delete-action-btn {
+  .c-history-table__action-btn,
+  .c-history-table__edit-btn,
+  .c-history-table__delete-btn {
     width: 24px;
     height: 24px;
     font-size: 10px;

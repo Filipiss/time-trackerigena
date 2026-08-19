@@ -1,4 +1,4 @@
-.adminLayout {
+﻿.adminLayout {
   display: flex;
   height: 100vh;
   width: 100vw;
@@ -14,7 +14,7 @@
   color: var(--text-muted);
 }
 
-.sidebar {
+.l-sidebar {
   width: 250px;
   background-color: var(--sidebar-bg, #0f172a);
   border-right: 1px solid var(--border-default);
@@ -52,7 +52,7 @@
   margin: 0;
 }
 
-.sidebar .navMenu li a {
+.l-sidebar .navMenu li a {
   text-decoration: none;
   color: var(--sidebar-text, #94a3b8);
   padding: 10px 20px;
@@ -62,7 +62,7 @@
   border-left: 3px solid transparent;
 }
 
-.sidebar .navMenu li a:hover {
+.l-sidebar .navMenu li a:hover {
   background-color: var(--sidebar-hover-bg, rgba(255, 255, 255, 0.05));
   color: var(--sidebar-hover-text, #fff);
   border-left-color: var(--theme-accent);
@@ -107,7 +107,7 @@
 }
 
 @media (max-width: 1024px) {
-  .sidebar {
+  .l-sidebar {
     width: 200px;
   }
 
@@ -124,7 +124,7 @@
     width: 100%;
   }
 
-  .sidebar {
+  .l-sidebar {
     width: 100%;
     height: auto;
     border-right: none;
@@ -157,7 +157,7 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  .sidebar .navMenu li a {
+  .l-sidebar .navMenu li a {
     padding: 8px 12px;
     border-left: none;
     border-bottom: 2px solid transparent;
@@ -165,7 +165,7 @@
     white-space: nowrap;
   }
 
-  .sidebar .navMenu li a:hover {
+  .l-sidebar .navMenu li a:hover {
     background-color: transparent;
     color: var(--theme-accent);
     border-bottom-color: var(--theme-accent);

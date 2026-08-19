@@ -29,22 +29,22 @@ export default function CalendarBoard({
   const monthLabel = monthDate.toLocaleDateString(monthLocale, { month: 'long', year: 'numeric' });
 
   return (
-    <div className="calendar-page fade-in">
-      <div className="calendar-header">
-        <h2 className="calendar-title gradient-text">📅 {t("Calendário de Compromissos")}</h2>
+    <div className="calendar-page u-fade-in">
+      <div className="c-calendar__header">
+        <h2 className="calendar-title u-gradient-text">📅 {t("Calendário de Compromissos")}</h2>
 
         <div className="calendar-nav">
-          <button className="btn btn-ghost calendar-nav-btn" onClick={onPrevMonth} title={t("Mês anterior")}>‹</button>
-          <button className="btn btn-ghost calendar-today-btn" onClick={onToday}>{t("Hoje")}</button>
+          <button className="c-btn c-btn--ghost calendar-nav-btn" onClick={onPrevMonth} title={t("Mês anterior")}>‹</button>
+          <button className="c-btn c-btn--ghost calendar-today-btn" onClick={onToday}>{t("Hoje")}</button>
           <span className="calendar-month-label">{monthLabel}</span>
-          <button className="btn btn-ghost calendar-nav-btn" onClick={onNextMonth} title={t("Próximo mês")}>›</button>
+          <button className="c-btn c-btn--ghost calendar-nav-btn" onClick={onNextMonth} title={t("Próximo mês")}>›</button>
         </div>
       </div>
 
       <StatusLegend items={legendItems} />
 
       <div className="calendar-grid-scroll">
-        <div className="calendar-grid glass-card-static">
+        <div className="c-calendar__grid o-card--static">
           <div className="calendar-weekdays">
             {weekdayLabels.map((label) => (
               <div key={label} className="calendar-weekday-cell">{label}</div>
@@ -76,7 +76,7 @@ export default function CalendarBoard({
                           title={`${event.eventType.toUpperCase()}: ${event.notes || event.name}`}
                         >
                           <span className="chip-dot" style={{ backgroundColor: config.color }} />
-                          <span className="chip-name truncate">{event.name}</span>
+                          <span className="chip-name u-truncate">{event.name}</span>
                         </button>
                       );
                     })}

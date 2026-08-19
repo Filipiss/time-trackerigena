@@ -18,7 +18,7 @@ export default function BillingTable({
   const { t } = useLanguage();
 
   return (
-    <div className="values-section-card glass-card-static fade-in">
+    <div className="values-section-card o-card--static u-fade-in">
       <div className="values-section-header">
         <div className="values-header-title-wrapper">
           <h3 className="values-header-title">{t("Faturamento & Câmbio de Moedas")}</h3>
@@ -63,7 +63,7 @@ export default function BillingTable({
                     <td>{t(item.projectName || 'Sem Projeto')}</td>
                     <td>
                       <div className="task-cell">
-                        <span className="task-color-dot" style={{ backgroundColor: item.color }} />
+                        <span className="o-color-dot" style={{ backgroundColor: item.color }} />
                         <span className="task-name-text">{item.name}</span>
                       </div>
                     </td>
@@ -77,7 +77,7 @@ export default function BillingTable({
                     </td>
                     <td className="font-mono value-eur-highlight">{CURRENCY_SYMBOLS[targetCurrency]} {totalConverted.toFixed(2)}</td>
                     <td>
-                      <button className="btn-icon" onClick={() => onEdit?.(item)} title={t("Editar Horas e Valor/Hora")}>
+                      <button className="c-btn--icon" onClick={() => onEdit?.(item)} title={t("Editar Horas e Valor/Hora")}>
                         <Pencil size={16} strokeWidth={1.5} />
                       </button>
                     </td>

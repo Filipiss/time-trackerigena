@@ -1,4 +1,4 @@
-.task-selector-item {
+﻿.c-selector__item {
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -14,7 +14,7 @@
   text-align: left;
 }
 
-.task-selector-item::before {
+.c-selector__item::before {
   content: '';
   position: absolute;
   left: 0;
@@ -26,37 +26,37 @@
   transition: opacity var(--transition-base);
 }
 
-.task-selector-item:hover {
+.c-selector__item:hover {
   background: var(--bg-card-hover);
   border-color: var(--border-highlight);
   transform: translateY(-1px);
 }
 
-.task-selector-item:hover::before {
+.c-selector__item:hover::before {
   opacity: 1;
 }
 
-.task-selector-item.selected {
+.c-selector__item.is-selected {
   border-color: rgba(6, 182, 212, 0.4);
   background: rgba(6, 182, 212, 0.08);
   box-shadow: 0 0 15px rgba(6, 182, 212, 0.1);
 }
 
-.task-selector-item.selected::before {
+.c-selector__item.is-selected::before {
   opacity: 1;
   background: var(--gradient-primary);
 }
 
-.task-dot {
+.o-task-dot {
   transition: all var(--transition-base);
 }
 
-.task-selector-item:hover .task-dot {
+.c-selector__item:hover .o-task-dot {
   transform: scale(1.2);
   box-shadow: 0 0 8px currentColor;
 }
 
-.task-item-name {
+.c-selector__item-name {
   font-size: var(--text-sm);
   font-weight: 500;
   color: var(--text-primary);
@@ -65,7 +65,7 @@
   white-space: nowrap;
 }
 
-.task-card {
+.c-task-card {
   display: flex;
   align-items: center;
   padding: var(--space-4) var(--space-5);
@@ -77,29 +77,29 @@
   transition: all var(--transition-base);
 }
 
-.task-card:hover {
+.c-task-card:hover {
   transform: translateY(-2px);
   border-color: var(--border-highlight);
   box-shadow: var(--shadow-glow-primary);
 }
 
-.task-card-billed {
+.c-task-card--billed {
   border-color: rgba(16, 185, 129, 0.2);
   background: rgba(16, 185, 129, 0.02);
 }
 
-.task-card-billed:hover {
+.c-task-card--billed:hover {
   border-color: rgba(16, 185, 129, 0.4);
   box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
 }
 
-.task-card-billed .task-card-name {
+.c-task-card--billed .c-task-card__name {
   color: var(--text-secondary);
   text-decoration: line-through;
   text-decoration-color: var(--text-muted);
 }
 
-.task-card-color {
+.c-task-card__color {
   width: 5px;
   position: absolute;
   top: 0;
@@ -108,7 +108,7 @@
   box-shadow: 2px 0 8px currentColor;
 }
 
-.task-card-info {
+.c-task-card__info {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
@@ -117,20 +117,20 @@
   max-width: calc(100% - 110px);
 }
 
-.task-card-name {
+.c-task-card__name {
   font-weight: 600;
   font-size: var(--text-sm);
   color: var(--text-primary);
 }
 
-.task-card-meta {
+.c-task-card__meta {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-2);
 }
 
-.task-hourly-rate-badge {
+.c-task-card__rate-badge {
   font-size: var(--text-xs);
   color: var(--text-secondary);
   background: rgba(255, 255, 255, 0.04);
@@ -140,28 +140,28 @@
   font-weight: 500;
 }
 
-.task-budget-badge {
+.c-task-card__budget-badge {
   font-size: 0.75rem;
 }
 
-.badge-success {
+.o-badge--success {
   background: rgba(16, 185, 129, 0.16);
   color: var(--color-success);
   border: 1px solid rgba(16, 185, 129, 0.28);
 }
 
-.billed-badge {
+.c-task-card__billed-badge {
   animation: fadeIn 0.3s ease;
 }
 
-.task-card-actions {
+.c-task-card__actions {
   display: flex;
   align-items: center;
   gap: var(--space-1);
   flex-shrink: 0;
 }
 
-.btn-billed-toggle {
+.c-task-card__billed-btn {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
@@ -175,24 +175,24 @@
   position: relative;
 }
 
-.btn-billed-toggle:hover {
+.c-task-card__billed-btn:hover {
   background: rgba(16, 185, 129, 0.15);
   border-color: rgba(16, 185, 129, 0.4);
   transform: scale(1.1);
 }
 
-.btn-billed-toggle.active {
+.c-task-card__billed-btn.is-active {
   background: rgba(16, 185, 129, 0.2);
   border-color: var(--color-success);
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
 }
 
-.btn-billed-toggle.active:hover {
+.c-task-card__billed-btn.is-active:hover {
   background: rgba(239, 68, 68, 0.15);
   border-color: rgba(239, 68, 68, 0.4);
 }
 
-.btn-billed-toggle.active:hover::after {
+.c-task-card__billed-btn.is-active:hover::after {
   content: '?';
   position: absolute;
   font-size: 0.6rem;
@@ -209,27 +209,27 @@
 }
 
 @media (max-width: 880px) {
-  .task-card {
+  .c-task-card {
     padding: var(--space-4);
   }
 
-  .task-card-info {
+  .c-task-card__info {
     max-width: calc(100% - 92px);
   }
 }
 
 @media (max-width: 767px) {
-  .task-card {
+  .c-task-card {
     gap: var(--space-2);
     align-items: flex-start;
   }
 
-  .task-card-info {
+  .c-task-card__info {
     max-width: none;
     width: 100%;
   }
 
-  .task-card-actions {
+  .c-task-card__actions {
     flex-direction: column;
   }
 }

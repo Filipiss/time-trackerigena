@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import Input from '../../atoms/Input/Input';
 import Select from '../../atoms/Select/Select';
@@ -85,14 +85,14 @@ export default function DashboardOverview({ refreshTrigger }) {
   }));
 
   if (loading) {
-    return <div className="loading-container"><Spinner /></div>;
+    return <div className="c-loading"><Spinner /></div>;
   }
 
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <h2 className="dashboard-title gradient-text">Dashboard</h2>
-        <div className="dashboard-filters">
+        <h2 className="dashboard-title u-gradient-text">Dashboard</h2>
+        <div className="c-dashboard__filters">
           <Select value={filters.category} onChange={(event) => update('category', event.target.value)}>
             <option value="">{t("Todas as categorias")}</option>
             {availableCategories.map((category) => (
@@ -143,7 +143,7 @@ export default function DashboardOverview({ refreshTrigger }) {
       </div>
 
       <div className="charts-grid">
-        <div className="glass-card chart-card">
+        <div className="o-card chart-card">
           <h3 className="chart-card-title">{t("Proporção por categoria")}</h3>
           <div className="chart-wrapper">
             <ResponsiveContainer width="100%" height={260}>
@@ -157,7 +157,7 @@ export default function DashboardOverview({ refreshTrigger }) {
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="glass-card chart-card">
+        <div className="o-card chart-card">
           <h3 className="chart-card-title">{t("Horas trabalhadas")}</h3>
           <div className="chart-wrapper">
             <ResponsiveContainer width="100%" height={260}>
@@ -171,7 +171,7 @@ export default function DashboardOverview({ refreshTrigger }) {
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="glass-card chart-card span-2-desktop">
+        <div className="o-card chart-card span-2-desktop">
           <h3 className="chart-card-title">{t("Tempo gasto por task")}</h3>
           <div className="chart-wrapper">
             <ResponsiveContainer width="100%" height={280}>

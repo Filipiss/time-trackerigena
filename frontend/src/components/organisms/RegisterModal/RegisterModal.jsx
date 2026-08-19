@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { validate_password_strength_js } from '../../../utils/passwordStrength';
@@ -81,7 +81,7 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
                     </span>
                     <h2>Cadastro realizado!</h2>
                     <p>Verifique seu e-mail para ativar a conta antes de fazer login.</p>
-                    <button className="btn-primary" onClick={onSwitchToLogin}>Ir para o Login</button>
+                    <button className="c-btn--primary" onClick={onSwitchToLogin}>Ir para o Login</button>
                 </div>
             </div>
         </div>,
@@ -148,7 +148,7 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
                             placeholder="+55 11 99999-9999" autoComplete="tel" />
                     </div>
 
-                    <button type="submit" className="btn-primary" disabled={loading}>
+                    <button type="submit" className="c-btn--primary" disabled={loading}>
                         {loading ? 'Criando conta…' : 'Criar conta'}
                     </button>
                 </form>

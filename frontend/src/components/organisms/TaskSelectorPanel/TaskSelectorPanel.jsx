@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import Spinner from '../../atoms/Spinner/Spinner';
 import TabButton from '../../molecules/TabButton/TabButton';
 import TaskCard from '../../molecules/TaskCard/TaskCard';
@@ -90,7 +90,7 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
 
   if (loading) {
     return (
-      <div className="task-selector glass-card-static task-selector-shell">
+      <div className="task-selector o-card--static c-selector">
         <div className="task-selector-loading">
           <Spinner label={t("Carregando...")} />
         </div>
@@ -99,9 +99,9 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
   }
 
   return (
-    <div className="task-selector glass-card-static task-selector-shell">
+    <div className="task-selector o-card--static c-selector">
       <div className="task-selector-header">
-        <h3 className="task-selector-title">{t("Opções do Timer")}</h3>
+        <h3 className="c-selector__title">{t("Opções do Timer")}</h3>
       </div>
 
       {projects.length === 0 ? (
@@ -110,16 +110,16 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
         </div>
       ) : (
         <>
-          <div className="selector-filter-group">
+          <div className="c-selector__filters">
             <div className="selector-filter-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Briefcase size={14} strokeWidth={1.5} /> {t("Categoria")}
             </div>
-            <div className="selector-tabs-scroll">
-              <div className="selector-tabs">
+            <div className="c-selector__tabs-scroll">
+              <div className="c-selector__tabs">
                 {categories.map((category) => (
                   <TabButton
                     key={category}
-                    className={`selector-tab ${effectiveCategory === category ? 'active' : ''}`}
+                    className={`c-selector__tab ${effectiveCategory === category ? 'is-active' : ''}`}
                     isActive={effectiveCategory === category}
                     dotColor={`var(--color-${category})`}
                     onClick={() => handleSelectCategory(category)}
@@ -137,19 +137,19 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
             </div>
           </div>
 
-          <div className="selector-filter-group">
+          <div className="c-selector__filters">
             <div className="selector-filter-label">{t("Projeto")}</div>
             {projectsInCategory.length === 0 ? (
               <div className="task-selector-empty selector-inline-empty">
                 <p>{t("Nenhum projeto nesta categoria.")}</p>
               </div>
             ) : (
-              <div className="selector-tabs-scroll">
-                <div className="selector-tabs">
+              <div className="c-selector__tabs-scroll">
+                <div className="c-selector__tabs">
                   {projectsInCategory.map((project) => (
                     <TabButton
                       key={project.id}
-                      className={`selector-tab ${effectiveProjectId === project.id ? 'active' : ''}`}
+                      className={`c-selector__tab ${effectiveProjectId === project.id ? 'is-active' : ''}`}
                       isActive={effectiveProjectId === project.id}
                       onClick={() => setActiveProjectId(project.id)}
                     >
@@ -161,14 +161,14 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
             )}
           </div>
 
-          <div className="selector-filter-group">
+          <div className="c-selector__filters">
             <div className="selector-filter-label">✨ {t("Tarefa")}</div>
             {tasksInProject.length === 0 ? (
               <div className="task-selector-empty selector-inline-empty">
                 <p>{t("Nenhuma task neste projeto. Crie tasks na aba Tasks!")}</p>
               </div>
             ) : (
-              <div className="task-selector-grid">
+              <div className="c-selector__grid">
                 {tasksInProject.map((task) => (
                   <TaskCard key={task.id} task={task} selected={selectedTask?.id === task.id} onClick={onSelectTask} />
                 ))}

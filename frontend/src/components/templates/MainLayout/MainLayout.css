@@ -1,4 +1,4 @@
-.app-layout {
+﻿.l-app {
   display: flex;
   min-height: 100vh;
   position: relative;
@@ -7,7 +7,7 @@
   max-width: 100vw;
 }
 
-.app-content-wrapper {
+.l-app__content {
   flex-grow: 1;
   margin-left: 300px;
   display: flex;
@@ -16,7 +16,7 @@
   min-width: 0;
 }
 
-.app-topbar {
+.l-app__topbar {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -28,80 +28,80 @@
   z-index: 50;
 }
 
-.topbar-spacer {
+.l-app__topbar-spacer {
   flex: 1;
 }
 
-.app-main {
+.l-app__main {
   flex-grow: 1;
   padding: var(--space-8);
   min-width: 0;
 }
 
-.content-container {
+.l-content {
   max-width: 1200px;
   margin: 0 auto;
   min-width: 0;
 }
 
 @media (max-width: 1366px) {
-  .app-content-wrapper {
+  .l-app__content {
     margin-left: 264px;
   }
 
-  .app-main {
+  .l-app__main {
     padding: var(--space-6);
   }
 }
 
 @media (max-width: 1200px) {
-  .app-content-wrapper {
+  .l-app__content {
     margin-left: 136px;
   }
 }
 
 @media (max-width: 1024px) {
-  .app-content-wrapper {
+  .l-app__content {
     margin-left: 112px;
   }
 
-  .app-main {
+  .l-app__main {
     padding: var(--space-5);
   }
 }
 
 @media (max-width: 880px) {
-  .app-main {
+  .l-app__main {
     padding: var(--space-4);
   }
 }
 
 @media (max-width: 767px) {
-  .app-content-wrapper {
+  .l-app__content {
     margin-left: 0;
   }
 
-  .app-main {
+  .l-app__main {
     padding: var(--space-4) var(--space-4) 96px;
   }
 
-  .app-topbar {
+  .l-app__topbar {
     padding: 10px 16px;
   }
 }
 
 @media (max-width: 480px) {
-  .app-main {
+  .l-app__main {
     padding: var(--space-3) var(--space-3) 80px;
   }
 }
 
 @media (max-width: 360px) {
-  .app-main {
+  .l-app__main {
     padding: var(--space-2) var(--space-2) 72px;
   }
 
-  .app-topbar {
+  .l-app__topbar {
     padding: 8px 12px;
   }
 }

@@ -3,7 +3,7 @@ import './TasksPage.css';
 
 export default function TasksPage({ onTaskChange }) {
   return (
-    <div className="tasks-page fade-in">
+    <div className="tasks-page u-fade-in">
       <TaskManagerBoard onTaskChange={onTaskChange} />
     </div>
   );

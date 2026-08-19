@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { fetchAllUsers, toggleAdminRole, deleteAdminUser, updateUserProfile } from '../../../api';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import AdminEditUserModal from './AdminEditUserModal';
@@ -100,23 +100,23 @@ export default function UsersManagementPage() {
                                 <td>{u.country || <span style={{ color: '#a0aab2' }}>---</span>}</td>
                                 <td>{u.phone || <span style={{ color: '#a0aab2' }}>---</span>}</td>
                                 <td>
-                                    <span className={`${styles.badge} ${u.is_active ? styles.active : styles.inactive}`}>
+                                    <span className={`${styles['o-badge']} ${u.is_active ? styles['is-active'] : styles.inactive}`}>
                                         {u.is_active ? t('Ativo') : t('Pendente')}
                                     </span>
                                 </td>
                                 <td>
-                                    <span className={`${styles.badge} ${u.is_admin ? styles.admin : styles.member}`}>
+                                    <span className={`${styles['o-badge']} ${u.is_admin ? styles.admin : styles.member}`}>
                                         {u.is_admin ? 'Admin' : t('Membro')}
                                     </span>
                                 </td>
                                 <td className={styles.actions}>
-                                    <button className={styles.btn} onClick={() => setEditingUser(u)}>
+                                    <button className={styles['c-btn']} onClick={() => setEditingUser(u)}>
                                         {t('Editar')}
                                     </button>
-                                    <button className={styles.btn} onClick={() => handleToggleAdmin(u.id, u.is_admin)}>
+                                    <button className={styles['c-btn']} onClick={() => handleToggleAdmin(u.id, u.is_admin)}>
                                         {u.is_admin ? t('Remover Admin') : t('Dar Admin')}
                                     </button>
-                                    <button className={`${styles.btn} ${styles.btnDelete}`} onClick={() => handleDelete(u.id)}>
+                                    <button className={`${styles['c-btn']} ${styles.btnDelete}`} onClick={() => handleDelete(u.id)}>
                                         {t('Excluir')}
                                     </button>
                                 </td>

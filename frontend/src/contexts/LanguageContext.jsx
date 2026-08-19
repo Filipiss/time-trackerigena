@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const LanguageContext = createContext();
 
@@ -101,7 +101,7 @@ const dictionary = {
         "Ações de Bloco": "Bulk Actions",
         "Limpar Filtros": "Clear Filters",
         "Filtros Ativos": "Active Filters",
-        "Nenhum registro de tempo cadastrado para o período selecionado.": "No time entries registered for the selected period.",
+        "Nenhum registro de tempo cadastrado para o período selecionado.": "No time entries registered for the is-selected period.",
         "Sem Notas": "No Notes",
         "Confirmar a exclusão destas entradas de tempo?": "Confirm deletion of these time entries?",
         "Confirmar": "Confirm",
@@ -221,7 +221,7 @@ const dictionary = {
         "Todas as Semanas": "All Weeks",
         "Dia da Semana": "Day of the Week",
         "Todos da Semana": "All Week",
-        "Nenhum registro no período ou dia selecionado.": "No entries logged for the selected period or day.",
+        "Nenhum registro no período ou dia selecionado.": "No entries logged for the is-selected period or day.",
         "Editar Registro": "Edit Entry",
         "Data (Resumo)": "Date (Summary)",
         "Horas Trabalhadas (Decimal)": "Worked Hours (Decimal)",
@@ -267,7 +267,7 @@ const dictionary = {
         "Carregando registros de hoje...": "Loading today's entries...",
         "Nenhum registro cronometrado hoje. Escolha uma tarefa ao lado e inicie o cronômetro!": "No entries tracked today. Choose a task and start the timer!",
         "Selecione uma Task abaixo para começar...": "Select a Task below to begin...",
-        "Nenhuma Task selecionada": "No Task selected",
+        "Nenhuma Task selecionada": "No Task is-selected",
         "Iniciar": "Start",
         "Pausar": "Pause",
         "Resetar": "Reset",

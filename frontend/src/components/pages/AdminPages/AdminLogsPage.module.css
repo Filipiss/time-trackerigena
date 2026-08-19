@@ -1,4 +1,4 @@
-.container {
+﻿.container {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -151,7 +151,7 @@
     color: var(--text-primary);
 }
 
-.badge {
+.o-badge {
     display: inline-block;
     padding: 0.25rem 0.5rem;
     border-radius: 6px;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { apiForgotPassword } from '../../../api';
 
@@ -33,7 +33,7 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }) {
                         <span className="success-icon">📧</span>
                         <h2>E-mail enviado!</h2>
                         <p>Se o e-mail/usuário existir, você receberá um link válido por 1 hora para redefinir sua senha.</p>
-                        <button className="btn-primary" onClick={onSwitchToLogin}>Voltar ao login</button>
+                        <button className="c-btn--primary" onClick={onSwitchToLogin}>Voltar ao login</button>
                     </div>
                 ) : (
                     <>
@@ -56,7 +56,7 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }) {
                                 />
                             </div>
 
-                            <button type="submit" className="btn-primary" disabled={loading}>
+                            <button type="submit" className="c-btn--primary" disabled={loading}>
                                 {loading ? 'Enviando…' : 'Enviar link de recuperação'}
                             </button>
                         </form>

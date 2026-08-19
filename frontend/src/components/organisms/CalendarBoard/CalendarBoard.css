@@ -2,7 +2,7 @@
   animation: slideUp 0.4s ease;
 }
 
-.calendar-header {
+.c-calendar__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -46,7 +46,7 @@
   overflow-x: auto;
 }
 
-.calendar-grid {
+.c-calendar__grid {
   min-width: 860px;
   padding: var(--space-4);
   animation: slideUp 0.4s ease;
@@ -174,19 +174,19 @@
 }
 
 @media (max-width: 1366px) {
-  .calendar-grid {
+  .c-calendar__grid {
     min-width: 820px;
   }
 }
 
 @media (max-width: 1200px) {
-  .calendar-grid {
+  .c-calendar__grid {
     min-width: 780px;
   }
 }
 
 @media (max-width: 1024px) {
-  .calendar-grid {
+  .c-calendar__grid {
     min-width: 720px;
   }
 
@@ -196,7 +196,7 @@
 }
 
 @media (max-width: 880px) {
-  .calendar-grid {
+  .c-calendar__grid {
     min-width: 680px;
     padding: var(--space-3);
   }
@@ -242,7 +242,7 @@
     font-size: var(--text-base);
   }
 
-  .calendar-grid {
+  .c-calendar__grid {
     min-width: 640px;
   }
 

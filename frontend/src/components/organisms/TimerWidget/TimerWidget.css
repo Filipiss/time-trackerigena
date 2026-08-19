@@ -1,4 +1,4 @@
-﻿.timer-bar-container {
+﻿.c-timer__bar {
   display: flex;
   align-items: center;
   width: 100%;
@@ -13,12 +13,12 @@
   box-sizing: border-box;
 }
 
-.timer-bar-input-section {
+.c-timer__input {
   flex: 2;
   min-width: 0;
 }
 
-.timer-bar-notes-input {
+.c-timer__notes {
   width: 100%;
   border: none;
   background: transparent;
@@ -28,11 +28,11 @@
   padding: var(--space-2) 0;
 }
 
-.timer-bar-notes-input::placeholder {
+.c-timer__notes::placeholder {
   color: var(--text-placeholder);
 }
 
-.timer-bar-task-badge {
+.c-timer__task-badge {
   flex: 1.5;
   min-width: 0;
   display: flex;
@@ -43,21 +43,21 @@
   height: 32px;
 }
 
-.timer-bar-task-info {
+.c-timer__task-info {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   font-size: var(--text-sm);
 }
 
-.timer-bar-task-info .task-color-dot {
+.c-timer__task-info .o-color-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
-.task-badge-project {
+.c-timer__badge-project {
   font-weight: 600;
   color: var(--text-secondary);
   max-width: 100px;
@@ -66,11 +66,11 @@
   white-space: nowrap;
 }
 
-.task-badge-divider {
+.c-timer__badge-divider {
   color: var(--text-placeholder);
 }
 
-.task-badge-name {
+.c-timer__badge-name {
   color: var(--text-primary);
   max-width: 120px;
   overflow: hidden;
@@ -78,19 +78,19 @@
   white-space: nowrap;
 }
 
-.timer-bar-task-placeholder {
+.c-timer__task-placeholder {
   color: var(--text-placeholder);
   font-size: var(--text-sm);
 }
 
-.timer-bar-display {
+.c-timer__display {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 var(--space-2);
 }
 
-.timer-digits-mono {
+.c-timer__digits {
   font-family: var(--font-sans);
   font-variant-numeric: tabular-nums;
   font-size: 1.5rem;
@@ -99,17 +99,17 @@
   letter-spacing: 0.02em;
 }
 
-.timer-bar-display.running .timer-digits-mono {
+.c-timer__display.is-running .c-timer__digits {
   color: var(--theme-accent);
 }
 
-.timer-bar-controls {
+.c-timer__controls {
   display: flex;
   align-items: center;
   gap: var(--space-2);
 }
 
-.timer-bar-btn {
+.c-timer__btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -126,81 +126,81 @@
   white-space: nowrap;
 }
 
-.timer-bar-btn:hover {
+.c-timer__btn:hover {
   background: var(--bg-card-hover);
   color: var(--text-primary);
 }
 
-.timer-bar-btn:disabled {
+.c-timer__btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.timer-bar-btn.start {
+.c-timer__btn.start {
   background: var(--theme-accent);
   color: var(--text-inverse);
   border-color: var(--theme-accent);
 }
 
-.timer-bar-btn.start:hover:not(:disabled) {
+.c-timer__btn.start:hover:not(:disabled) {
   background: var(--theme-accent-hover);
   border-color: var(--theme-accent-hover);
 }
 
-.timer-bar-btn.pause {
+.c-timer__btn.pause {
   background: var(--color-warning);
   color: var(--text-inverse);
   border-color: var(--color-warning);
 }
 
-.timer-bar-btn.stop {
+.c-timer__btn.stop {
   background: var(--color-danger);
   color: var(--text-inverse);
   border-color: var(--color-danger);
 }
 
-.timer-bar-btn.save {
+.c-timer__btn.save {
   background: var(--theme-accent);
   color: var(--text-inverse);
   border-color: var(--theme-accent);
 }
 
-.timer-bar-btn.save:hover:not(:disabled) {
+.c-timer__btn.save:hover:not(:disabled) {
   background: var(--theme-accent-hover);
   border-color: var(--theme-accent-hover);
 }
 
 @media (max-width: 1024px) {
-  .timer-bar-container {
+  .c-timer__bar {
     flex-wrap: wrap;
     gap: var(--space-3);
   }
 
-  .timer-bar-input-section {
+  .c-timer__input {
     width: 100%;
     flex: 1 1 100%;
   }
 
-  .timer-bar-task-badge {
+  .c-timer__task-badge {
     border-left: none;
     padding-left: 0;
   }
 }
 
 @media (max-width: 767px) {
-  .timer-bar-container {
+  .c-timer__bar {
     flex-direction: column;
     align-items: stretch;
     gap: var(--space-3);
     padding: var(--space-4);
   }
 
-  .timer-bar-input-section {
+  .c-timer__input {
     width: 100%;
     min-width: unset;
   }
 
-  .timer-bar-task-badge {
+  .c-timer__task-badge {
     width: 100%;
     padding: var(--space-2) 0;
     min-width: unset;
@@ -212,22 +212,22 @@
     justify-content: center;
   }
 
-  .timer-bar-display {
+  .c-timer__display {
     justify-content: center;
     padding: var(--space-2) 0;
   }
 
-  .timer-digits-mono {
+  .c-timer__digits {
     font-size: 2rem;
   }
 
-  .timer-bar-controls {
+  .c-timer__controls {
     justify-content: center;
     width: 100%;
     gap: var(--space-3);
   }
 
-  .timer-bar-btn {
+  .c-timer__btn {
     flex: 1;
     padding: var(--space-3);
     font-size: var(--text-sm);
@@ -236,23 +236,23 @@
 }
 
 @media (max-width: 360px) {
-  .timer-bar-container {
+  .c-timer__bar {
     padding: var(--space-3);
     gap: var(--space-2);
     margin-bottom: var(--space-4);
   }
 
-  .timer-digits-mono {
+  .c-timer__digits {
     font-size: 1.6rem;
   }
 
-  .timer-bar-btn {
+  .c-timer__btn {
     padding: var(--space-2) var(--space-1);
     font-size: var(--text-xs);
     gap: var(--space-1);
   }
 
-  .timer-bar-controls {
+  .c-timer__controls {
     gap: var(--space-2);
   }
 }

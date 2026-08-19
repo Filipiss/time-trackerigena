@@ -21,7 +21,7 @@ function formatTime(ms) {
 
 const TIMER_STATES = {
   STOPPED: 'stopped',
-  RUNNING: 'running',
+  RUNNING: 'is-running',
   PAUSED: 'paused',
 };
 
@@ -162,12 +162,12 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
   const canSave = elapsedTime >= 1000 && selectedTask;
 
   return (
-    <div className="timer-bar-container">
+    <div className="c-timer__bar">
       {/* 1. Descrição ou Nota atual */}
-      <div className="timer-bar-input-section">
+      <div className="c-timer__input">
         <input
           type="text"
-          className="timer-bar-notes-input"
+          className="c-timer__notes"
           placeholder={selectedTask ? t("No que você está trabalhando?") : t("Selecione uma Task abaixo para começar...")}
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
@@ -176,45 +176,45 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
       </div>
 
       {/* 2. Task Selecionada (Indicador Visual) */}
-      <div className="timer-bar-task-badge">
+      <div className="c-timer__task-badge">
         {selectedTask ? (
-          <div className="timer-bar-task-info">
-            <span className="task-color-dot" style={{ backgroundColor: selectedTask.color || '#03a9f4' }} />
-            <span className="task-badge-project">{t(selectedTask.project_name || 'Sem Projeto')}</span>
-            <span className="task-badge-divider">/</span>
-            <span className="task-badge-name">{selectedTask.name}</span>
+          <div className="c-timer__task-info">
+            <span className="o-color-dot" style={{ backgroundColor: selectedTask.color || '#03a9f4' }} />
+            <span className="c-timer__badge-project">{t(selectedTask.project_name || 'Sem Projeto')}</span>
+            <span className="c-timer__badge-divider">/</span>
+            <span className="c-timer__badge-name">{selectedTask.name}</span>
           </div>
         ) : (
-          <div className="timer-bar-task-placeholder">
+          <div className="c-timer__task-placeholder">
             {t("Nenhuma Task selecionada")}
           </div>
         )}
       </div>
 
       {/* 3. Cronômetro / Tempo Decorrido */}
-      <div className={`timer-bar-display ${timerState}`}>
-        <span className="timer-digits-mono">
+      <div className={`c-timer__display ${timerState}`}>
+        <span className="c-timer__digits">
           {time.hours}:{time.minutes}:{time.seconds}
         </span>
       </div>
 
       {/* 4. Controles de Ação */}
-      <div className="timer-bar-controls">
+      <div className="c-timer__controls">
         {timerState !== TIMER_STATES.RUNNING ? (
-          <button className="timer-bar-btn start" onClick={handleStart} disabled={!canStart} title={t("Iniciar")}>
+          <button className="c-timer__btn start" onClick={handleStart} disabled={!canStart} title={t("Iniciar")}>
             <Play size={16} fill="currentColor" /> {t("Iniciar")}
           </button>
         ) : (
-          <button className="timer-bar-btn pause" onClick={handlePause} title={t("Pausar")}>
+          <button className="c-timer__btn pause" onClick={handlePause} title={t("Pausar")}>
             <Pause size={16} fill="currentColor" /> {t("Pausar")}
           </button>
         )}
 
-        <button className="timer-bar-btn restart" onClick={handleRestart} disabled={timerState === TIMER_STATES.STOPPED && elapsedTime === 0} title={t("Resetar")}>
+        <button className="c-timer__btn restart" onClick={handleRestart} disabled={timerState === TIMER_STATES.STOPPED && elapsedTime === 0} title={t("Resetar")}>
           <RotateCcw size={14} />
         </button>
 
-        <button className="timer-bar-btn save" onClick={handleSave} disabled={!canSave || saving} title={t("Salvar Registro")}>
+        <button className="c-timer__btn save" onClick={handleSave} disabled={!canSave || saving} title={t("Salvar Registro")}>
           {saving ? '...' : t("Salvar")}
         </button>
       </div>

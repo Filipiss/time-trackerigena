@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import Badge from '../../atoms/Badge/Badge';
 import Input from '../../atoms/Input/Input';
 import Select from '../../atoms/Select/Select';
@@ -444,18 +444,18 @@ export default function TaskManagerBoard({ onTaskChange }) {
   );
 
   if (loading) {
-    return <div className="loading-container"><Spinner /></div>;
+    return <div className="c-loading"><Spinner /></div>;
   }
 
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <div className="task-manager fade-in">
+      <div className="task-manager u-fade-in">
         <div className="task-manager-header">
-          <h2 className="task-manager-title gradient-text"><Blocks size={24} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '8px' }} strokeWidth={1.5} /> {t("Gerenciamento de Projetos e Tarefas")}</h2>
+          <h2 className="task-manager-title u-gradient-text"><Blocks size={24} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '8px' }} strokeWidth={1.5} /> {t("Gerenciamento de Projetos e Tarefas")}</h2>
         </div>
 
         <div className="forms-grid">
-          <form className="task-form glass-card-static" onSubmit={handleCreateCategory}>
+          <form className="c-task-form o-card--static" onSubmit={handleCreateCategory}>
             <div className="task-form-title"><Briefcase size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> {t("Nova Categoria")}</div>
             <div className="task-form-field">
               <label className="task-form-label">{t("Nome")}</label>
@@ -486,7 +486,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                   <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
                     <button
                       type="button"
-                      className="btn btn-icon"
+                      className="c-btn c-btn--icon"
                       style={{ background: 'rgba(255,255,255,0.05)', padding: '8px' }}
                       onClick={() => {
                         const cat = categories.find((c) => String(c.id) === selectedCategoryToManage);
@@ -498,7 +498,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                     </button>
                     <button
                       type="button"
-                      className="btn btn-icon"
+                      className="c-btn c-btn--icon"
                       style={{ background: 'rgba(255,255,255,0.05)', padding: '8px' }}
                       onClick={() => {
                         const cat = categories.find((c) => String(c.id) === selectedCategoryToManage);
@@ -515,10 +515,10 @@ export default function TaskManagerBoard({ onTaskChange }) {
                 )}
               </div>
             </div>
-            <button type="submit" className="btn btn-primary task-form-submit">+ {t("Criar Categoria")}</button>
+            <button type="submit" className="c-btn c-btn--primary task-form-submit">+ {t("Criar Categoria")}</button>
           </form>
 
-          <form className="task-form glass-card-static" onSubmit={handleCreateProject}>
+          <form className="c-task-form o-card--static" onSubmit={handleCreateProject}>
             <div className="task-form-title"><FolderOpen size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> {t("Novo Projeto")}</div>
             <div className="task-form-field">
               <label className="task-form-label">💼 {t("Nome do Projeto")}</label>
@@ -532,10 +532,10 @@ export default function TaskManagerBoard({ onTaskChange }) {
                 ))}
               </Select>
             </div>
-            <button type="submit" className="btn btn-primary task-form-submit" disabled={creatingProject}>+ {t("Criar Projeto")}</button>
+            <button type="submit" className="c-btn c-btn--primary task-form-submit" disabled={creatingProject}>+ {t("Criar Projeto")}</button>
           </form>
 
-          <form className="task-form glass-card-static" onSubmit={handleCreateTask}>
+          <form className="c-task-form o-card--static" onSubmit={handleCreateTask}>
             <div className="task-form-title"><Sparkles size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> {t("Nova Task")}</div>
             <div className="task-form-field">
               <label className="task-form-label">✨ {t("Nome da Tarefa")}</label>
@@ -550,7 +550,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                 ))}
               </Select>
             </div>
-            <div className="task-form-inline-row" style={{ marginBottom: 'var(--space-6)' }}>
+            <div className="c-task-form__row" style={{ marginBottom: 'var(--space-6)' }}>
               <div className="task-form-field task-form-currency-field">
                 <label className="task-form-label">{t("Moeda")}</label>
                 <CurrencySelect value={newTaskCurrency} onChange={(event) => setNewTaskCurrency(event.target.value)} />
@@ -588,7 +588,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                 </div>
               </div>
             </div>
-            <button type="submit" className="btn btn-primary task-form-submit" disabled={creatingTask}>+ {t("Criar Tarefa")}</button>
+            <button type="submit" className="c-btn c-btn--primary task-form-submit" disabled={creatingTask}>+ {t("Criar Tarefa")}</button>
           </form>
         </div>
 
@@ -610,9 +610,9 @@ export default function TaskManagerBoard({ onTaskChange }) {
               return (
                 <SortableWrapper key={project.id} id={`proj-${project.id}`}>
                   {({ setNodeRef, style, attributes, listeners }) => (
-                    <div ref={setNodeRef} style={{ ...style, position: 'relative' }} className="project-folder">
+                    <div ref={setNodeRef} style={{ ...style, position: 'relative' }} className="c-folder">
                       <div
-                        className="project-folder-tab"
+                        className="c-folder__tab"
                         {...attributes} {...listeners}
                         onClick={() => {
                           setExpandedProjects(prev => {
@@ -627,7 +627,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                       >
                         <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <button
-                            className="btn-icon"
+                            className="c-btn--icon"
                             title={expandedProjects.has(project.id) ? t("Minimizar projeto") : t("Expandir projeto")}
                           >
                             {expandedProjects.has(project.id) ? <ChevronDown size={18} strokeWidth={1.5} /> : <ChevronRight size={18} strokeWidth={1.5} />}
@@ -635,7 +635,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                           <Folder size={16} strokeWidth={1.5} /> {project.name}
                         </span>
                         <div style={{ display: 'flex', gap: '4px' }}>
-                          <label className="btn-icon" title={t("Anexar arquivo")} onClick={e => e.stopPropagation()} style={{ cursor: 'pointer', opacity: uploadingToProject === project.id ? 0.5 : 1 }}>
+                          <label className="c-btn--icon" title={t("Anexar arquivo")} onClick={e => e.stopPropagation()} style={{ cursor: 'pointer', opacity: uploadingToProject === project.id ? 0.5 : 1 }}>
                             {uploadingToProject === project.id ? <Loader size={16} strokeWidth={1.5} className="spin-animation" /> : <Paperclip size={16} strokeWidth={1.5} />}
                             <input type="file" hidden accept=".svg,.png,.jpg,.jpeg,.gif,.pdf,.zip,.rar,.doc,.docx,.xls,.xlsx,.json,.fig" onChange={(e) => {
                               const file = e.target.files[0];
@@ -644,7 +644,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                             }} disabled={uploadingToProject === project.id} />
                           </label>
                           <button
-                            className="btn-icon"
+                            className="c-btn--icon"
                             onClick={(event) => {
                               event.stopPropagation();
                               handleEditProjectClick(project);
@@ -654,7 +654,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                             <Pencil size={16} strokeWidth={1.5} />
                           </button>
                           <button
-                            className="btn-icon"
+                            className="c-btn--icon"
                             onClick={(event) => {
                               event.stopPropagation();
                               handleDeleteProject(project.id);
@@ -667,7 +667,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                         </div>
                       </div>
                       {expandedProjects.has(project.id) && (
-                        <div className="project-folder-body glass-card">
+                        <div className="c-folder__body o-card">
 
                           <SortableContext items={projectTasks.map(t => `task-${t.id}`)} strategy={verticalListSortingStrategy}>
                             <div className="task-cards-list" style={{ marginBottom: (attachmentsByProject[project.id] && attachmentsByProject[project.id].length > 0) ? 'var(--space-6)' : 0 }}>
@@ -713,13 +713,13 @@ export default function TaskManagerBoard({ onTaskChange }) {
                                       </label>
                                     </div>
 
-                                    <span className="truncate" style={{ flex: 1, fontWeight: 500, color: 'var(--text-primary)' }} title={att.file_name}>{att.file_name}</span>
+                                    <span className="u-truncate" style={{ flex: 1, fontWeight: 500, color: 'var(--text-primary)' }} title={att.file_name}>{att.file_name}</span>
 
                                     <div style={{ display: 'flex', gap: '4px' }}>
-                                      <a href={att.file_url} target="_blank" rel="noreferrer" className="btn-icon" style={{ padding: '6px' }} title={t("Download")}>
+                                      <a href={att.file_url} target="_blank" rel="noreferrer" className="c-btn--icon" style={{ padding: '6px' }} title={t("Download")}>
                                         <Download size={14} style={{ color: 'var(--color-primary)' }} strokeWidth={1.5} />
                                       </a>
-                                      <button type="button" onClick={() => handleDeleteAttachment(project.id, att)} className="btn-icon" style={{ padding: '6px' }} title={t("Excluir")}>
+                                      <button type="button" onClick={() => handleDeleteAttachment(project.id, att)} className="c-btn--icon" style={{ padding: '6px' }} title={t("Excluir")}>
                                         <X size={14} style={{ color: 'var(--color-danger)' }} strokeWidth={1.5} />
                                       </button>
                                     </div>
@@ -763,7 +763,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
               <label className="edit-modal-label">{t("Cor")}</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <input type="color" className="color-picker" value={editTaskForm.color || '#10b981'} onChange={e => setEditTaskForm({ ...editTaskForm, color: e.target.value })} style={{ width: '42px', height: '42px', padding: '0', cursor: 'pointer', borderRadius: '4px' }} />
-                <button type="button" onClick={() => navigator.clipboard.writeText(editTaskForm.color || '#10b981')} className="btn-icon" style={{ padding: '6px', opacity: 0.7 }} title={t("Copiar código HEX")}>
+                <button type="button" onClick={() => navigator.clipboard.writeText(editTaskForm.color || '#10b981')} className="c-btn--icon" style={{ padding: '6px', opacity: 0.7 }} title={t("Copiar código HEX")}>
                   <Copy size={16} strokeWidth={1.5} />
                 </button>
               </div>

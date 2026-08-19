@@ -1,4 +1,4 @@
-import { Navigate, Outlet, Link } from 'react-router-dom';
+﻿import { Navigate, Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import styles from './AdminLayout.module.css';
@@ -12,7 +12,7 @@ export default function AdminLayout() {
 
     return (
         <div className={styles.adminLayout}>
-            <aside className={styles.sidebar}>
+            <aside className={styles['l-sidebar']}>
                 <div className={styles.sidebarHeader}>
                     <h2>{t("Painel Admin")}</h2>
                     <span className={styles.adminBadge}>Admin {user.username}</span>

@@ -3,7 +3,7 @@ import './DashboardPage.css';
 
 export default function DashboardPage({ refreshTrigger }) {
   return (
-    <div className="dashboard-page fade-in">
+    <div className="l-dashboard-page u-fade-in">
       <DashboardOverview refreshTrigger={refreshTrigger} />
     </div>
   );

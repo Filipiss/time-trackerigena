@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import Input from '../../atoms/Input/Input';
 import Spinner from '../../atoms/Spinner/Spinner';
 import BillingTable from '../../organisms/BillingTable/BillingTable';
@@ -171,8 +171,8 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
         }
         if (monthFilter) {
           const [year, month] = monthFilter.split('-');
-          filters.start_date = new Date(year, month - 1, 1).toISOString().split('T')[0];
-          filters.end_date = new Date(year, month, 0).toISOString().split('T')[0];
+          filters.start_date = new Date(year, month - 1, 1).toLocaleDateString('en-CA');
+          filters.end_date = new Date(year, month, 0).toLocaleDateString('en-CA');
         }
         const data = await fetchTimeEntries(filters);
         if (active) {
@@ -419,18 +419,18 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
   return (
     <div className="time-history">
       <div className="time-history-header">
-        <h2 className="time-history-title gradient-text">
+        <h2 className="time-history-title u-gradient-text">
           <ScrollText size={20} strokeWidth={1.5} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} />
           {t("Histórico de Sessões")}
         </h2>
-        <div className="history-filters">
-          <TabButton className={`filter-btn ${categoryFilter === 'all' ? 'active' : ''}`} isActive={categoryFilter === 'all'} onClick={() => setCategoryFilter('all')}>{t("Todos")}</TabButton>
+        <div className="l-history-page__filters">
+          <TabButton className={`filter-btn ${categoryFilter === 'all' ? 'is-active' : ''}`} isActive={categoryFilter === 'all'} onClick={() => setCategoryFilter('all')}>{t("Todos")}</TabButton>
           {categories.map((category) => {
             const key = category.name.toLowerCase();
             return (
               <TabButton
                 key={category.id}
-                className={`filter-btn ${categoryFilter === key ? 'active' : ''}`}
+                className={`filter-btn ${categoryFilter === key ? 'is-active' : ''}`}
                 isActive={categoryFilter === key}
                 dotColor={`var(--color-${key})`}
                 onClick={() => setCategoryFilter(key)}
@@ -453,12 +453,12 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
       </div>
 
       {loading ? (
-        <div className="loading-container"><Spinner /></div>
+        <div className="c-loading"><Spinner /></div>
       ) : (
-        <div className="history-content-layout fade-in">
-          <div className="period-dropdowns-container">
-            <div className="filter-group">
-              <label className="filter-label">{t("Mês")}</label>
+        <div className="history-content-layout u-fade-in">
+          <div className="c-period-filter">
+            <div className="c-filter-group">
+              <label className="c-filter-label">{t("Mês")}</label>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <select
                   value={monthFilter.split('-')[1]}
@@ -469,7 +469,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
                     setSelectedWeek('all');
                     setSelectedDay('all');
                   }}
-                  className="filter-select"
+                  className="c-filter-select"
                   style={{ minWidth: '130px', fontWeight: '600' }}
                 >
                   {months.map(m => (
@@ -485,7 +485,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
                     setSelectedWeek('all');
                     setSelectedDay('all');
                   }}
-                  className="filter-select"
+                  className="c-filter-select"
                   style={{ minWidth: '90px', fontWeight: '600' }}
                 >
                   {years.map(y => (
@@ -495,15 +495,15 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
               </div>
             </div>
 
-            <div className="filter-group">
-              <label className="filter-label">{t("Semana")}</label>
+            <div className="c-filter-group">
+              <label className="c-filter-label">{t("Semana")}</label>
               <select
                 value={safeSelectedWeek}
                 onChange={(e) => {
                   setSelectedWeek(e.target.value);
                   setSelectedDay('all');
                 }}
-                className="filter-select"
+                className="c-filter-select"
               >
                 <option value="all">{t("Todas as Semanas")}</option>
                 {weeksList.map((week) => (
@@ -515,12 +515,12 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
             </div>
 
             {safeSelectedWeek !== 'all' && viewMode === 'registros' && (
-              <div className="filter-group">
-                <label className="filter-label">{t("Dia da Semana")}</label>
+              <div className="c-filter-group">
+                <label className="c-filter-label">{t("Dia da Semana")}</label>
                 <select
                   value={safeSelectedDay}
                   onChange={(e) => setSelectedDay(e.target.value)}
-                  className="filter-select"
+                  className="c-filter-select"
                 >
                   <option value="all">{t("Todos da Semana")}</option>
                   {weekDaysList.map((d) => (
@@ -534,11 +534,11 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
           </div>
 
           {entries.length === 0 ? (
-            <div className="glass-card-static empty-card">
-              <div className="empty-state">
-                <span className="empty-state-icon"><Clock size={40} strokeWidth={1.5} /></span>
-                <div className="empty-state-title">{t("Nenhum registro encontrado")}</div>
-                <div className="empty-state-text">
+            <div className="o-card--static empty-card">
+              <div className="c-empty-state">
+                <span className="c-empty-state__icon"><Clock size={40} strokeWidth={1.5} /></span>
+                <div className="c-empty-state__title">{t("Nenhum registro encontrado")}</div>
+                <div className="c-empty-state__text">
                   {categoryFilter === 'all'
                     ? t('Você ainda não cronometrou nenhuma atividade. Vá para a aba Timer!')
                     : t("Nenhum registro na categoria {category} ainda.").replace("{category}", categories.find((category) => category.name.toLowerCase() === categoryFilter)?.name || categoryFilter)}
@@ -549,7 +549,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
             <div className="active-tab-content">
               {viewMode === 'registros' ? (
                 groupedByDayList.length === 0 ? (
-                  <div className="glass-card-static empty-card" style={{ padding: '2rem', textAlign: 'center' }}>
+                  <div className="o-card--static empty-card" style={{ padding: '2rem', textAlign: 'center' }}>
                     {t("Nenhum registro no período ou dia selecionado.")}
                   </div>
                 ) : (

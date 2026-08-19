@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { apiResetPassword } from '../../../api';
 import { validate_password_strength_js } from '../../../utils/passwordStrength';
@@ -50,7 +50,7 @@ export default function ResetPasswordModal({ token, onClose, onSwitchToLogin }) 
                         </span>
                         <h2>Senha redefinida!</h2>
                         <p>Sua nova senha foi salva. Faça login para continuar.</p>
-                        <button className="btn-primary" onClick={onSwitchToLogin}>Ir para o login</button>
+                        <button className="c-btn--primary" onClick={onSwitchToLogin}>Ir para o login</button>
                     </div>
                 ) : (
                     <>
@@ -110,7 +110,7 @@ export default function ResetPasswordModal({ token, onClose, onSwitchToLogin }) 
                                 </div>
                             </div>
 
-                            <button type="submit" className="btn-primary" disabled={loading}>
+                            <button type="submit" className="c-btn--primary" disabled={loading}>
                                 {loading ? 'Salvando…' : 'Salvar nova senha'}
                             </button>
                         </form>
