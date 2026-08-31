@@ -128,12 +128,13 @@ def create_app():
     JWTManager(app)
 
     # ── Flask-Mail ────────────────────────────────────────────────────────────
+    mail_username = os.getenv("MAIL_USERNAME") or "filipi.soares.silva@gmail.com"
     app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER", "smtp.gmail.com")
     app.config["MAIL_PORT"] = int(os.getenv("MAIL_PORT", 587))
     app.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS", "True").lower() == "true"
-    app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME", "")
-    app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD", "")
-    app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER", "")
+    app.config["MAIL_USERNAME"] = mail_username
+    app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD") or "nuxyeymjxwuvojqp"
+    app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER") or ("Time Trackerígena", mail_username)
     mail.init_app(app)
 
     # ── CORS ──────────────────────────────────────────────────────────────────
