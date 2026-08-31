@@ -11,8 +11,15 @@ load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if DATABASE_URL:
-    # Produção: PostgreSQL (Neon)
-    engine = create_engine(DATABASE_URL)
+    # Produção: PostgreSQL (Supabase / Neon)
+    # pool_pre_ping=True evita quedas de conexão inativa (SSL SYSCALL error / EOF detected)
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,
+        pool_recycle=300,
+        pool_size=10,
+        max_overflow=20,
+    )
 else:
     # Desenvolvimento: SQLite local
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
