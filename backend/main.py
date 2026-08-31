@@ -20,14 +20,21 @@ from routes.calendar_event_routes import calendar_event_bp
 from routes.admin_routes import admin_bp
 from routes.settings_routes import settings_bp
 
-from models.category import Category
-from models.project import Project
-from models.task import Task
-from models.user import User  # noqa: F401
-from models.calendar_event import CalendarEvent # noqa: F401
-from models.system_setting import SystemSetting # noqa: F401
-from models.ticket import Ticket, TicketMessage # noqa: F401
-from models.audit_log import AuditLog # noqa: F401
+import models  # noqa: F401
+from models import (  # noqa: F401
+    AuditLog,
+    CalendarEvent,
+    Category,
+    Project,
+    ProjectAttachment,
+    ProjectDeadlineHistory,
+    SystemSetting,
+    Task,
+    Ticket,
+    TicketMessage,
+    TimeEntry,
+    User,
+)
 
 load_dotenv()
 
