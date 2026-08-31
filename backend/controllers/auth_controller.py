@@ -44,7 +44,7 @@ def register():
         )
         log_action(db, "REGISTER", "USER", result["user"].id, f"User {result['user'].username} registered first-time account.", user_id=result["user"].id)
         return jsonify({
-            "message": "Cadastro realizado! Verifique seu e-mail para ativar a conta.",
+            "message": "Cadastro realizado com sucesso! Você já pode fazer login.",
             "username": result["user"].username,
         }), 201
     except ValueError as err:

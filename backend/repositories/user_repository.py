@@ -21,13 +21,13 @@ class UserRepository:
     def find_by_reset_token(self, token: str) -> User | None:
         return self.db.query(User).filter(User.reset_token == token).first()
 
-    def create(self, username: str, email: str, password_hash: str, activation_token: str) -> User:
+    def create(self, username: str, email: str, password_hash: str, activation_token: str = None, is_active: bool = True) -> User:
         user = User(
             username=username.lower(),
             email=email.lower(),
             password_hash=password_hash,
             activation_token=activation_token,
-            is_active=False,
+            is_active=is_active,
         )
         self.db.add(user)
         self.db.commit()
