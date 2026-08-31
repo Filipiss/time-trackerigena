@@ -152,11 +152,7 @@ export const reorderCategories = (orderData) => request('/api/categories/reorder
 // ===================== PROJECTS =====================
 
 export async function fetchProjects(category = null) {
-  let paramCategory = category;
-  if (category === 'loco') paramCategory = 'Loco';
-  if (category === 'freelas') paramCategory = 'Freelas';
-
-  const params = paramCategory ? `?category=${encodeURIComponent(paramCategory)}` : '';
+  const params = category ? `?category=${encodeURIComponent(category)}` : '';
   const data = await request(`/api/projects${params}`);
 
   return (data || []).map(project => ({
@@ -166,14 +162,9 @@ export async function fetchProjects(category = null) {
 }
 
 export async function createProject(data) {
-  const payload = {
-    ...data,
-    category: data.category === 'loco' ? 'Loco' : (data.category === 'freelas' ? 'Freelas' : data.category)
-  };
-
   const response = await request('/api/projects', {
     method: 'POST',
-    body: JSON.stringify(payload),
+    body: JSON.stringify(data),
   });
 
   return {
@@ -183,14 +174,9 @@ export async function createProject(data) {
 }
 
 export async function updateProject(id, data) {
-  const payload = { ...data };
-  if (data.category) {
-    payload.category = data.category === 'loco' ? 'Loco' : (data.category === 'freelas' ? 'Freelas' : data.category);
-  }
-
   const response = await request(`/api/projects/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(payload),
+    body: JSON.stringify(data),
   });
 
   return {
@@ -236,11 +222,7 @@ export async function updateProjectAttachment(projectId, attachmentId, data) {
 // ===================== TASKS =====================
 
 export async function fetchTasks(category = null) {
-  let paramCategory = category;
-  if (category === 'loco') paramCategory = 'Loco';
-  if (category === 'freelas') paramCategory = 'Freelas';
-
-  const params = paramCategory ? `?category=${encodeURIComponent(paramCategory)}` : '';
+  const params = category ? `?category=${encodeURIComponent(category)}` : '';
   const data = await request(`/api/tasks${params}`);
 
   return (data || []).map(task => ({
@@ -250,14 +232,9 @@ export async function fetchTasks(category = null) {
 }
 
 export async function createTask(data) {
-  const payload = {
-    ...data,
-    category: data.category === 'loco' ? 'Loco' : (data.category === 'freelas' ? 'Freelas' : data.category)
-  };
-
   const response = await request('/api/tasks', {
     method: 'POST',
-    body: JSON.stringify(payload),
+    body: JSON.stringify(data),
   });
 
   return {
@@ -267,14 +244,9 @@ export async function createTask(data) {
 }
 
 export async function updateTask(id, data) {
-  const payload = { ...data };
-  if (data.category) {
-    payload.category = data.category === 'loco' ? 'Loco' : (data.category === 'freelas' ? 'Freelas' : data.category);
-  }
-
   const response = await request(`/api/tasks/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(payload),
+    body: JSON.stringify(data),
   });
 
   return {
@@ -329,8 +301,7 @@ export async function fetchTimeEntries(filters = {}) {
   const params = new URLSearchParams();
 
   if (filters.category) {
-    const backendCat = filters.category === 'loco' ? 'Loco' : (filters.category === 'freelas' ? 'Freelas' : filters.category);
-    params.append('category', backendCat);
+    params.append('category', filters.category);
   }
   if (filters.task_id) params.append('task_id', filters.task_id);
   if (filters.start_date) params.append('start_date', filters.start_date);
@@ -460,4 +431,19 @@ export async function fetchAuditLogs(filters = {}) {
   if (filters.username) query.set('username', filters.username);
   if (filters.limit) query.set('limit', filters.limit);
   return request(`/api/admin/logs?${query.toString()}`);
+}
+
+export async function deleteAuditLog(logId) {
+  return request(`/api/admin/logs/${logId}`, { method: 'DELETE' });
+}
+
+export async function deleteAuditLogsBulk(logIds) {
+  return request('/api/admin/logs/delete-bulk', {
+    method: 'POST',
+    body: JSON.stringify({ log_ids: logIds }),
+  });
+}
+
+export async function clearAllAuditLogs() {
+  return request('/api/admin/logs/clear', { method: 'DELETE' });
 }

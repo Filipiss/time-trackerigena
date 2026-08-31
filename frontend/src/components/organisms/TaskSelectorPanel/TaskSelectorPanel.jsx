@@ -7,11 +7,6 @@ import { fetchProjects, fetchTasks } from '../../../api';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import './TaskSelectorPanel.css';
 
-const CATEGORY_LABELS = {
-  loco: 'Loco',
-  freelas: 'Freelas',
-};
-
 export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshTrigger }) {
   const { t } = useLanguage();
   const [projects, setProjects] = useState([]);
@@ -147,7 +142,7 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
                     }
                     icon={<Briefcase size={14} strokeWidth={1.5} />}
                   >
-                    {CATEGORY_LABELS[category] || category}
+                    {category}
                   </TabButton>
                 ))}
               </div>
