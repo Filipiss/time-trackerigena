@@ -137,16 +137,12 @@ def create_app():
     mail.init_app(app)
 
     # ── CORS ──────────────────────────────────────────────────────────────────
-    origins = [
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://localhost:3000",
-    ]
-    frontend_url = os.getenv("FRONTEND_URL")
-    if frontend_url:
-        origins.append(frontend_url)
-
-    CORS(app, origins=origins, supports_credentials=True)
+    CORS(
+        app,
+        resources={r"/*": {"origins": "*"}},
+        allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+        methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    )
 
     @app.after_request
     def add_security_headers(response):
