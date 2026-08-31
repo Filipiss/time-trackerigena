@@ -112,28 +112,42 @@
 }
 
 .actions {
+    text-align: left;
+    vertical-align: middle;
+}
+
+.actionsContainer {
     display: flex;
-    gap: 8px;
+    gap: var(--space-2);
+    align-items: center;
+    justify-content: flex-start;
+    white-space: nowrap;
 }
 
 .c-btn {
-    padding: 6px 14px;
-    border: 1px solid var(--border-default);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-sm);
     cursor: pointer;
-    font-size: 0.85rem;
-    background-color: var(--bg-surface);
+    font-size: 0.8rem;
+    font-weight: 500;
+    background-color: var(--bg-card);
     color: var(--text-secondary);
     transition: all var(--transition-fast);
+    line-height: 1.2;
 }
 
 .c-btn:hover {
     background-color: var(--bg-card-hover);
     color: var(--text-primary);
+    border-color: var(--border-highlight);
 }
 
 .btnDelete {
-    border-color: var(--color-danger);
+    border-color: rgba(239, 68, 68, 0.4);
     color: var(--color-danger);
     background-color: transparent;
 }

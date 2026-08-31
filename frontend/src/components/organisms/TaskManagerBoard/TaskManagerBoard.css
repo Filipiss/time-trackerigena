@@ -125,6 +125,15 @@
 .category-tabs-scroll {
   overflow-x: auto;
   padding-bottom: 2px;
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.category-tabs-scroll::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari and Opera */
 }
 
 .category-tabs {
@@ -313,4 +322,47 @@
   .c-task-form {
     padding: var(--space-3);
   }
+}
+
+.c-projects-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.c-projects-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-4);
+  height: 38px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.c-projects-page-btn:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--border-highlight);
+}
+
+.c-projects-page-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.c-projects-page-info {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  font-weight: 500;
 }

@@ -110,15 +110,21 @@ export default function UsersManagementPage() {
                                     </span>
                                 </td>
                                 <td className={styles.actions}>
-                                    <button className={styles['c-btn']} onClick={() => setEditingUser(u)}>
-                                        {t('Editar')}
-                                    </button>
-                                    <button className={styles['c-btn']} onClick={() => handleToggleAdmin(u.id, u.is_admin)}>
-                                        {u.is_admin ? t('Remover Admin') : t('Dar Admin')}
-                                    </button>
-                                    <button className={`${styles['c-btn']} ${styles.btnDelete}`} onClick={() => handleDelete(u.id)}>
-                                        {t('Excluir')}
-                                    </button>
+                                    <div className={styles.actionsContainer}>
+                                        <button className={styles['c-btn']} onClick={() => setEditingUser(u)}>
+                                            {t('Editar')}
+                                        </button>
+                                        {!u.is_admin && (
+                                            <button className={styles['c-btn']} onClick={() => handleToggleAdmin(u.id, u.is_admin)}>
+                                                {t('Dar Admin')}
+                                            </button>
+                                        )}
+                                        {!u.is_admin && (
+                                            <button className={`${styles['c-btn']} ${styles.btnDelete}`} onClick={() => handleDelete(u.id)}>
+                                                {t('Excluir')}
+                                            </button>
+                                        )}
+                                    </div>
                                 </td>
                             </tr>
                         ))}

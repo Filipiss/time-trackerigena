@@ -200,3 +200,96 @@
     text-overflow: ellipsis;
     overflow: hidden;
 }
+
+.actionsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    min-height: 40px;
+}
+
+.bulkActions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(225, 29, 72, 0.1);
+    border: 1px solid rgba(225, 29, 72, 0.2);
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--color-danger);
+}
+
+.btnBulkDelete {
+    background: var(--color-danger);
+    color: var(--text-inverse);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    transition: all var(--transition-fast);
+}
+
+.btnBulkDelete:hover {
+    background: #dc2626;
+}
+
+.btnClearAll {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    border: 1px solid var(--border-default);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    transition: all var(--transition-fast);
+}
+
+.btnClearAll:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.btnRowDelete {
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all var(--transition-fast);
+}
+
+.btnRowDelete:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+}
+
+.checkbox {
+    cursor: pointer;
+    accent-color: var(--color-danger);
+}
+
+.rowSelected {
+    background: rgba(225, 29, 72, 0.05) !important;
+}
+
+.highlight {
+    background-color: var(--theme-accent, #3b82f6);
+    color: #ffffff;
+    border-radius: 2px;
+    padding: 0 2px;
+    font-weight: 600;
+}

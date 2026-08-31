@@ -42,21 +42,20 @@ def get_all_users():
 @admin_required()
 def toggle_admin_role(user_id):
     """PUT /api/admin/users/<id>/role"""
-    data = request.get_json() or {}
-    is_admin_target = data.get("is_admin", False)
-    
     db = get_db_session()
     try:
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
             return jsonify({"error": "Usuário não encontrado"}), 404
         
-        # Prevenir que o usuário tire o próprio admin se for o último? Por enquanto só altera.
-        user.is_admin = not user.is_admin
+        if user.is_admin:
+            return jsonify({"error": "Não é permitido remover cargo administrativo pelo painel. Apenas direto no banco de dados."}), 400
+            
+        user.is_admin = True
         db.commit()
         
         return jsonify({
-            "message": f"Papel de {user.username} {'promovido a Admin' if user.is_admin else 'rebaixado a Usuário'}",
+            "message": f"Papel de {user.username} promovido a Admin",
             "is_admin": user.is_admin
         }), 200
     except Exception as e:
@@ -134,6 +133,9 @@ def delete_user(user_id):
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
             return jsonify({"error": "Usuário não encontrado"}), 404
+            
+        if user.is_admin:
+            return jsonify({"error": "Não é permitido excluir contas administradoras pelo painel. Apenas direto no banco de dados."}), 400
             
         db.delete(user)
         db.commit()
@@ -215,6 +217,58 @@ def get_audit_logs():
         logs = query.order_by(AuditLog.created_at.desc()).limit(limit).all()
         return jsonify([log.to_dict() for log in logs]), 200
     except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        db.close()
+
+@admin_required()
+def delete_audit_log(log_id):
+    """DELETE /api/admin/logs/<id>"""
+    db = get_db_session()
+    try:
+        from models.audit_log import AuditLog
+        log = db.query(AuditLog).filter(AuditLog.id == log_id).first()
+        if not log:
+            return jsonify({"error": "Registro de log não encontrado."}), 404
+        db.delete(log)
+        db.commit()
+        return jsonify({"message": "Registro de log excluído."}), 200
+    except Exception as e:
+        db.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        db.close()
+
+@admin_required()
+def delete_audit_logs_bulk():
+    """POST /api/admin/logs/delete-bulk"""
+    data = request.get_json() or {}
+    log_ids = data.get("log_ids", [])
+    if not log_ids:
+        return jsonify({"error": "Nenhum ID de log fornecido."}), 400
+    db = get_db_session()
+    try:
+        from models.audit_log import AuditLog
+        db.query(AuditLog).filter(AuditLog.id.in_(log_ids)).delete(synchronize_session=False)
+        db.commit()
+        return jsonify({"message": f"{len(log_ids)} registros de log excluídos."}), 200
+    except Exception as e:
+        db.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        db.close()
+
+@admin_required()
+def clear_all_audit_logs():
+    """DELETE /api/admin/logs/clear"""
+    db = get_db_session()
+    try:
+        from models.audit_log import AuditLog
+        db.query(AuditLog).delete(synchronize_session=False)
+        db.commit()
+        return jsonify({"message": "Todos os registros de log foram limpos."}), 200
+    except Exception as e:
+        db.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
         db.close()

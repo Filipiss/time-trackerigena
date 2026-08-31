@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
-import { fetchAuditLogs } from '../../../api';
+import { fetchAuditLogs, deleteAuditLog, deleteAuditLogsBulk, clearAllAuditLogs } from '../../../api';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import { Trash2 } from 'lucide-react';
 import styles from './AdminLogsPage.module.css';
 
 export default function AdminLogsPage() {
@@ -10,6 +11,7 @@ export default function AdminLogsPage() {
     const [actionFilter, setActionFilter] = useState('');
     const [userFilter, setUserFilter] = useState('');
     const [limitFilter, setLimitFilter] = useState('100');
+    const [selectedLogIds, setSelectedLogIds] = useState(new Set());
 
     // List of typical log actions for dropdown filter
     const logActionsList = [
@@ -31,7 +33,11 @@ export default function AdminLogsPage() {
 
     useEffect(() => {
         loadLogs();
-    }, [actionFilter, limitFilter]); // Reload automatically on drop-down changes
+    }, [actionFilter, limitFilter, userFilter]); // Reload automatically on filter changes
+
+    useEffect(() => {
+        setSelectedLogIds(new Set());
+    }, [logs]);
 
     async function loadLogs() {
         try {
@@ -46,6 +52,77 @@ export default function AdminLogsPage() {
             console.error(e);
         } finally {
             setLoading(false);
+        }
+    }
+
+    function highlightText(text, search) {
+        if (!search || !text) return text;
+        const index = text.toLowerCase().indexOf(search.toLowerCase());
+        if (index === -1) return text;
+
+        const before = text.substring(0, index);
+        const match = text.substring(index, index + search.length);
+        const after = text.substring(index + search.length);
+
+        return (
+            <>
+                {before}
+                <mark className={styles.highlight}>{match}</mark>
+                {after}
+            </>
+        );
+    }
+
+    function handleToggleSelectLog(id) {
+        setSelectedLogIds(prev => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    }
+
+    function handleToggleSelectAll() {
+        if (selectedLogIds.size === logs.length) {
+            setSelectedLogIds(new Set());
+        } else {
+            setSelectedLogIds(new Set(logs.map(log => log.id)));
+        }
+    }
+
+    async function handleDeleteSingle(id) {
+        if (!window.confirm(t("Tem certeza de que deseja excluir este registro de log?"))) return;
+        try {
+            await deleteAuditLog(id);
+            loadLogs();
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+
+    async function handleDeleteBulk() {
+        const count = selectedLogIds.size;
+        if (!window.confirm(t("Tem certeza de que deseja excluir os {{count}} registros de log selecionados?").replace("{{count}}", count))) return;
+        try {
+            await deleteAuditLogsBulk(Array.from(selectedLogIds));
+            setSelectedLogIds(new Set());
+            loadLogs();
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+
+    async function handleClearAll() {
+        if (window.confirm(t("Tem certeza de que deseja excluir permanentemente todos os logs?"))) {
+            if (window.confirm(t("Esta ação NÃO PODE ser desfeita. Deseja mesmo prosseguir e apagar todo o histórico de logs?"))) {
+                try {
+                    await clearAllAuditLogs();
+                    setSelectedLogIds(new Set());
+                    loadLogs();
+                } catch (e) {
+                    alert(e.message);
+                }
+            }
         }
     }
 
@@ -95,16 +172,13 @@ export default function AdminLogsPage() {
 
                 <div className={styles.formGroup}>
                     <label>{t("Usuário")}</label>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                        <input
-                            type="text"
-                            placeholder={t("Nome de usuário")}
-                            value={userFilter}
-                            onChange={(e) => setUserFilter(e.target.value)}
-                            className={styles.input}
-                        />
-                        <button type="submit" className={styles.btnSearch}>{t("Buscar")}</button>
-                    </div>
+                    <input
+                        type="text"
+                        placeholder={t("Nome de usuário")}
+                        value={userFilter}
+                        onChange={(e) => setUserFilter(e.target.value)}
+                        className={styles.input}
+                    />
                 </div>
 
                 <div className={styles.formGroup}>
@@ -123,6 +197,23 @@ export default function AdminLogsPage() {
                 </div>
             </form>
 
+            <div className={styles.actionsHeader}>
+                {selectedLogIds.size > 0 ? (
+                    <div className={styles.bulkActions}>
+                        <span>{t("{{count}} selecionado(s)").replace("{{count}}", selectedLogIds.size)}</span>
+                        <button type="button" onClick={handleDeleteBulk} className={styles.btnBulkDelete}>
+                            <Trash2 size={13} style={{ marginRight: '6px' }} />
+                            {t("Excluir Selecionados")}
+                        </button>
+                    </div>
+                ) : <div />}
+
+                <button type="button" onClick={handleClearAll} className={styles.btnClearAll}>
+                    <Trash2 size={13} style={{ marginRight: '6px' }} />
+                    {t("Limpar Todos os Logs")}
+                </button>
+            </div>
+
             <div className={styles.tableWrapper}>
                 {loading ? (
                     <div className={styles.spinnerWrapper}>
@@ -136,20 +227,37 @@ export default function AdminLogsPage() {
                     <table className={styles.table}>
                         <thead>
                             <tr>
+                                <th style={{ width: '40px', textAlign: 'center' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={logs.length > 0 && selectedLogIds.size === logs.length}
+                                        onChange={handleToggleSelectAll}
+                                        className={styles.checkbox}
+                                    />
+                                </th>
                                 <th>{t("Data e Hora")}</th>
                                 <th>{t("Usuário")}</th>
                                 <th>{t("Ação")}</th>
                                 <th>{t("IP")}</th>
                                 <th>{t("Descrição")}</th>
+                                <th style={{ width: '80px', textAlign: 'center' }}>{t("Ações")}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {logs.map((log) => (
-                                <tr key={log.id}>
+                                <tr key={log.id} className={selectedLogIds.has(log.id) ? styles.rowSelected : ''}>
+                                    <td style={{ textAlign: 'center' }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedLogIds.has(log.id)}
+                                            onChange={() => handleToggleSelectLog(log.id)}
+                                            className={styles.checkbox}
+                                        />
+                                    </td>
                                     <td className={styles.timestampCell}>{formatLogDate(log.created_at)}</td>
                                     <td>
                                         <span className={styles.username}>
-                                            {log.username || 'System/Guest'}
+                                            {highlightText(log.username || 'System/Guest', userFilter)}
                                         </span>
                                     </td>
                                     <td>
@@ -159,6 +267,16 @@ export default function AdminLogsPage() {
                                     </td>
                                     <td className={styles.ipCell}>{log.ip_address || '—'}</td>
                                     <td className={styles.descCell}>{log.description || '—'}</td>
+                                    <td style={{ textAlign: 'center' }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDeleteSingle(log.id)}
+                                            className={styles.btnRowDelete}
+                                            title={t("Excluir registro")}
+                                        >
+                                            <Trash2 size={15} strokeWidth={1.5} />
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

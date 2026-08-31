@@ -56,7 +56,7 @@ export default function UserWidget({ onNavigateToProfile }) {
             {open && (
                 <div className="user-dropdown">
                     {user?.is_admin && (
-                        <button className="dropdown-item" onClick={() => { setOpen(false); navigate('/admin/users'); }}>
+                        <button className="dropdown-item" onClick={() => { setOpen(false); navigate('/admin'); }}>
                             <span>⚙️</span> {t("Painel Admin")}
                         </button>
                     )}

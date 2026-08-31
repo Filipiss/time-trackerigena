@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState, useRef } from 'react';
 import Badge from '../../atoms/Badge/Badge';
 import Input from '../../atoms/Input/Input';
 import Select from '../../atoms/Select/Select';
@@ -86,7 +86,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [loading, setLoading] = useState(true);
   const [newProjectName, setNewProjectName] = useState('');
-  const [newProjectCategory, setNewProjectCategory] = useState('loco');
+  const [newProjectCategory, setNewProjectCategory] = useState('');
   const [creatingProject, setCreatingProject] = useState(false);
   const [newTaskName, setNewTaskName] = useState('');
   const [newTaskProjectId, setNewTaskProjectId] = useState('');
@@ -95,13 +95,49 @@ export default function TaskManagerBoard({ onTaskChange }) {
   const [newTaskCurrency, setNewTaskCurrency] = useState('EUR');
   const [newTaskBudgetedHours, setNewTaskBudgetedHours] = useState('');
   const [creatingTask, setCreatingTask] = useState(false);
-  const [activeTab, setActiveTab] = useState('loco');
-  const [categoryPage, setCategoryPage] = useState(1);
-  const [prevCategoriesLength, setPrevCategoriesLength] = useState(categories.length);
-  if (categories.length !== prevCategoriesLength) {
-    setPrevCategoriesLength(categories.length);
-    setCategoryPage(1);
-  }
+  const [activeTab, setActiveTab] = useState('');
+
+  const tabsContainerRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [projectPage, setProjectPage] = useState(1);
+
+  const scrollTabs = (direction) => {
+    if (tabsContainerRef.current) {
+      const scrollAmount = 200;
+      tabsContainerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const updateScrollButtons = () => {
+    if (tabsContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = tabsContainerRef.current;
+      setCanScrollLeft(scrollLeft > 1);
+      setCanScrollRight(scrollWidth - scrollLeft - clientWidth > 1);
+    }
+  };
+
+  useEffect(() => {
+    const container = tabsContainerRef.current;
+    if (!container) return;
+
+    updateScrollButtons();
+    container.addEventListener('scroll', updateScrollButtons);
+    window.addEventListener('resize', updateScrollButtons);
+
+    return () => {
+      container.removeEventListener('scroll', updateScrollButtons);
+      window.removeEventListener('resize', updateScrollButtons);
+    };
+  }, [categories]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(updateScrollButtons, 100);
+    return () => clearTimeout(timeoutId);
+  }, [categories]);
 
   const [selectedCategoryToManage, setSelectedCategoryToManage] = useState('');
   const [isCategoryNameFocused, setIsCategoryNameFocused] = useState(false);
@@ -449,9 +485,16 @@ export default function TaskManagerBoard({ onTaskChange }) {
     [activeTab, projects],
   );
 
-  const visibleCategories = useMemo(() => {
-    return categories.slice((categoryPage - 1) * 5, categoryPage * 5);
-  }, [categories, categoryPage]);
+  const visibleCategoryProjects = useMemo(() => {
+    const start = (projectPage - 1) * 5;
+    return categoryProjects.slice(start, start + 5);
+  }, [categoryProjects, projectPage]);
+
+  useEffect(() => {
+    setProjectPage(1);
+  }, [activeTab, categoryProjects.length]);
+
+  const visibleCategories = categories;
 
   if (loading) {
     return <div className="c-loading"><Spinner /></div>;
@@ -603,17 +646,17 @@ export default function TaskManagerBoard({ onTaskChange }) {
         </div>
 
         <div className="category-tabs-wrapper-with-paging" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-4)' }}>
-          {categories.length > 5 && (
+          {(canScrollLeft || canScrollRight) && (
             <button
               type="button"
-              disabled={categoryPage === 1}
-              onClick={() => setCategoryPage(p => p - 1)}
+              disabled={!canScrollLeft}
+              onClick={() => scrollTabs('left')}
               className="c-tab-page-btn"
             >
               &larr;
             </button>
           )}
-          <div className="category-tabs-scroll" style={{ flex: 1, marginBottom: 0 }}>
+          <div ref={tabsContainerRef} className="category-tabs-scroll" style={{ flex: 1, marginBottom: 0 }}>
             <SortableContext items={visibleCategories.map(c => `cat-${c.id}`)} strategy={horizontalListSortingStrategy}>
               <div className="category-tabs">
                 {visibleCategories.map((category) => (
@@ -622,11 +665,11 @@ export default function TaskManagerBoard({ onTaskChange }) {
               </div>
             </SortableContext>
           </div>
-          {categories.length > 5 && (
+          {(canScrollLeft || canScrollRight) && (
             <button
               type="button"
-              disabled={categoryPage === Math.ceil(categories.length / 5)}
-              onClick={() => setCategoryPage(p => p + 1)}
+              disabled={!canScrollRight}
+              onClick={() => scrollTabs('right')}
               className="c-tab-page-btn"
             >
               &rarr;
@@ -634,10 +677,10 @@ export default function TaskManagerBoard({ onTaskChange }) {
           )}
         </div>
 
-        <SortableContext items={categoryProjects.map(p => `proj-${p.id}`)} strategy={verticalListSortingStrategy}>
+        <SortableContext items={visibleCategoryProjects.map(p => `proj-${p.id}`)} strategy={verticalListSortingStrategy}>
           <div className="projects-grid">
             {categoryProjects.length === 0 ? <p className="empty-msg">{t("Nenhum projeto encontrado.")}</p> : null}
-            {categoryProjects.map((project) => {
+            {visibleCategoryProjects.map((project) => {
               const projectTasks = tasks.filter((task) => task.project_id === project.id);
               return (
                 <SortableWrapper key={project.id} id={`proj-${project.id}`}>
@@ -769,6 +812,30 @@ export default function TaskManagerBoard({ onTaskChange }) {
             })}
           </div>
         </SortableContext>
+
+        {categoryProjects.length > 5 && (
+          <div className="c-projects-pagination">
+            <button
+              type="button"
+              className="c-projects-page-btn"
+              disabled={projectPage === 1}
+              onClick={() => setProjectPage(p => p - 1)}
+            >
+              &larr; {t("Anterior")}
+            </button>
+            <span className="c-projects-page-info">
+              {t("Página")} {projectPage} {t("de")} {Math.ceil(categoryProjects.length / 5)}
+            </span>
+            <button
+              type="button"
+              className="c-projects-page-btn"
+              disabled={projectPage === Math.ceil(categoryProjects.length / 5)}
+              onClick={() => setProjectPage(p => p + 1)}
+            >
+              {t("Próxima")} &rarr;
+            </button>
+          </div>
+        )}
 
         <EditModal isOpen={!!editingProject} title={t("Editar Projeto")} onClose={() => setEditingProject(null)} onSave={handleSaveProject}>
           <div className="edit-modal-field">

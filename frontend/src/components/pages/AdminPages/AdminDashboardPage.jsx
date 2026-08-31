@@ -70,7 +70,17 @@ export default function AdminDashboardPage() {
 
             <div className={styles.recentActivity}>
                 <h2>{t("Resumo")}</h2>
-                <p>{t("O aplicativo possui um volume constante de novos blocos faturados. Utilize o Google Analytics para visualizar o tráfego detalhado em tempo real.")}</p>
+                <p>{t("O aplicativo possui um volume constante de novos blocos faturados. Utilize o Google Analytics para visualizar o tráfego detalhado em tempo real:")}</p>
+                <div style={{ marginTop: '8px' }}>
+                    <a
+                        href="https://analytics.google.com/analytics/web/#/a404478018p549687196/reports/intelligenthome?params=_u..nav%3Dmaui"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.analyticsLink}
+                    >
+                        https://analytics.google.com/analytics/web/#/a404478018p549687196/reports/intelligenthome?params=_u..nav%3Dmaui
+                    </a>
+                </div>
             </div>
         </div>
     );
