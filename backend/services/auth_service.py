@@ -32,12 +32,13 @@ class AuthService:
         # Gera token de ativação
         token = User.generate_activation_token()
 
-        # Cria usuário
+        # Cria usuário já ativo para permitir login imediato
         user = self.repo.create(
             username=username,
             email=email,
             password_hash=password_hash,
             activation_token=token,
+            is_active=True,
         )
 
         # Dispara e-mail em background (não bloqueia a resposta)
