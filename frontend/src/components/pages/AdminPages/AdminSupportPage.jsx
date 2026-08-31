@@ -1,12 +1,13 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { fetchAllTicketsAdmin, fetchTicketMessages, replyTicket, updateTicketStatusAdmin, deleteTicketAdmin } from '../../../api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import { formatBrasiliaDateTime, formatBrasiliaTime } from '../../../utils/dateUtils';
 import styles from '../SupportPage/SupportPage.module.css';
 
 export default function AdminSupportPage() {
     const { user } = useAuth();
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const [activeTab, setActiveTab] = useState('open');
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -125,7 +126,7 @@ export default function AdminSupportPage() {
                                                 {ticket.status === 'open' ? t('Novo / Aguardando Admin') : ticket.status === 'answered' ? t('Respondido') : t('Resolvido')}
                                             </span>
                                         </div>
-                                        <small className={styles.ticketDate}>Autor: {ticket.user_name} | Atualizado em: {new Date(ticket.updated_at).toLocaleString()}</small>
+                                        <small className={styles.ticketDate}>{t("Autor:")} {ticket.user_name} | {t("Atualizado em:")} {formatBrasiliaDateTime(ticket.updated_at, language)}</small>
                                     </div>
                                 ))
                         )}
@@ -136,7 +137,7 @@ export default function AdminSupportPage() {
                     <div className={styles.chatWindow}>
                         <div className={styles.chatHeader}>
                             <button className={styles.btnBack} onClick={() => setSelectedTicket(null)}>{t("⬅ Voltar")}</button>
-                            <h2>{selectedTicket.subject} (Autor: {selectedTicket.user_name})</h2>
+                            <h2>{selectedTicket.subject} ({t("Autor:")} {selectedTicket.user_name})</h2>
 
                             <div style={{ marginLeft: 'auto', display: 'flex', gap: '10px' }}>
                                 {selectedTicket.status !== 'resolved' ? (
@@ -169,8 +170,8 @@ export default function AdminSupportPage() {
                                         <div key={msg.id} className={`${styles.messageWrap} ${isAdmin ? styles.alignRight : styles.alignLeft}`}>
                                             <div className={`${styles.messageBubble} ${isAdmin ? styles.bubbleMe : styles.bubbleThem}`}>
                                                 <div className={styles.msgMeta}>
-                                                    <strong>{isAdmin ? (isMe ? 'Você (Admin)' : msg.sender_name) : msg.sender_name}</strong>
-                                                    <small>{new Date(msg.created_at).toLocaleTimeString()}</small>
+                                                    <strong>{isAdmin ? (isMe ? t('Você (Admin)') : msg.sender_name) : msg.sender_name}</strong>
+                                                    <small>{formatBrasiliaTime(msg.created_at, language)}</small>
                                                 </div>
                                                 <div className={styles.msgText}>{msg.message}</div>
                                             </div>

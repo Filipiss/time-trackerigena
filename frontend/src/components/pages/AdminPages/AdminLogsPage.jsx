@@ -1,11 +1,12 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchAuditLogs, deleteAuditLog, deleteAuditLogsBulk, clearAllAuditLogs } from '../../../api';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import { formatBrasiliaDateTime } from '../../../utils/dateUtils';
 import { Trash2 } from 'lucide-react';
 import styles from './AdminLogsPage.module.css';
 
 export default function AdminLogsPage() {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [actionFilter, setActionFilter] = useState('');
@@ -132,13 +133,7 @@ export default function AdminLogsPage() {
     }
 
     function formatLogDate(dateStr) {
-        if (!dateStr) return '';
-        try {
-            const date = new Date(dateStr);
-            return date.toLocaleString();
-        } catch (e) {
-            return dateStr;
-        }
+        return formatBrasiliaDateTime(dateStr, language);
     }
 
     function getActionBadgeClass(action) {

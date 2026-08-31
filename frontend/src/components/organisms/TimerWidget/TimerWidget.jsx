@@ -1,6 +1,7 @@
-﻿import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createTimeEntry } from '../../../api';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import { getTodayBrasiliaDate } from '../../../utils/dateUtils';
 import { Play, Pause, RotateCcw } from 'lucide-react';
 import './TimerWidget.css';
 
@@ -134,7 +135,7 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
         task_id: selectedTask.id,
         duration_seconds: durationSeconds,
         notes: notes.trim() || null,
-        date: new Date().toISOString().split('T')[0],
+        date: getTodayBrasiliaDate(),
       });
 
       if (intervalRef.current) {
