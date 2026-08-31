@@ -1,7 +1,8 @@
 import { handleGuestRequest } from './utils/guestMock';
 
 // Serviço de API — comunicação com o backend Flask com tradução de categorias
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const RAW_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = RAW_API_URL.replace(/\/+$/, '');
 
 // ===================== AUTH HELPER =====================
 
