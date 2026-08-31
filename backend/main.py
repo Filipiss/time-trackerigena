@@ -114,7 +114,7 @@ finally:
     db.close()
 
 
-mail = Mail()
+from utils.mail import mail
 from utils.notifier import start_notifier
 
 
