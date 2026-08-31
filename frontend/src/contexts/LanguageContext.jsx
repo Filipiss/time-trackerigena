@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const LanguageContext = createContext();
 
@@ -372,7 +372,7 @@ const dictionary = {
         "Carregando...": "Loading...",
         "Nenhuma fila encontrada para este filtro.": "No queue found for this filter.",
         "Novo / Aguardando Admin": "New / Awaiting Admin",
-        "Respondido": "Replied",
+        "Respondido": "Answered",
         "Resolvido": "Resolved",
         "Monitorando histórico...": "Loading history...",
         "⬅ Voltar": "⬅ Back",
@@ -381,6 +381,30 @@ const dictionary = {
         "🗑️ Excluir": "🗑️ Delete",
         "🔒 Este chamado está resolvido. Os usuários não podem responder até que você reabra.": "🔒 This ticket is resolved. Users cannot reply until you reopen it.",
         "Enviar Resposta": "Send Reply",
+
+        // User Support Page
+        "Suporte Técnico e Ajuda": "Technical Support & Help",
+        "Relate problemas ou tire dúvidas com os administradores.": "Report problems or ask questions to administrators.",
+        "Criar Chamado": "Create Ticket",
+        "Meus Chamados Ativos": "My Active Tickets",
+        "Assunto (Resumo do problema)": "Subject (Problem Summary)",
+        "Do que você precisa de ajuda?": "What do you need help with?",
+        "Mensagem Detalhada": "Detailed Message",
+        "Descreva tudo em detalhes para podermos ajudar...": "Describe everything in detail so we can help...",
+        "Enviar Novo Chamado": "Submit New Ticket",
+        "Nenhum chamado listado aqui.": "No tickets listed here.",
+        "Aguardando Atendimento": "Waiting for Support",
+        "Atualizado em:": "Updated on:",
+        "⬅ Voltar para lista": "⬅ Back to list",
+        "Montando histórico...": "Loading conversation history...",
+        "Você": "You",
+        "🛡️ Suporte": "🛡️ Support",
+        "🔒 Este chamado foi encerrado pelo suporte. Não é possível enviar novas mensagens.": "🔒 This ticket was closed by support. New messages cannot be sent.",
+        "Escreva sua resposta...": "Write your reply...",
+        "Enviar": "Send",
+        "Chamado aberto com sucesso!": "Ticket opened successfully!",
+        "Erro ao carregar chamados:": "Error loading tickets:",
+        "Autor:": "Author:",
 
         // Admin panel — AdminSettingsPage
         "Configurações Base": "Base Settings",
