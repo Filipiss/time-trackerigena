@@ -129,9 +129,16 @@ def create_app():
 
     # ── Flask-Mail ────────────────────────────────────────────────────────────
     mail_username = os.getenv("MAIL_USERNAME") or "filipi.soares.silva@gmail.com"
+    mail_port = int(os.getenv("MAIL_PORT", 465))
+    use_ssl_env = os.getenv("MAIL_USE_SSL")
+    use_ssl = (use_ssl_env.lower() == "true") if use_ssl_env is not None else (mail_port == 465)
+    use_tls_env = os.getenv("MAIL_USE_TLS")
+    use_tls = (use_tls_env.lower() == "true") if use_tls_env is not None else (mail_port == 587)
+
     app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER", "smtp.gmail.com")
-    app.config["MAIL_PORT"] = int(os.getenv("MAIL_PORT", 587))
-    app.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS", "True").lower() == "true"
+    app.config["MAIL_PORT"] = mail_port
+    app.config["MAIL_USE_SSL"] = use_ssl
+    app.config["MAIL_USE_TLS"] = use_tls
     app.config["MAIL_USERNAME"] = mail_username
     app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD") or "nuxyeymjxwuvojqp"
     app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER") or ("Time Trackerígena", mail_username)
