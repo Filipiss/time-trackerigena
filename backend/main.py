@@ -9,7 +9,6 @@ from sqlalchemy import inspect, text
 
 from utils.database import Base, engine
 
-# Importa os rotas/blueprints que irão disparar a importação dos controllers
 from routes.project_routes import project_bp
 from routes.task_routes import task_bp
 from routes.time_entry_routes import time_entry_bp
@@ -20,8 +19,8 @@ from routes.calendar_event_routes import calendar_event_bp
 from routes.admin_routes import admin_bp
 from routes.settings_routes import settings_bp
 
-import models  # noqa: F401
-from models import (  # noqa: F401
+import models
+from models import (
     AuditLog,
     CalendarEvent,
     Category,
@@ -38,7 +37,6 @@ from models import (  # noqa: F401
 
 load_dotenv()
 
-# Cria todas as tabelas no banco de dados, se não existirem (incluindo 'users')
 Base.metadata.create_all(bind=engine)
 
 
@@ -57,7 +55,7 @@ def _run_lightweight_migrations():
             ("deadline", "VARCHAR(10)"),
             ("status", "VARCHAR(30)"),
             ("notes", "TEXT"),
-            ("user_id", "INTEGER"),  # FK para users — adicionada gradualmente
+            ("user_id", "INTEGER"),
             ("sort_order", "INTEGER DEFAULT 0"),
         ],
         "tasks": [
@@ -78,7 +76,6 @@ def _run_lightweight_migrations():
                         text(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}")
                     )
 
-    # Garante valores padrão para linhas antigas
     with engine.begin() as connection:
         connection.execute(text("UPDATE projects SET status = 'em_andamento' WHERE status IS NULL"))
         connection.execute(text("UPDATE tasks SET currency = 'EUR' WHERE currency IS NULL"))
@@ -86,15 +83,12 @@ def _run_lightweight_migrations():
         connection.execute(text("UPDATE projects SET sort_order = 0 WHERE sort_order IS NULL"))
         connection.execute(text("UPDATE tasks SET sort_order = 0 WHERE sort_order IS NULL"))
 
-        # Backward compatibility migration: If calendar_events is totally empty, migrate older deadlines
         res = connection.execute(text("SELECT count(id) FROM calendar_events")).scalar()
         if res == 0:
-            # Transfer old projects
             connection.execute(text("""
                 INSERT INTO calendar_events (user_id, project_id, date, status, deadline_notified)
                 SELECT user_id, id, deadline, status, 0 FROM projects WHERE deadline IS NOT NULL
             """))
-            # Transfer old tasks
             connection.execute(text("""
                 INSERT INTO calendar_events (user_id, task_id, date, status, deadline_notified)
                 SELECT (SELECT user_id FROM projects WHERE projects.id = tasks.project_id), id, deadline, status, 0 FROM tasks WHERE deadline IS NOT NULL
@@ -102,7 +96,6 @@ def _run_lightweight_migrations():
 
 _run_lightweight_migrations()
 
-# Mantém as categorias já existentes no banco local acessíveis no novo gerenciamento.
 from utils.database import get_db_session
 db = get_db_session()
 try:
@@ -122,12 +115,10 @@ def create_app():
     app = Flask(__name__)
     app.url_map.strict_slashes = False
 
-    # ── JWT ──────────────────────────────────────────────────────────────────
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "dev-insecure-key-change-in-prod")
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 60 * 60 * 24 * 7  # 7 dias
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 60 * 60 * 24 * 7
     JWTManager(app)
 
-    # ── Flask-Mail ────────────────────────────────────────────────────────────
     mail_username = os.getenv("MAIL_USERNAME") or "filipi.soares.silva@gmail.com"
     mail_port = int(os.getenv("MAIL_PORT", 465))
     use_ssl_env = os.getenv("MAIL_USE_SSL")
@@ -144,7 +135,6 @@ def create_app():
     app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER") or ("Time Trackerígena", mail_username)
     mail.init_app(app)
 
-    # ── CORS ──────────────────────────────────────────────────────────────────
     CORS(
         app,
         resources={r"/*": {"origins": "*"}},
@@ -159,11 +149,9 @@ def create_app():
         response.headers['X-Frame-Options'] = 'SAMEORIGIN'
         response.headers['X-XSS-Protection'] = '1; mode=block'
         response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-        # Secure CSP for REST APIs (not rendering HTML/iframes)
         response.headers['Content-Security-Policy'] = "default-src 'none'; frame-ancestors 'none'"
         return response
 
-    # ── Blueprints ────────────────────────────────────────────────────────────
     from routes.admin_routes import admin_bp
     from routes.settings_routes import settings_bp
     from routes.support_routes import support_bp

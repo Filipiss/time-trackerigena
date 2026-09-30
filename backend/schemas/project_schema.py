@@ -9,7 +9,6 @@ class ProjectSchema(Schema):
     category = fields.Str(required=True)
     created_at = fields.DateTime(dump_only=True)
 
-    # Campos do calendário de deadlines
     deadline = fields.Str(load_default=None, allow_none=True)
     status = fields.Str(load_default="em_andamento", allow_none=True)
     notes = fields.Str(load_default=None, allow_none=True)

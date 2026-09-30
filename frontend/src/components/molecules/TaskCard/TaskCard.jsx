@@ -53,8 +53,6 @@ export default function TaskCard({
     );
   }
 
-  // Shared molecule with variants because both surfaces present the same task identity block,
-  // but only the management view needs billing/destructive controls.
   return (
     <Button className={`c-selector__item ${isSelected ? 'is-selected' : ''}`} onClick={() => onClick?.(task)}>
       <ColorDot className="o-task-dot" color={task.color || 'var(--color-info)'} size="10px" />

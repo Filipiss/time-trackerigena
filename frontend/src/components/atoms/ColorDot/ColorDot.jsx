@@ -8,5 +8,5 @@ export default function ColorDot({ className = '', color = '#06b6d4', size, styl
     ...style,
   };
 
-  return <span className={`color-dot ${className}`.trim()} style={dotStyle} {...props} />;
+  return <span className={`o-color-dot ${className}`.trim()} style={dotStyle} {...props} />;
 }

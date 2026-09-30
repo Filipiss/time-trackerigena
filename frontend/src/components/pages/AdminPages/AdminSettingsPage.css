@@ -1,43 +1,43 @@
-.container {
+.c-admin-settings {
     padding: 1rem;
 }
 
-.header .header h1 {
+.c-admin-settings__header h1 {
     font-size: 2rem;
     margin-bottom: 0.5rem;
     color: var(--text-primary);
 }
 
-.header p {
+.c-admin-settings__header p {
     color: var(--text-secondary);
     margin-bottom: 2rem;
 }
 
-.formContainer {
+.c-admin-settings__form {
     background: var(--bg-surface);
     border: 1px solid var(--border-default);
     border-radius: var(--radius-md);
     overflow: hidden;
 }
 
-.settingsSection {
+.c-admin-settings__section {
     padding: 2rem;
 }
 
-.settingsSection h2 {
+.c-admin-settings__section h2 {
     font-size: 1.2rem;
     margin-bottom: 0.5rem;
     color: var(--text-primary);
 }
 
-.hint {
+.c-admin-settings__hint {
     color: var(--text-muted);
     font-size: 0.9rem;
     line-height: 1.5;
     margin-bottom: 1rem;
 }
 
-.textarea {
+.c-admin-settings__textarea {
     width: 100%;
     background: var(--bg-input);
     border: 1px solid var(--border-default);
@@ -49,25 +49,25 @@
     resize: vertical;
 }
 
-.textarea:focus {
+.c-admin-settings__textarea:focus {
     outline: none;
     border-color: var(--theme-accent);
 }
 
-.divider {
+.c-admin-settings__divider {
     border: none;
     border-top: 1px solid var(--border-default);
     margin: 0;
 }
 
-.toggleRow {
+.c-admin-settings__toggle-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 2rem;
 }
 
-.switch {
+.c-admin-settings__switch {
     position: relative;
     display: inline-block;
     width: 60px;
@@ -75,13 +75,13 @@
     flex-shrink: 0;
 }
 
-.switch input {
+.c-admin-settings__switch input {
     opacity: 0;
     width: 0;
     height: 0;
 }
 
-.slider {
+.c-admin-settings__slider {
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -93,7 +93,7 @@
     border-radius: 34px;
 }
 
-.slider:before {
+.c-admin-settings__slider:before {
     position: absolute;
     content: "";
     height: 26px;
@@ -105,15 +105,15 @@
     border-radius: 50%;
 }
 
-input:checked+.slider {
+.c-admin-settings__switch input:checked + .c-admin-settings__slider {
     background-color: var(--color-danger);
 }
 
-input:checked+.slider:before {
+.c-admin-settings__switch input:checked + .c-admin-settings__slider:before {
     transform: translateX(26px);
 }
 
-.actions {
+.c-admin-settings__actions {
     padding: 1.5rem 2rem;
     background: var(--bg-card-hover);
     border-top: 1px solid var(--border-default);
@@ -121,7 +121,7 @@ input:checked+.slider:before {
     justify-content: flex-end;
 }
 
-.btnSave {
+.c-admin-settings__btn--save {
     background: var(--theme-accent);
     color: var(--text-inverse);
     border: none;
@@ -132,36 +132,36 @@ input:checked+.slider:before {
     transition: background 0.2s;
 }
 
-.btnSave:hover {
+.c-admin-settings__btn--save:hover {
     background: var(--theme-accent-hover);
 }
 
-.btnSave:disabled {
+.c-admin-settings__btn--save:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.loading {
+.c-admin-settings__loading {
     text-align: center;
     padding: 3rem;
     color: var(--text-muted);
 }
 
 @media (max-width: 767px) {
-    .settingsSection {
+    .c-admin-settings__section {
         padding: 1.25rem 1rem;
     }
 
-    .toggleRow {
+    .c-admin-settings__toggle-row {
         gap: 1rem;
     }
 
-    .actions {
+    .c-admin-settings__actions {
         padding: 1rem;
         justify-content: center;
     }
 
-    .btnSave {
+    .c-admin-settings__btn--save {
         width: 100%;
         text-align: center;
     }

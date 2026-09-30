@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState, useRef } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import Badge from '../../atoms/Badge/Badge';
 import Input from '../../atoms/Input/Input';
 import Select from '../../atoms/Select/Select';
@@ -502,16 +502,16 @@ export default function TaskManagerBoard({ onTaskChange }) {
 
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <div className="task-manager u-fade-in">
-        <div className="task-manager-header">
-          <h2 className="task-manager-title u-gradient-text"><Blocks size={24} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '8px' }} strokeWidth={1.5} /> {t("Gerenciamento de Projetos e Tarefas")}</h2>
+      <div className="c-task-manager u-fade-in">
+        <div className="c-task-manager__header">
+          <h2 className="c-task-manager__title u-gradient-text"><Blocks size={24} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '8px' }} strokeWidth={1.5} /> {t("Gerenciamento de Projetos e Tarefas")}</h2>
         </div>
 
-        <div className="forms-grid">
+        <div className="c-task-manager__forms">
           <form className="c-task-form o-card--static" onSubmit={handleCreateCategory}>
-            <div className="task-form-title"><Briefcase size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> {t("Nova Categoria")}</div>
-            <div className="task-form-field">
-              <label className="task-form-label">{t("Nome")}</label>
+            <div className="c-task-form__title"><Briefcase size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> {t("Nova Categoria")}</div>
+            <div className="c-task-form__field">
+              <label className="c-task-form__label">{t("Nome")}</label>
               <Input
                 value={newCategoryName}
                 onChange={(event) => setNewCategoryName(event.target.value)}
@@ -521,8 +521,8 @@ export default function TaskManagerBoard({ onTaskChange }) {
                 onBlur={(e) => { e.target.placeholder = t("Ex.: Trabalho, Freelance, Pessoal..."); setIsCategoryNameFocused(false); }}
               />
             </div>
-            <div className="task-form-field task-form-spacing" style={{ marginBottom: 'var(--space-6)' }}>
-              <label className="task-form-label">{t("Gerenciar Categoria")}</label>
+            <div className="c-task-form__field c-task-form__field--spacing" style={{ marginBottom: 'var(--space-6)' }}>
+              <label className="c-task-form__label">{t("Gerenciar Categoria")}</label>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <Select
                   value={selectedCategoryToManage}
@@ -568,34 +568,34 @@ export default function TaskManagerBoard({ onTaskChange }) {
                 )}
               </div>
             </div>
-            <button type="submit" className="c-btn c-btn--primary task-form-submit">+ {t("Criar Categoria")}</button>
+            <button type="submit" className="c-btn c-btn--primary c-task-form__submit">+ {t("Criar Categoria")}</button>
           </form>
 
           <form className="c-task-form o-card--static" onSubmit={handleCreateProject}>
-            <div className="task-form-title"><FolderOpen size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> {t("Novo Projeto")}</div>
-            <div className="task-form-field">
-              <label className="task-form-label">💼 {t("Nome do Projeto")}</label>
+            <div className="c-task-form__title"><FolderOpen size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> {t("Novo Projeto")}</div>
+            <div className="c-task-form__field">
+              <label className="c-task-form__label">💼 {t("Nome do Projeto")}</label>
               <Input value={newProjectName} onChange={(event) => setNewProjectName(event.target.value)} required />
             </div>
-            <div className="task-form-field task-form-spacing" style={{ marginBottom: 'var(--space-6)' }}>
-              <label className="task-form-label">🏷️ {t("Categoria")}</label>
+            <div className="c-task-form__field c-task-form__field--spacing" style={{ marginBottom: 'var(--space-6)' }}>
+              <label className="c-task-form__label">🏷️ {t("Categoria")}</label>
               <Select value={newProjectCategory} onChange={(event) => setNewProjectCategory(event.target.value)} required>
                 {categories.map((category) => (
                   <option key={category.id} value={category.name}>{category.name}</option>
                 ))}
               </Select>
             </div>
-            <button type="submit" className="c-btn c-btn--primary task-form-submit" disabled={creatingProject}>+ {t("Criar Projeto")}</button>
+            <button type="submit" className="c-btn c-btn--primary c-task-form__submit" disabled={creatingProject}>+ {t("Criar Projeto")}</button>
           </form>
 
           <form className="c-task-form o-card--static" onSubmit={handleCreateTask}>
-            <div className="task-form-title"><Sparkles size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> {t("Nova Task")}</div>
-            <div className="task-form-field">
-              <label className="task-form-label">✨ {t("Nome da Tarefa")}</label>
+            <div className="c-task-form__title"><Sparkles size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} /> {t("Nova Task")}</div>
+            <div className="c-task-form__field">
+              <label className="c-task-form__label">✨ {t("Nome da Tarefa")}</label>
               <Input value={newTaskName} onChange={(event) => setNewTaskName(event.target.value)} required />
             </div>
-            <div className="task-form-field task-form-spacing">
-              <label className="task-form-label">{t("Projeto")}</label>
+            <div className="c-task-form__field c-task-form__field--spacing">
+              <label className="c-task-form__label">{t("Projeto")}</label>
               <Select value={newTaskProjectId} onChange={(event) => setNewTaskProjectId(event.target.value)} required>
                 <option value="">{t("Selecione um projeto...")}</option>
                 {projects.map((project) => (
@@ -604,14 +604,14 @@ export default function TaskManagerBoard({ onTaskChange }) {
               </Select>
             </div>
             <div className="c-task-form__row" style={{ marginBottom: 'var(--space-6)' }}>
-              <div className="task-form-field task-form-currency-field">
-                <label className="task-form-label">{t("Moeda")}</label>
+              <div className="c-task-form__field c-task-form__currency-field">
+                <label className="c-task-form__label">{t("Moeda")}</label>
                 <CurrencySelect value={newTaskCurrency} onChange={(event) => setNewTaskCurrency(event.target.value)} />
               </div>
-              <div className="task-form-field task-form-inline-field">
-                <label className="task-form-label">{t("Valor/Hora")}</label>
+              <div className="c-task-form__field c-task-form__inline-field">
+                <label className="c-task-form__label">{t("Valor/Hora")}</label>
                 <Input
-                  className="input-centered"
+                  className="c-task-form__input--centered"
                   type="number"
                   step="0.01"
                   value={newTaskHourlyRate}
@@ -621,11 +621,11 @@ export default function TaskManagerBoard({ onTaskChange }) {
                   onBlur={(e) => e.target.placeholder = `${CURRENCY_SYMBOLS[newTaskCurrency] || '$'}`}
                 />
               </div>
-              <div className="task-form-field task-form-inline-field">
-                <label className="task-form-label">{t("Horas Orçadas")}</label>
+              <div className="c-task-form__field c-task-form__inline-field">
+                <label className="c-task-form__label">{t("Horas Orçadas")}</label>
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                   <Input
-                    className="input-centered"
+                    className="c-task-form__input--centered"
                     type="number"
                     step="0.5"
                     min="0"
@@ -641,7 +641,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                 </div>
               </div>
             </div>
-            <button type="submit" className="c-btn c-btn--primary task-form-submit" disabled={creatingTask}>+ {t("Criar Tarefa")}</button>
+            <button type="submit" className="c-btn c-btn--primary c-task-form__submit" disabled={creatingTask}>+ {t("Criar Tarefa")}</button>
           </form>
         </div>
 
@@ -656,9 +656,9 @@ export default function TaskManagerBoard({ onTaskChange }) {
               &larr;
             </button>
           )}
-          <div ref={tabsContainerRef} className="category-tabs-scroll" style={{ flex: 1, marginBottom: 0 }}>
+          <div ref={tabsContainerRef} className="c-task-manager__category-tabs-scroll" style={{ flex: 1, marginBottom: 0 }}>
             <SortableContext items={visibleCategories.map(c => `cat-${c.id}`)} strategy={horizontalListSortingStrategy}>
-              <div className="category-tabs">
+              <div className="c-task-manager__category-tabs">
                 {visibleCategories.map((category) => (
                   <SortableCategory key={category.id} category={category} activeTab={activeTab} setActiveTab={setActiveTab} />
                 ))}
@@ -678,8 +678,8 @@ export default function TaskManagerBoard({ onTaskChange }) {
         </div>
 
         <SortableContext items={visibleCategoryProjects.map(p => `proj-${p.id}`)} strategy={verticalListSortingStrategy}>
-          <div className="projects-grid">
-            {categoryProjects.length === 0 ? <p className="empty-msg">{t("Nenhum projeto encontrado.")}</p> : null}
+          <div className="c-task-manager__projects-grid">
+            {categoryProjects.length === 0 ? <p className="c-task-manager__empty-msg">{t("Nenhum projeto encontrado.")}</p> : null}
             {visibleCategoryProjects.map((project) => {
               const projectTasks = tasks.filter((task) => task.project_id === project.id);
               return (
@@ -711,10 +711,10 @@ export default function TaskManagerBoard({ onTaskChange }) {
                         </span>
                         <div style={{ display: 'flex', gap: '4px' }}>
                           <label className="c-btn--icon" title={t("Anexar arquivo")} onClick={e => e.stopPropagation()} style={{ cursor: 'pointer', opacity: uploadingToProject === project.id ? 0.5 : 1 }}>
-                            {uploadingToProject === project.id ? <Loader size={16} strokeWidth={1.5} className="spin-animation" /> : <Paperclip size={16} strokeWidth={1.5} />}
+                            {uploadingToProject === project.id ? <Loader size={16} strokeWidth={1.5} className="u-spin" /> : <Paperclip size={16} strokeWidth={1.5} />}
                             <input type="file" hidden accept=".svg,.png,.jpg,.jpeg,.gif,.pdf,.zip,.rar,.doc,.docx,.xls,.xlsx,.json,.fig" onChange={(e) => {
                               const file = e.target.files[0];
-                              e.target.value = null; // reseta pra conseguir mandar o mesmo
+                              e.target.value = null;
                               handleFileUpload(project.id, file);
                             }} disabled={uploadingToProject === project.id} />
                           </label>
@@ -745,7 +745,7 @@ export default function TaskManagerBoard({ onTaskChange }) {
                         <div className="c-folder__body o-card">
 
                           <SortableContext items={projectTasks.map(t => `task-${t.id}`)} strategy={verticalListSortingStrategy}>
-                            <div className="task-cards-list" style={{ marginBottom: (attachmentsByProject[project.id] && attachmentsByProject[project.id].length > 0) ? 'var(--space-6)' : 0 }}>
+                            <div className="c-task-manager__cards-list" style={{ marginBottom: (attachmentsByProject[project.id] && attachmentsByProject[project.id].length > 0) ? 'var(--space-6)' : 0 }}>
                               {projectTasks.map((task) => (
                                 <SortableWrapper key={task.id} id={`task-${task.id}`}>
                                   {({ setNodeRef, style, attributes, listeners }) => (
@@ -762,17 +762,17 @@ export default function TaskManagerBoard({ onTaskChange }) {
                                   )}
                                 </SortableWrapper>
                               ))}
-                              {projectTasks.length === 0 ? <span className="empty-msg task-list-empty">{t("Nenhuma tarefa cadastrada para este projeto.")}</span> : null}
+                              {projectTasks.length === 0 ? <span className="c-task-manager__empty-msg c-task-manager__empty-text">{t("Nenhuma tarefa cadastrada para este projeto.")}</span> : null}
                             </div>
                           </SortableContext>
 
                           {attachmentsByProject[project.id] && attachmentsByProject[project.id].length > 0 && (
-                            <div className="attachments-section">
+                            <div className="c-folder__attachments">
                               <div style={{ padding: 'var(--space-2) var(--space-4)', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--text-secondary)', borderTop: '1px solid var(--border-subtle)', paddingTop: 'var(--space-4)', marginBottom: 'var(--space-3)' }}>
                                 <FolderOpen size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} strokeWidth={1.5} />
                                 {t("Arquivos do projeto")}
                               </div>
-                              <div className="attachments-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 'var(--space-3)', padding: '0 var(--space-2)' }}>
+                              <div className="c-folder__attachments-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 'var(--space-3)', padding: '0 var(--space-2)' }}>
                                 {attachmentsByProject[project.id].map(att => (
                                   <div key={att.id} style={{ position: 'relative', overflow: 'hidden', paddingLeft: '14px', display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: 'var(--space-2) var(--space-3) var(--space-2) 18px', fontSize: 'var(--text-xs)' }}>
                                     <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', backgroundColor: att.color || 'var(--border-subtle)' }} />
@@ -838,30 +838,30 @@ export default function TaskManagerBoard({ onTaskChange }) {
         )}
 
         <EditModal isOpen={!!editingProject} title={t("Editar Projeto")} onClose={() => setEditingProject(null)} onSave={handleSaveProject}>
-          <div className="edit-modal-field">
-            <label className="edit-modal-label">{t("Nome do Projeto")}</label>
+          <div className="c-modal__field">
+            <label className="c-modal__label">{t("Nome do Projeto")}</label>
             <Input value={editProjectForm.name} onChange={e => setEditProjectForm({ ...editProjectForm, name: e.target.value })} required />
           </div>
         </EditModal>
 
         <EditModal isOpen={!!editingTask} title={t("Editar Tarefa")} onClose={() => setEditingTask(null)} onSave={handleSaveTask}>
-          <div className="edit-modal-field">
-            <label className="edit-modal-label">✨ {t("Nome da Tarefa")}</label>
+          <div className="c-modal__field">
+            <label className="c-modal__label">✨ {t("Nome da Tarefa")}</label>
             <Input value={editTaskForm.name} onChange={e => setEditTaskForm({ ...editTaskForm, name: e.target.value })} required />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', alignItems: 'end' }}>
-            <div className="edit-modal-field">
-              <label className="edit-modal-label">{t("Valor/Hora")}</label>
+            <div className="c-modal__field">
+              <label className="c-modal__label">{t("Valor/Hora")}</label>
               <Input type="number" step="0.01" value={editTaskForm.hourly_rate} onChange={e => setEditTaskForm({ ...editTaskForm, hourly_rate: e.target.value })} />
             </div>
-            <div className="edit-modal-field">
-              <label className="edit-modal-label">{t("Horas Orçadas")}</label>
+            <div className="c-modal__field">
+              <label className="c-modal__label">{t("Horas Orçadas")}</label>
               <Input type="number" step="0.1" value={editTaskForm.budgeted_hours} onChange={e => setEditTaskForm({ ...editTaskForm, budgeted_hours: e.target.value })} />
             </div>
-            <div className="edit-modal-field">
-              <label className="edit-modal-label">{t("Cor")}</label>
+            <div className="c-modal__field">
+              <label className="c-modal__label">{t("Cor")}</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <input type="color" className="color-picker" value={editTaskForm.color || '#10b981'} onChange={e => setEditTaskForm({ ...editTaskForm, color: e.target.value })} style={{ width: '42px', height: '42px', padding: '0', cursor: 'pointer', borderRadius: '4px' }} />
+                <input type="color" className="c-task-form__color-picker" value={editTaskForm.color || '#10b981'} onChange={e => setEditTaskForm({ ...editTaskForm, color: e.target.value })} style={{ width: '42px', height: '42px', padding: '0', cursor: 'pointer', borderRadius: '4px' }} />
                 <button type="button" onClick={() => navigator.clipboard.writeText(editTaskForm.color || '#10b981')} className="c-btn--icon" style={{ padding: '6px', opacity: 0.7 }} title={t("Copiar código HEX")}>
                   <Copy size={16} strokeWidth={1.5} />
                 </button>

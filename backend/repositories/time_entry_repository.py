@@ -67,7 +67,6 @@ class TimeEntryRepository:
         if category:
             base_query = base_query.filter(Project.category == category)
         filtered = base_query.subquery()
-        # Tempo por categoria
         category_stats = (
             db.query(
                 Project.category,
@@ -80,7 +79,6 @@ class TimeEntryRepository:
             .all()
         )
         
-        # Tempo por tarefa
         task_stats = (
             db.query(
                 Task.name,
@@ -96,7 +94,6 @@ class TimeEntryRepository:
             .all()
         )
         
-        # Tempo por dia
         day_stats = (
             db.query(
                 func.date(TimeEntry.start_time).label("day"),

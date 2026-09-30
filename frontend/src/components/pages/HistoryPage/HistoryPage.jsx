@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Input from '../../atoms/Input/Input';
 import Spinner from '../../atoms/Spinner/Spinner';
 import BillingTable from '../../organisms/BillingTable/BillingTable';
@@ -269,14 +269,12 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
     }
   };
 
-  // 1. Calcular a lista de semanas para o mês selecionado
   const weeksList = useMemo(() => {
     if (!monthFilter) return [];
     const [year, month] = monthFilter.split('-').map(Number);
     return getWeeksOfMonth(year, month - 1, language);
   }, [monthFilter, language]);
 
-  // 2. Dias úteis da semana atual selecionada (Segunda a Domingo)
   const weekDaysList = useMemo(() => {
     if (selectedWeek === 'all') return [];
     const days = [];
@@ -303,7 +301,6 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
     return days;
   }, [selectedWeek, t, language]);
 
-  // Validadores para prevenir efeitos colaterais caso a semana/dia selecionado fiquem órfãos quando mudar o mês
   const safeSelectedWeek = useMemo(() => {
     if (selectedWeek === 'all') return 'all';
     const isValid = weeksList.some(w => w.key === selectedWeek);
@@ -317,11 +314,9 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
     return isValid ? selectedDay : 'all';
   }, [selectedDay, safeSelectedWeek, weekDaysList]);
 
-  // 3. Filtrar entries baseando-se na semana e no dia específico
   const filteredEntries = useMemo(() => {
     let result = entries;
 
-    // Filtro de Semana
     if (safeSelectedWeek !== 'all') {
       const start = new Date(safeSelectedWeek + 'T00:00:00');
       const end = new Date(safeSelectedWeek + 'T23:59:59');
@@ -333,7 +328,6 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
       });
     }
 
-    // Filtro de Dia Específico
     if (safeSelectedDay !== 'all') {
       result = result.filter((entry) => {
         const local = new Date(entry.start_time);
@@ -348,7 +342,6 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
     return result;
   }, [entries, safeSelectedWeek, safeSelectedDay]);
 
-  // 4. Agrupar filteredEntries por dia para exibição estilo Clockify
   const groupedByDayList = useMemo(() => {
     const groups = {};
     filteredEntries.forEach((entry) => {
@@ -382,7 +375,6 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
     return Object.values(groups).sort((a, b) => b.dateStr.localeCompare(a.dateStr));
   }, [filteredEntries]);
 
-  // 5. Totalizar tarefas para a BillingTable com base nas entries filtradas!
   const taskTotalsList = useMemo(() => {
     const taskTotals = {};
     filteredEntries.forEach((entry) => {
@@ -417,9 +409,9 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
   );
 
   return (
-    <div className="time-history">
-      <div className="time-history-header">
-        <h2 className="time-history-title u-gradient-text">
+    <div className="c-history-page">
+      <div className="c-history-page__header">
+        <h2 className="c-history-page__title u-gradient-text">
           <ScrollText size={20} strokeWidth={1.5} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }} />
           {t("Histórico de Sessões")}
         </h2>
@@ -461,7 +453,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
       {loading ? (
         <div className="c-loading"><Spinner /></div>
       ) : (
-        <div className="history-content-layout u-fade-in">
+        <div className="c-history-page__content u-fade-in">
           <div className="c-period-filter">
             <div className="c-filter-group">
               <label className="c-filter-label">{t("Mês")}</label>
@@ -540,7 +532,7 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
           </div>
 
           {entries.length === 0 ? (
-            <div className="o-card--static empty-card">
+            <div className="o-card--static c-history-page__empty-card">
               <div className="c-empty-state">
                 <span className="c-empty-state__icon"><Clock size={40} strokeWidth={1.5} /></span>
                 <div className="c-empty-state__title">{t("Nenhum registro encontrado")}</div>
@@ -552,10 +544,10 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
               </div>
             </div>
           ) : (
-            <div className="active-tab-content">
+            <div className="c-history-page__tab-content">
               {viewMode === 'registros' ? (
                 groupedByDayList.length === 0 ? (
-                  <div className="o-card--static empty-card" style={{ padding: '2rem', textAlign: 'center' }}>
+                  <div className="o-card--static c-history-page__empty-card" style={{ padding: '2rem', textAlign: 'center' }}>
                     {t("Nenhum registro no período ou dia selecionado.")}
                   </div>
                 ) : (
@@ -589,7 +581,6 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
         </div>
       )}
 
-      {/* Modal de Edição */}
       <EditModal
         isOpen={!!editingItem}
         title={t("Editar Registro")}
@@ -598,19 +589,19 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
       >
         {editingItem?.task_id && (
           <>
-            <div className="edit-modal-field">
-              <label className="edit-modal-label">{t("Nome da Tarefa")}</label>
+            <div className="c-modal__field">
+              <label className="c-modal__label">{t("Nome da Tarefa")}</label>
               <Input value={editForm.task_name} onChange={e => setEditForm({ ...editForm, task_name: e.target.value })} />
             </div>
-            <div className="edit-modal-field">
-              <label className="edit-modal-label">{t("Valor/Hora")}</label>
+            <div className="c-modal__field">
+              <label className="c-modal__label">{t("Valor/Hora")}</label>
               <Input type="number" step="0.01" value={editForm.hourly_rate} onChange={e => setEditForm({ ...editForm, hourly_rate: e.target.value })} />
             </div>
           </>
         )}
         {viewMode !== 'faturamento' && (
-          <div className="edit-modal-field">
-            <label className="edit-modal-label">{t("Data (Resumo)")}</label>
+          <div className="c-modal__field">
+            <label className="c-modal__label">{t("Data (Resumo)")}</label>
             <Input
               type="date"
               value={editForm.start_date}
@@ -619,8 +610,8 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
             />
           </div>
         )}
-        <div className="edit-modal-field">
-          <label className="edit-modal-label">{viewMode === 'faturamento' ? t('Horas Trabalhadas (Decimal)') : t('Duração (HH:MM:SS)')}</label>
+        <div className="c-modal__field">
+          <label className="c-modal__label">{viewMode === 'faturamento' ? t('Horas Trabalhadas (Decimal)') : t('Duração (HH:MM:SS)')}</label>
           <Input
             value={editForm.duration}
             onChange={e => setEditForm({ ...editForm, duration: e.target.value })}
@@ -629,8 +620,8 @@ export default function HistoryPage({ refreshTrigger, onRefresh }) {
           />
         </div>
         {!Array.isArray(editingItem?.ids) && (
-          <div className="edit-modal-field">
-            <label className="edit-modal-label">{t("Notas")}</label>
+          <div className="c-modal__field">
+            <label className="c-modal__label">{t("Notas")}</label>
             <Input value={editForm.notes} onChange={e => setEditForm({ ...editForm, notes: e.target.value })} />
           </div>
         )}

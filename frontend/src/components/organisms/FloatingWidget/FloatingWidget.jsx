@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Sun, Moon, Accessibility, Volume2, VolumeX } from 'lucide-react';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import './FloatingWidget.css';
@@ -14,39 +14,34 @@ export default function FloatingWidget() {
 
     const menuRef = useRef(null);
 
-    // 1. Controle do Tema
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
     }, [theme]);
 
-    // 2. Controle do Zoom da Fonte
     useEffect(() => {
         document.documentElement.style.fontSize = `${fontSize}%`;
         localStorage.setItem('access_fontSize', String(fontSize));
     }, [fontSize]);
 
-    // 3. Controle de Fonte Disléxica
     useEffect(() => {
         if (dyslexic) {
-            document.body.classList.add('accessibility-dyslexic');
+            document.body.classList.add('has-dyslexic-font');
         } else {
-            document.body.classList.remove('accessibility-dyslexic');
+            document.body.classList.remove('has-dyslexic-font');
         }
         localStorage.setItem('access_dyslexic', String(dyslexic));
     }, [dyslexic]);
 
-    // 4. Controle de Alto Contraste
     useEffect(() => {
         if (highContrast) {
-            document.body.classList.add('accessibility-high-contrast');
+            document.body.classList.add('has-high-contrast');
         } else {
-            document.body.classList.remove('accessibility-high-contrast');
+            document.body.classList.remove('has-high-contrast');
         }
         localStorage.setItem('access_contrast', String(highContrast));
     }, [highContrast]);
 
-    // 5. Controle do Leitor por Voz de Elementos Focalizados/Hover
     useEffect(() => {
         localStorage.setItem('access_speech', String(speechEnabled));
         if (!speechEnabled) {
@@ -90,7 +85,6 @@ export default function FloatingWidget() {
         };
     }, [speechEnabled, language]);
 
-    // Fechar menu ao clicar fora
     useEffect(() => {
         const handleOutsideClick = (e) => {
             if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -120,51 +114,48 @@ export default function FloatingWidget() {
     };
 
     return (
-        <div className="floating-accessibility-widget" ref={menuRef}>
+        <div className="c-floating-widget" ref={menuRef}>
             {isOpen && (
-                <div className="accessibility-panel o-card--static u-fade-in">
-                    <div className="accessibility-panel-header">
+                <div className="c-floating-widget__panel o-card--static u-fade-in">
+                    <div className="c-floating-widget__panel-header">
                         <h4>{t("Acessibilidade")}</h4>
                     </div>
 
-                    <div className="accessibility-panel-body">
-                        {/* Controle de Fonte */}
-                        <div className="accessibility-control-group">
-                            <span className="control-group-title">{t("Zoom do Texto")}</span>
-                            <div className="zoom-buttons-row">
-                                <button onClick={handleZoomOut} className="zoom-btn" title={t("Diminuir Fonte")}>A-</button>
-                                <button onClick={handleZoomReset} className="zoom-btn reset" title={t("Resetar Fonte")}>{fontSize}%</button>
-                                <button onClick={handleZoomIn} className="zoom-btn" title={t("Aumentar Fonte")}>A+</button>
+                    <div className="c-floating-widget__panel-body">
+
+                        <div className="c-floating-widget__control-group">
+                            <span className="c-floating-widget__group-title">{t("Zoom do Texto")}</span>
+                            <div className="c-floating-widget__zoom-row">
+                                <button onClick={handleZoomOut} className="c-floating-widget__zoom-btn" title={t("Diminuir Fonte")}>A-</button>
+                                <button onClick={handleZoomReset} className="c-floating-widget__zoom-btn c-floating-widget__zoom-btn--reset" title={t("Resetar Fonte")}>{fontSize}%</button>
+                                <button onClick={handleZoomIn} className="c-floating-widget__zoom-btn" title={t("Aumentar Fonte")}>A+</button>
                             </div>
                         </div>
 
-                        {/* Alternar Fonte para Dislexia */}
-                        <div className="accessibility-control-group flex-row">
-                            <span className="control-group-title">{t("Fonte Alternativa")}</span>
+                        <div className="c-floating-widget__control-group c-floating-widget__control-group--row">
+                            <span className="c-floating-widget__group-title">{t("Fonte Alternativa")}</span>
                             <button
-                                className={`toggle-switch-btn ${dyslexic ? 'is-active' : ''}`}
+                                className={`c-floating-widget__toggle-btn ${dyslexic ? 'is-active' : ''}`}
                                 onClick={() => setDyslexic(prev => !prev)}
                             >
                                 {dyslexic ? t("Ativado") : t("Desativado")}
                             </button>
                         </div>
 
-                        {/* Alternar Alto Contraste */}
-                        <div className="accessibility-control-group flex-row">
-                            <span className="control-group-title">{t("Alto Contraste")}</span>
+                        <div className="c-floating-widget__control-group c-floating-widget__control-group--row">
+                            <span className="c-floating-widget__group-title">{t("Alto Contraste")}</span>
                             <button
-                                className={`toggle-switch-btn ${highContrast ? 'is-active' : ''}`}
+                                className={`c-floating-widget__toggle-btn ${highContrast ? 'is-active' : ''}`}
                                 onClick={() => setHighContrast(prev => !prev)}
                             >
                                 {highContrast ? t("Ativado") : t("Desativado")}
                             </button>
                         </div>
 
-                        {/* Leitor de Voz */}
-                        <div className="accessibility-control-group flex-row">
-                            <span className="control-group-title">{t("Leitor por Voz (Hover)")}</span>
+                        <div className="c-floating-widget__control-group c-floating-widget__control-group--row">
+                            <span className="c-floating-widget__group-title">{t("Leitor por Voz (Hover)")}</span>
                             <button
-                                className={`toggle-switch-btn speech-btn ${speechEnabled ? 'is-active' : ''}`}
+                                className={`c-floating-widget__toggle-btn c-floating-widget__speech-btn ${speechEnabled ? 'is-active' : ''}`}
                                 onClick={() => setSpeechEnabled(prev => !prev)}
                                 title={t("Lê os textos ao passar o mouse ou focar no elemento")}
                             >
@@ -173,19 +164,18 @@ export default function FloatingWidget() {
                             </button>
                         </div>
 
-                        {/* Seletor de Idioma */}
-                        <div className="accessibility-control-group flex-row">
-                            <span className="control-group-title">{t("Idioma / Language")}</span>
-                            <div className="lang-buttons-row">
+                        <div className="c-floating-widget__control-group c-floating-widget__control-group--row">
+                            <span className="c-floating-widget__group-title">{t("Idioma / Language")}</span>
+                            <div className="c-floating-widget__lang-row">
                                 <button
-                                    className={`lang-btn ${language === 'pt' ? 'is-active' : ''}`}
+                                    className={`c-floating-widget__lang-btn ${language === 'pt' ? 'is-active' : ''}`}
                                     onClick={() => setLanguage('pt')}
                                     title="Português"
                                 >
                                     PT
                                 </button>
                                 <button
-                                    className={`lang-btn ${language === 'en' ? 'is-active' : ''}`}
+                                    className={`c-floating-widget__lang-btn ${language === 'en' ? 'is-active' : ''}`}
                                     onClick={() => setLanguage('en')}
                                     title="English"
                                 >
@@ -197,11 +187,10 @@ export default function FloatingWidget() {
                 </div>
             )}
 
-            {/* Botões Flutuantes Principais */}
-            <div className="floating-buttons-bar">
+            <div className="c-floating-widget__bar">
                 <button
                     onClick={toggleTheme}
-                    className="widget-float-btn theme-toggle"
+                    className="c-floating-widget__btn"
                     title={theme === 'light' ? t("Mudar para Tema Escuro") : t("Mudar para Tema Claro")}
                 >
                     {theme === 'light' ? <Moon size={18} strokeWidth={2} /> : <Sun size={18} strokeWidth={2} />}
@@ -209,7 +198,7 @@ export default function FloatingWidget() {
 
                 <button
                     onClick={() => setIsOpen(prev => !prev)}
-                    className={`widget-float-btn accessibility-toggle ${isOpen ? 'is-active' : ''}`}
+                    className={`c-floating-widget__btn ${isOpen ? 'is-active' : ''}`}
                     title={t("Opções de Acessibilidade")}
                 >
                     <Accessibility size={20} strokeWidth={2} />

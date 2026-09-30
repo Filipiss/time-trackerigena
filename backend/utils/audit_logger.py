@@ -6,7 +6,6 @@ def log_action(db, action, resource_type=None, resource_id=None, description=Non
         from models.user import User
         from models.audit_log import AuditLog
 
-        # Resolvendo user_id e username
         if not user_id:
             try:
                 identity = get_jwt_identity()
@@ -21,7 +20,6 @@ def log_action(db, action, resource_type=None, resource_id=None, description=Non
             if user:
                 username = user.username
 
-        # Captura o IP do request Flask se estiver no contexto de request
         ip_address = None
         try:
             if request:

@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Spinner from '../../atoms/Spinner/Spinner';
 import TabButton from '../../molecules/TabButton/TabButton';
 import TaskCard from '../../molecules/TaskCard/TaskCard';
@@ -33,8 +33,6 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
         setProjects(validProjects);
         setTasks(validTasks);
 
-        // Se uma task estava selecionada, verifica se ela ainda existe no backend. 
-        // Se foi excluída, limpa a seleção.
         if (selectedTask && !validTasks.some(t => String(t.id) === String(selectedTask.id))) {
           onSelectTask(null);
         }
@@ -102,8 +100,8 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
 
   if (loading) {
     return (
-      <div className="task-selector o-card--static c-selector">
-        <div className="task-selector-loading">
+      <div className="c-selector o-card--static">
+        <div className="c-selector__loading">
           <Spinner label={t("Carregando...")} />
         </div>
       </div>
@@ -111,19 +109,19 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
   }
 
   return (
-    <div className="task-selector o-card--static c-selector">
-      <div className="task-selector-header">
+    <div className="c-selector o-card--static">
+      <div className="c-selector__header">
         <h3 className="c-selector__title">{t("Opções do Timer")}</h3>
       </div>
 
       {projects.length === 0 ? (
-        <div className="task-selector-empty">
+        <div className="c-selector__empty">
           <p>{t("Nenhum projeto encontrado. Vá para a página de tarefas para criar um.")}</p>
         </div>
       ) : (
         <>
           <div className="c-selector__filters">
-            <div className="selector-filter-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div className="c-selector__filter-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Briefcase size={14} strokeWidth={1.5} /> {t("Categoria")}
             </div>
             <div className="c-selector__tabs-scroll">
@@ -159,9 +157,9 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
           </div>
 
           <div className="c-selector__filters">
-            <div className="selector-filter-label">{t("Projeto")}</div>
+            <div className="c-selector__filter-label">{t("Projeto")}</div>
             {projectsInCategory.length === 0 ? (
-              <div className="task-selector-empty selector-inline-empty">
+              <div className="c-selector__empty c-selector__empty--inline">
                 <p>{t("Nenhum projeto nesta categoria.")}</p>
               </div>
             ) : (
@@ -197,9 +195,9 @@ export default function TaskSelectorPanel({ selectedTask, onSelectTask, refreshT
           </div>
 
           <div className="c-selector__filters">
-            <div className="selector-filter-label">✨ {t("Tarefa")}</div>
+            <div className="c-selector__filter-label">✨ {t("Tarefa")}</div>
             {tasksInProject.length === 0 ? (
-              <div className="task-selector-empty selector-inline-empty">
+              <div className="c-selector__empty c-selector__empty--inline">
                 <p>{t("Nenhuma task neste projeto. Crie tasks na aba Tasks!")}</p>
               </div>
             ) : (

@@ -1,10 +1,10 @@
-﻿.auth-buttons {
+.c-auth-buttons {
     display: inline-flex;
     align-items: center;
     gap: var(--space-3, 12px);
 }
 
-.guest-indicator {
+.c-auth-buttons__guest-indicator {
     display: inline-flex;
     align-items: center;
     font-size: 11px;
@@ -18,7 +18,7 @@
     border-radius: var(--radius-pill, 100px);
 }
 
-.auth-btn {
+.c-auth-buttons__btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -31,31 +31,31 @@
     white-space: nowrap;
 }
 
-.auth-btn--ghost {
+.c-auth-buttons__btn--ghost {
     background: transparent;
     border: 1px solid var(--border-default, #e2e8f0);
     color: var(--text-secondary, #475569);
 }
 
-.auth-btn--ghost:hover {
+.c-auth-buttons__btn--ghost:hover {
     background: var(--bg-card-hover, #f1f5f9);
     color: var(--text-primary, #0f172a);
     border-color: var(--border-highlight, #cbd5e1);
 }
 
-.auth-btn--primary {
+.c-auth-buttons__btn--primary {
     background: var(--theme-accent);
     border: none;
     color: var(--text-inverse, #ffffff);
     box-shadow: 0 2px 4px rgba(3, 169, 244, 0.15);
 }
 
-.auth-btn--primary:hover {
+.c-auth-buttons__btn--primary:hover {
     background: var(--theme-accent-hover);
+    box-shadow: 0 4px 12px rgba(3, 169, 244, 0.3);
     transform: translateY(-1px);
-    box-shadow: 0 4px 6px rgba(3, 169, 244, 0.25);
 }
 
-.auth-btn--primary:active {
+.c-auth-buttons__btn:active {
     transform: translateY(0);
 }

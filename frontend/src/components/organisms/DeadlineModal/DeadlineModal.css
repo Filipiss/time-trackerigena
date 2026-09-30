@@ -1,4 +1,4 @@
-﻿.calendar-modal-overlay {
+.c-modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
@@ -10,7 +10,7 @@
   padding: var(--space-4);
 }
 
-.calendar-modal {
+.c-modal {
   width: min(100%, 480px);
   max-height: 85vh;
   overflow-y: auto;
@@ -18,30 +18,30 @@
   animation: slideUp 0.3s ease;
 }
 
-.calendar-modal-header {
+.c-modal__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--space-4);
 }
 
-.calendar-modal-header h3 {
+.c-modal__header h3 {
   font-size: var(--text-lg);
   color: var(--text-primary);
 }
 
-.calendar-modal-project-name {
+.c-modal__project-name {
   font-size: var(--text-base);
   font-weight: 600;
   color: var(--text-primary);
   padding: var(--space-2) 0;
 }
 
-.modal-form-spacing {
+.c-modal__form-spacing {
   margin-top: 10px;
 }
 
-.calendar-modal-actions {
+.c-modal__actions {
   display: flex;
   justify-content: flex-end;
   gap: var(--space-2);
@@ -49,31 +49,31 @@
   flex-wrap: wrap;
 }
 
-.calendar-history-section {
+.c-modal__history-section {
   margin-top: var(--space-5);
   padding-top: var(--space-4);
   border-top: 1px solid var(--border-subtle);
 }
 
-.calendar-history-title {
+.c-modal__history-title {
   font-size: var(--text-sm);
   font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: var(--space-2);
 }
 
-.calendar-history-loading {
+.c-modal__history-loading {
   display: flex;
   justify-content: center;
   padding: var(--space-3) 0;
 }
 
-.calendar-history-empty {
+.c-modal__history-empty {
   font-size: var(--text-sm);
   color: var(--text-muted);
 }
 
-.calendar-history-list {
+.c-modal__history-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -81,7 +81,7 @@
   overflow-y: auto;
 }
 
-.calendar-history-item {
+.c-modal__history-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -93,27 +93,27 @@
   gap: var(--space-3);
 }
 
-.calendar-history-date {
+.c-modal__history-date {
   font-size: var(--text-xs);
   color: var(--text-muted);
   text-align: right;
 }
 
 @media (max-width: 767px) {
-  .calendar-modal {
+  .c-modal {
     padding: var(--space-4);
   }
 
-  .calendar-modal-actions > * {
+  .c-modal__actions > * {
     flex: 1 1 100%;
   }
 
-  .calendar-history-item {
+  .c-modal__history-item {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .calendar-history-date {
+  .c-modal__history-date {
     text-align: left;
   }
 }

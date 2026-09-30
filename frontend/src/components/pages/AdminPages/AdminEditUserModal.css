@@ -1,4 +1,4 @@
-.overlay {
+.c-admin-edit-modal__overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -11,7 +11,7 @@
     z-index: 1000;
 }
 
-.modal {
+.c-admin-edit-modal {
     background: var(--bg-surface);
     border-radius: var(--radius-md);
     width: 95%;
@@ -21,7 +21,7 @@
     overflow: hidden;
 }
 
-.header {
+.c-admin-edit-modal__header {
     background: var(--bg-card-hover);
     padding: 1.25rem;
     display: flex;
@@ -30,13 +30,13 @@
     border-bottom: 1px solid var(--border-default);
 }
 
-.header h2 {
+.c-admin-edit-modal__header h2 {
     margin: 0;
     font-size: 1.25rem;
     color: var(--text-primary);
 }
 
-.closeBtn {
+.c-admin-edit-modal__close {
     background: none;
     border: none;
     color: var(--text-secondary);
@@ -45,26 +45,26 @@
     line-height: 1;
 }
 
-.closeBtn:hover {
+.c-admin-edit-modal__close:hover {
     color: var(--text-primary);
 }
 
-.formBody {
+.c-admin-edit-modal__form {
     padding: 1.5rem;
 }
 
-.formGroup {
+.c-admin-edit-modal__form-group {
     margin-bottom: 1.15rem;
 }
 
-.formGroup label {
+.c-admin-edit-modal__form-group label {
     display: block;
     margin-bottom: 0.5rem;
     font-size: 0.85rem;
     color: var(--text-secondary);
 }
 
-.formGroup input {
+.c-admin-edit-modal__form-group input {
     width: 100%;
     padding: 0.7rem;
     background: var(--bg-input);
@@ -74,12 +74,12 @@
     font-family: inherit;
 }
 
-.formGroup input:focus {
+.c-admin-edit-modal__form-group input:focus {
     border-color: var(--theme-accent);
     outline: none;
 }
 
-.alert {
+.c-admin-edit-modal__alert {
     background: rgba(245, 158, 11, 0.08);
     border: 1px solid rgba(245, 158, 11, 0.25);
     color: var(--color-warning);
@@ -90,14 +90,14 @@
     margin-bottom: 1.5rem;
 }
 
-.actions {
+.c-admin-edit-modal__actions {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
 }
 
-.btnCancel,
-.btnSave {
+.c-admin-edit-modal__btn--cancel,
+.c-admin-edit-modal__btn--save {
     padding: 0.65rem 1.25rem;
     border-radius: var(--radius-sm);
     cursor: pointer;
@@ -105,23 +105,23 @@
     font-weight: 500;
 }
 
-.btnCancel {
+.c-admin-edit-modal__btn--cancel {
     background: transparent;
     color: var(--text-secondary);
     border: 1px solid var(--border-default);
 }
 
-.btnCancel:hover {
+.c-admin-edit-modal__btn--cancel:hover {
     background: var(--bg-card-hover);
     color: var(--text-primary);
 }
 
-.btnSave {
+.c-admin-edit-modal__btn--save {
     background: var(--theme-accent);
     color: var(--text-inverse);
     border: none;
 }
 
-.btnSave:hover {
+.c-admin-edit-modal__btn--save:hover {
     background: var(--theme-accent-hover);
 }

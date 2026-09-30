@@ -110,7 +110,6 @@ def get_metrics():
         projects_count = db.query(func.count(Project.id)).scalar() or 0
         tasks_count = db.query(func.count(Task.id)).scalar() or 0
         
-        # Total tracked seconds
         total_seconds = db.query(func.sum(TimeEntry.duration_seconds)).scalar() or 0
         total_hours = round(total_seconds / 3600, 2)
         

@@ -19,20 +19,17 @@ class Task(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
     hourly_rate = Column(Float, default=0.0)
-    currency = Column(String(3), default="EUR")  # 'EUR', 'USD' ou 'BRL'
-    budgeted_hours = Column(Float, nullable=True)  # horas orçadas para a task
+    currency = Column(String(3), default="EUR")
+    budgeted_hours = Column(Float, nullable=True)
     is_billed = Column(Boolean, default=False)
 
-    # Relacionamento com o projeto pai
     project = relationship("Project", back_populates="tasks")
 
-    # Detalhes de rastreamento / histórico
     time_entries = relationship(
         "TimeEntry", back_populates="task", cascade="all, delete-orphan"
     )
 
-    # Campos de Calendário (Prazos)
-    deadline = Column(String(10), nullable=True)  # formato YYYY-MM-DD
+    deadline = Column(String(10), nullable=True)
     status = Column(String(30), default="em_andamento")
     notes = Column(Text, nullable=True)
     deadline_notified = Column(Boolean, default=False)

@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import CurrencySelect from '../../molecules/CurrencySelect/CurrencySelect';
 import { CURRENCY_SYMBOLS } from '../../../utils/currency';
 import { useLanguage } from '../../../contexts/LanguageContext';
@@ -29,15 +29,15 @@ export default function BillingTable({
   const visibleTotals = taskTotalsList.slice((currentPage - 1) * 5, currentPage * 5);
 
   return (
-    <div className="values-section-card o-card--static u-fade-in">
-      <div className="values-section-header">
-        <div className="values-header-title-wrapper">
-          <h3 className="values-header-title">{t("Faturamento & Câmbio de Moedas")}</h3>
+    <div className="c-billing-card o-card--static u-fade-in">
+      <div className="c-billing-card__header">
+        <div className="c-billing-card__title-wrap">
+          <h3 className="c-billing-card__title">{t("Faturamento & Câmbio de Moedas")}</h3>
         </div>
-        <div className="exchange-rate-input-wrapper">
-          <label className="exchange-label">{t("Mostrar Total em")}</label>
+        <div className="c-billing-card__exchange-wrap">
+          <label className="c-billing-card__exchange-label">{t("Mostrar Total em")}</label>
           <CurrencySelect className="font-mono" value={targetCurrency} onChange={(event) => setTargetCurrency(event.target.value)} disabled={exchangeRateLoading} />
-          <span className="exchange-rate-hint">
+          <span className="c-billing-card__exchange-hint">
             {exchangeRateLoading
               ? t('Atualizando cotação...')
               : `${t("Câmbio")}: 1€ = R$ ${exchangeRates.EURBRL.toFixed(2)} · 1US$ = R$ ${exchangeRates.USDBRL.toFixed(2)}`}
@@ -46,10 +46,10 @@ export default function BillingTable({
       </div>
 
       {taskTotalsList.length === 0 ? (
-        <div className="no-values-message">{t("Nenhum registro para calcular valores.")}</div>
+        <div className="c-billing-card__empty">{t("Nenhum registro para calcular valores.")}</div>
       ) : (
-        <div className="values-content">
-          <table className="values-table">
+        <div className="c-billing-card__content">
+          <table className="c-billing-table">
             <thead>
               <tr>
                 <th>{t("Projeto")}</th>
@@ -70,23 +70,23 @@ export default function BillingTable({
                 const taskProfit = hasBudget ? item.budgetedHours - hours : null;
 
                 return (
-                  <tr key={index} className="values-row">
+                  <tr key={index} className="c-billing-table__row">
                     <td>{t(item.projectName || 'Sem Projeto')}</td>
                     <td>
-                      <div className="task-cell">
+                      <div className="c-billing-table__task-cell">
                         <span className="o-color-dot" style={{ backgroundColor: item.color }} />
-                        <span className="task-name-text">{item.name}</span>
+                        <span className="c-billing-table__task-name">{item.name}</span>
                       </div>
                     </td>
                     <td className="font-mono">
                       {hours.toFixed(2)}h
-                      <span className="values-sec-details"> ({formatDurationShort(item.totalSeconds)})</span>
+                      <span className="c-billing-table__sec-details"> ({formatDurationShort(item.totalSeconds)})</span>
                     </td>
                     <td className="font-mono">{CURRENCY_SYMBOLS[item.currency]} {item.hourlyRate.toFixed(2)}/h</td>
                     <td className="font-mono" style={{ color: !hasBudget ? 'var(--text-muted)' : (taskProfit >= 0 ? 'var(--color-success)' : 'var(--color-danger)') }}>
                       {hasBudget ? `${taskProfit >= 0 ? '+' : ''}${taskProfit.toFixed(2)}h` : '—'}
                     </td>
-                    <td className="font-mono value-eur-highlight">{CURRENCY_SYMBOLS[targetCurrency]} {totalConverted.toFixed(2)}</td>
+                    <td className="font-mono c-billing-table__highlight">{CURRENCY_SYMBOLS[targetCurrency]} {totalConverted.toFixed(2)}</td>
                     <td>
                       <button className="c-btn--icon" onClick={() => onEdit?.(item)} title={t("Editar Horas e Valor/Hora")}>
                         <Pencil size={16} strokeWidth={1.5} />
@@ -103,18 +103,18 @@ export default function BillingTable({
                         type="button"
                         disabled={currentPage === 1}
                         onClick={() => setCurrentPage(p => p - 1)}
-                        className="c-entry-pagination-btn"
+                        className="c-entry-pagination__btn"
                       >
                         &larr;
                       </button>
-                      <span className="c-entry-pagination-info">
+                      <span className="c-entry-pagination__info">
                         {t("Tarefas")} {((currentPage - 1) * 5) + 1} - {Math.min(currentPage * 5, taskTotalsList.length)} {t("de")} {taskTotalsList.length}
                       </span>
                       <button
                         type="button"
                         disabled={currentPage === totalPages}
                         onClick={() => setCurrentPage(p => p + 1)}
-                        className="c-entry-pagination-btn"
+                        className="c-entry-pagination__btn"
                       >
                         &rarr;
                       </button>
@@ -122,9 +122,9 @@ export default function BillingTable({
                   </td>
                 </tr>
               )}
-              <tr className="values-totals-row">
-                <td colSpan={5} className="totals-label-cell">{t("Total Geral")}</td>
-                <td className="font-mono overall-eur-total">{CURRENCY_SYMBOLS[targetCurrency]} {totalInTargetCurrency.toFixed(2)}</td>
+              <tr className="c-billing-table__totals-row">
+                <td colSpan={5} className="c-billing-table__totals-label">{t("Total Geral")}</td>
+                <td className="font-mono c-billing-table__overall-total">{CURRENCY_SYMBOLS[targetCurrency]} {totalInTargetCurrency.toFixed(2)}</td>
               </tr>
             </tbody>
           </table>

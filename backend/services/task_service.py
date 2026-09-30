@@ -36,7 +36,6 @@ class TaskService:
         if not task:
             return None
             
-        # Validate new project_id if sent
         if "project_id" in data and data["project_id"] is not None:
             project = ProjectRepository.get_by_id(db, data["project_id"])
             if not project:

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchSettings, updateSettings } from '../../../api';
 import { useLanguage } from '../../../contexts/LanguageContext';
-import styles from './AdminSettingsPage.module.css';
+import './AdminSettingsPage.css';
 
 export default function AdminSettingsPage() {
     const { t } = useLanguage();
@@ -37,23 +37,23 @@ export default function AdminSettingsPage() {
         }
     }
 
-    if (loading) return <div className={styles.loading}>{t("Carregando configurações...")}</div>;
+    if (loading) return <div className="c-admin-settings__loading">{t("Carregando configurações...")}</div>;
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
+        <div className="c-admin-settings">
+            <div className="c-admin-settings__header">
                 <h1>{t("Configurações Base")}</h1>
                 <p>{t("Controle configurações globais, comunicação e bloqueios do sistema.")}</p>
             </div>
 
-            <form onSubmit={handleSave} className={styles.formContainer}>
+            <form onSubmit={handleSave} className="c-admin-settings__form">
 
-                <section className={styles.settingsSection}>
+                <section className="c-admin-settings__section">
                     <h2>{t("Banners de Comunicação")}</h2>
-                    <p className={styles.hint}>{t("Digite uma mensagem para exibir no topo de todas as telas (avisos, novidades, etc). Deixe em branco para esconder o banner.")}</p>
+                    <p className="c-admin-settings__hint">{t("Digite uma mensagem para exibir no topo de todas as telas (avisos, novidades, etc). Deixe em branco para esconder o banner.")}</p>
 
                     <textarea
-                        className={styles.textarea}
+                        className="c-admin-settings__textarea"
                         rows="3"
                         placeholder="Ex: O sistema entrará em manutenção amanhã às 22h."
                         value={settings.global_banner}
@@ -61,29 +61,29 @@ export default function AdminSettingsPage() {
                     />
                 </section>
 
-                <hr className={styles.divider} />
+                <hr className="c-admin-settings__divider" />
 
-                <section className={styles.settingsSection}>
-                    <div className={styles.toggleRow}>
-                        <div className={styles.toggleInfo}>
+                <section className="c-admin-settings__section">
+                    <div className="c-admin-settings__toggle-row">
+                        <div>
                             <h2 style={{ color: settings.maintenance_mode ? '#ef4444' : '#f1f5f9' }}>{t("Modo de Manutenção")}</h2>
-                            <p className={styles.hint}>
+                            <p className="c-admin-settings__hint">
                                 {t("Ao ativar, todos os usuários sem nível de Admin não conseguirão navegar pelo aplicativo, e verão uma página de Manutenção. Use com cuidado.")}
                             </p>
                         </div>
-                        <label className={styles.switch}>
+                        <label className="c-admin-settings__switch">
                             <input
                                 type="checkbox"
                                 checked={settings.maintenance_mode}
                                 onChange={e => setSettings({ ...settings, maintenance_mode: e.target.checked })}
                             />
-                            <span className={styles.slider}></span>
+                            <span className="c-admin-settings__slider"></span>
                         </label>
                     </div>
                 </section>
 
-                <div className={styles.actions}>
-                    <button type="submit" className={styles.btnSave} disabled={saving}>
+                <div className="c-admin-settings__actions">
+                    <button type="submit" className="c-admin-settings__btn--save" disabled={saving}>
                         {saving ? t('Salvando...') : t('Aplicar Configurações')}
                     </button>
                 </div>

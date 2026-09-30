@@ -31,7 +31,6 @@ def reorder_tasks():
             task_id = item.get("id")
             order = item.get("sort_order", 0)
             if task_id is not None:
-                # Segurança: garantir que a task pertence a projeto cujo dono é o usuario
                 task = db.query(Task).join(Project).filter(Task.id == task_id, Project.user_id == user_id).first()
                 if task:
                     task.sort_order = order
@@ -72,7 +71,6 @@ def create_task():
 
     db = get_db_session()
     try:
-        # Verifica que o projeto pertence ao user
         project = ProjectService.get_project(db, data.get("project_id"))
         if not project or project.user_id != user_id:
             return error_response("Projeto não encontrado", 404)
@@ -99,7 +97,6 @@ def update_task(task_id):
         task = TaskService.get_task(db, task_id)
         if not task:
             return error_response("Tarefa não encontrada", 404)
-        # Verifica ownership via project
         project = ProjectService.get_project(db, task.project_id)
         if not project or project.user_id != user_id:
             return error_response("Tarefa não encontrada", 404)

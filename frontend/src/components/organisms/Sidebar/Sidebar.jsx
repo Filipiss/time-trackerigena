@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import NavItem from '../../molecules/NavItem/NavItem';
 import UserWidget from '../../molecules/UserWidget/UserWidget';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -56,25 +56,23 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <aside className="app-sidebar">
+    <aside className="l-sidebar">
       <div className="l-sidebar__brand">
-        <span className="brand-logo" style={{ fontSize: '24px', marginRight: '8px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}>👽</span>
-        <h1 className="brand-title">Time Trackerígena</h1>
+        <span className="l-sidebar__logo" style={{ fontSize: '24px', marginRight: '8px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}>👽</span>
+        <h1 className="l-sidebar__title">Time Trackerígena</h1>
       </div>
 
-      {/* Widget do usuário — visível só quando logado */}
       {user && (
         <UserWidget onNavigateToProfile={() => navigate('/profile')} />
       )}
 
       <nav className="l-sidebar__nav">
         {NAV_ITEMS.map((item) => {
-          // Bloqueia o menu 'Suporte' de aparecer para Visitantes (not user) ou Administradores 
+
           if (item.id === '/support' && (!user || user.is_admin)) {
             return null;
           }
 
-          // Display timer badge only next to '/timer' (Timer)
           const badge = (item.id === '/timer' && activeTimeStr) ? activeTimeStr : null;
 
           return (
@@ -91,11 +89,11 @@ export default function Sidebar() {
       </nav>
 
       <div className="l-sidebar__footer">
-        <div className="footer-status">
-          <span className="sidebar-status-dot is-running" />
-          <span className="status-text">{t("Online")}</span>
+        <div className="l-sidebar__footer-status">
+          <span className="l-sidebar__status-dot is-running" />
+          <span className="l-sidebar__status-text">{t("Online")}</span>
         </div>
-        <div className="footer-version">BETA v1.0.0</div>
+        <div className="l-sidebar__footer-version">BETA v1.0.0</div>
       </div>
     </aside>
   );

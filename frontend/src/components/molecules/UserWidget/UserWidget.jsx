@@ -39,31 +39,31 @@ export default function UserWidget({ onNavigateToProfile }) {
 
     return (
         <div
-            className="user-widget"
+            className="c-user-widget"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            <button className="user-widget-trigger" aria-label={t("Menu do usuário")}>
+            <button className="c-user-widget__trigger" aria-label={t("Menu do usuário")}>
                 {user.avatar_url ? (
-                    <img src={user.avatar_url} alt={user.username} className="user-avatar" />
+                    <img src={user.avatar_url} alt={user.username} className="c-user-widget__avatar" />
                 ) : (
-                    <div className="user-avatar-initials">{initials}</div>
+                    <div className="c-user-widget__initials">{initials}</div>
                 )}
-                <span className="user-widget-name">{user.username}</span>
-                <span className="user-widget-caret">▾</span>
+                <span className="c-user-widget__name">{user.username}</span>
+                <span className="c-user-widget__caret">▾</span>
             </button>
 
             {open && (
-                <div className="user-dropdown">
+                <div className="c-user-widget__dropdown">
                     {user?.is_admin && (
-                        <button className="dropdown-item" onClick={() => { setOpen(false); navigate('/admin'); }}>
+                        <button className="c-user-widget__item" onClick={() => { setOpen(false); navigate('/admin'); }}>
                             <span>⚙️</span> {t("Painel Admin")}
                         </button>
                     )}
-                    <button className="dropdown-item" onClick={handleProfile}>
+                    <button className="c-user-widget__item" onClick={handleProfile}>
                         <span>👤</span> {t("Perfil")}
                     </button>
-                    <button className="dropdown-item dropdown-item--danger" onClick={handleLogout}>
+                    <button className="c-user-widget__item c-user-widget__item--danger" onClick={handleLogout}>
                         <span>🚪</span> {t("Sair")}
                     </button>
                 </div>

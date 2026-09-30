@@ -3,7 +3,7 @@ import { apiActivate } from '../../../api';
 import './ActivatePage.css';
 
 export default function ActivatePage({ token }) {
-    const [status, setStatus] = useState('loading'); // 'loading' | 'success' | 'error'
+    const [status, setStatus] = useState('loading');
     const [message, setMessage] = useState('');
 
     useEffect(() => {
@@ -18,31 +18,31 @@ export default function ActivatePage({ token }) {
     }
 
     return (
-        <div className="activate-page">
-            <div className="activate-card">
-                <span className="activate-logo">👽</span>
-                <h1 className="activate-brand">Time Trackerígena</h1>
+        <div className="c-activate-page">
+            <div className="c-activate-card">
+                <span className="c-activate-card__logo">👽</span>
+                <h1 className="c-activate-card__brand">Time Trackerígena</h1>
 
                 {status === 'loading' && (
                     <>
-                        <div className="activate-spinner" />
-                        <p className="activate-msg">Ativando sua conta…</p>
+                        <div className="c-activate-card__spinner" />
+                        <p className="c-activate-card__msg">Ativando sua conta…</p>
                     </>
                 )}
 
                 {status === 'success' && (
                     <>
-                        <span className="activate-icon">✅</span>
-                        <p className="activate-msg">{message}</p>
-                        <button className="activate-btn" onClick={goHome}>Ir para o app</button>
+                        <span className="c-activate-card__icon">✅</span>
+                        <p className="c-activate-card__msg">{message}</p>
+                        <button className="c-activate-card__btn" onClick={goHome}>Ir para o app</button>
                     </>
                 )}
 
                 {status === 'error' && (
                     <>
-                        <span className="activate-icon">❌</span>
-                        <p className="activate-msg">{message}</p>
-                        <button className="activate-btn" onClick={goHome}>Voltar ao início</button>
+                        <span className="c-activate-card__icon">❌</span>
+                        <p className="c-activate-card__msg">{message}</p>
+                        <button className="c-activate-card__btn" onClick={goHome}>Voltar ao início</button>
                     </>
                 )}
             </div>

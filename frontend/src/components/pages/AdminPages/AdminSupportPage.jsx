@@ -3,7 +3,7 @@ import { fetchAllTicketsAdmin, fetchTicketMessages, replyTicket, updateTicketSta
 import { useAuth } from '../../../contexts/AuthContext';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { formatBrasiliaDateTime, formatBrasiliaTime } from '../../../utils/dateUtils';
-import styles from '../SupportPage/SupportPage.module.css';
+import '../SupportPage/SupportPage.css';
 
 export default function AdminSupportPage() {
     const { user } = useAuth();
@@ -28,7 +28,7 @@ export default function AdminSupportPage() {
             const data = await fetchAllTicketsAdmin();
             setTickets(data.filter(t => t.status === activeTab));
         } catch (e) {
-            alert('Erro ao carregar chamados pelo Admin: ' + e.message);
+            alert('Erro: ' + e.message);
         } finally {
             setLoading(false);
         }
@@ -66,67 +66,64 @@ export default function AdminSupportPage() {
     }
 
     async function changeStatus(newStatus) {
-        if (!window.confirm(`Tem certeza que deseja mudar o status para ${newStatus}?`)) return;
         try {
             await updateTicketStatusAdmin(selectedTicket.id, newStatus);
             setSelectedTicket(prev => ({ ...prev, status: newStatus }));
-            if (newStatus === 'resolved') {
-                alert('Chamado marcado como resolvido e bloqueado para novas respostas.');
-            }
+            loadTickets();
         } catch (e) {
             alert('Erro: ' + e.message);
         }
     }
 
     async function handleDeleteTicket() {
-        if (!window.confirm(`Tem certeza absoluta que deseja excluir o chamado #${selectedTicket.id}? Isso apagará todo o histórico de mensagens PERMANENTEMENTE.`)) return;
+        if (!window.confirm(t("Tem certeza de que deseja excluir este chamado permanentemente?"))) return;
         try {
             await deleteTicketAdmin(selectedTicket.id);
             setSelectedTicket(null);
             loadTickets();
         } catch (e) {
-            alert('Erro ao excluir chamado: ' + e.message);
+            alert('Erro: ' + e.message);
         }
     }
 
     return (
-        <div className={styles.container}>
-            <header className={styles.header}>
+        <div className="c-support">
+            <header className="c-support__header">
                 <h1>{t("Gestão de Helpdesk (Admin)")}</h1>
                 <p>{t("Responda aos usuários e gerencie o pipeline de suporte.")}</p>
             </header>
 
-            <div className={styles.tabs}>
+            <div className="c-support__tabs">
                 <button
-                    className={`${styles.tab} ${activeTab === 'open' ? styles.activeTab : ''}`}
+                    className={`c-support__tab ${activeTab === 'open' ? 'is-active' : ''}`}
                     onClick={() => setActiveTab('open')}
                 >
                     {t("Novos Chamados")} {tickets.length > 0 && activeTab === 'open' && `(${tickets.length})`}
                 </button>
                 <button
-                    className={`${styles.tab} ${activeTab === 'answered' ? styles.activeTab : ''}`}
+                    className={`c-support__tab ${activeTab === 'answered' ? 'is-active' : ''}`}
                     onClick={() => setActiveTab('answered')}
                 >{t("Em Andamento")}</button>
                 <button
-                    className={`${styles.tab} ${activeTab === 'resolved' ? styles.activeTab : ''}`}
+                    className={`c-support__tab ${activeTab === 'resolved' ? 'is-active' : ''}`}
                     onClick={() => setActiveTab('resolved')}
                 >{t("Resolvidos")}</button>
             </div>
 
-            <main className={styles.content}>
+            <main className="c-support__content">
                 {!selectedTicket && (
-                    <div className={styles.ticketList}>
+                    <div className="c-support__ticket-list">
                         {loading ? <p>{t("Carregando...")}</p> : (
-                            tickets.length === 0 ? <p className={styles.empty}>{t("Nenhuma fila encontrada para este filtro.")}</p> :
+                            tickets.length === 0 ? <p style={{ color: 'var(--text-muted)' }}>{t("Nenhuma fila encontrada para este filtro.")}</p> :
                                 tickets.map(ticket => (
-                                    <div key={ticket.id} className={styles.ticketCard} onClick={() => openChat(ticket)}>
-                                        <div className={styles.ticketHeader}>
+                                    <div key={ticket.id} className="c-support__ticket-card" onClick={() => openChat(ticket)}>
+                                        <div className="c-support__ticket-header">
                                             <h3>#{ticket.id} - {ticket.subject}</h3>
-                                            <span className={`${styles['o-badge']} ${styles[ticket.status]}`}>
+                                            <span className={`o-badge o-badge--${ticket.status}`}>
                                                 {ticket.status === 'open' ? t('Novo / Aguardando Admin') : ticket.status === 'answered' ? t('Respondido') : t('Resolvido')}
                                             </span>
                                         </div>
-                                        <small className={styles.ticketDate}>{t("Autor:")} {ticket.user_name} | {t("Atualizado em:")} {formatBrasiliaDateTime(ticket.updated_at, language)}</small>
+                                        <small className="c-support__ticket-date">{t("Autor:")} {ticket.user_name} | {t("Atualizado em:")} {formatBrasiliaDateTime(ticket.updated_at, language)}</small>
                                     </div>
                                 ))
                         )}
@@ -134,46 +131,46 @@ export default function AdminSupportPage() {
                 )}
 
                 {selectedTicket && (
-                    <div className={styles.chatWindow}>
-                        <div className={styles.chatHeader}>
-                            <button className={styles.btnBack} onClick={() => setSelectedTicket(null)}>{t("⬅ Voltar")}</button>
+                    <div className="c-support__chat-window">
+                        <div className="c-support__chat-header">
+                            <button className="c-support__btn--back" onClick={() => setSelectedTicket(null)}>{t("⬅ Voltar")}</button>
                             <h2>{selectedTicket.subject} ({t("Autor:")} {selectedTicket.user_name})</h2>
 
                             <div style={{ marginLeft: 'auto', display: 'flex', gap: '10px' }}>
                                 {selectedTicket.status !== 'resolved' ? (
                                     <button
                                         onClick={() => changeStatus('resolved')}
-                                        className={styles.btnPrimary}
+                                        className="c-support__btn--primary"
                                         style={{ background: '#22c55e' }}
                                     >{t("✓ Marcar Resolvido")}</button>
                                 ) : (
                                     <button
                                         onClick={() => changeStatus('open')}
-                                        className={styles.btnPrimary}
+                                        className="c-support__btn--primary"
                                         style={{ background: '#f59f00' }}
                                     >{t("↺ Reabrir Chamado")}</button>
                                 )}
                                 <button
                                     onClick={handleDeleteTicket}
-                                    className={styles.btnPrimary}
+                                    className="c-support__btn--primary"
                                     style={{ background: '#ef4444' }}
-                                >{t("🗑️ Excluir")}</button>
+                                ><TrashIcon /> {t("Excluir")}</button>
                             </div>
                         </div>
 
-                        <div className={styles.chatMessages}>
+                        <div className="c-support__chat-messages">
                             {chatLoading ? <p>{t("Monitorando histórico...")}</p> : (
                                 chatMessages.map(msg => {
                                     const isMe = msg.sender_id === user.id;
                                     const isAdmin = msg.is_admin;
                                     return (
-                                        <div key={msg.id} className={`${styles.messageWrap} ${isAdmin ? styles.alignRight : styles.alignLeft}`}>
-                                            <div className={`${styles.messageBubble} ${isAdmin ? styles.bubbleMe : styles.bubbleThem}`}>
-                                                <div className={styles.msgMeta}>
+                                        <div key={msg.id} className={`c-support__message-wrap ${isAdmin ? 'c-support__message-wrap--right' : 'c-support__message-wrap--left'}`}>
+                                            <div className={`c-support__message-bubble ${isAdmin ? 'c-support__message-bubble--me' : 'c-support__message-bubble--them'}`}>
+                                                <div className="c-support__msg-meta">
                                                     <strong>{isAdmin ? (isMe ? t('Você (Admin)') : msg.sender_name) : msg.sender_name}</strong>
                                                     <small>{formatBrasiliaTime(msg.created_at, language)}</small>
                                                 </div>
-                                                <div className={styles.msgText}>{msg.message}</div>
+                                                <div className="c-support__msg-text">{msg.message}</div>
                                             </div>
                                         </div>
                                     );
@@ -181,25 +178,23 @@ export default function AdminSupportPage() {
                             )}
                         </div>
 
-                        {selectedTicket.status === 'resolved' ? (
-                            <div className={styles.chatClosedNotice}>
-                                {t("🔒 Este chamado está resolvido. Os usuários não podem responder até que você reabra.")}
-                            </div>
-                        ) : (
-                            <form onSubmit={handleSendMessage} className={styles.chatForm}>
-                                <textarea
-                                    value={chatInput}
-                                    onChange={e => setChatInput(e.target.value)}
-                                    placeholder="Escreva sua resposta de Suporte. Ao enviar, este chamado irá para 'Em Andamento'..."
-                                    rows={3}
-                                    disabled={chatLoading}
-                                />
-                                <button type="submit" disabled={chatLoading} className={styles.btnPrimary}>{t("Enviar Resposta")}</button>
-                            </form>
-                        )}
+                        <form onSubmit={handleSendMessage} className="c-support__chat-form">
+                            <textarea
+                                value={chatInput}
+                                onChange={e => setChatInput(e.target.value)}
+                                placeholder={t("Escreva sua resposta como Administrador...")}
+                                rows={3}
+                                disabled={chatLoading}
+                            />
+                            <button type="submit" disabled={chatLoading} className="c-support__btn--primary">{t("Enviar Resposta")}</button>
+                        </form>
                     </div>
                 )}
             </main>
         </div>
     );
+}
+
+function TrashIcon() {
+    return <span>🗑️</span>;
 }

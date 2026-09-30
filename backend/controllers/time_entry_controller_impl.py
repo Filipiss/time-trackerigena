@@ -47,7 +47,6 @@ def create_time_entry():
 
     db = get_db_session()
     try:
-        # Verifica ownership da task via project
         task = TaskService.get_task(db, data.get("task_id"))
         if not task:
             return error_response("Tarefa não encontrada", 404)

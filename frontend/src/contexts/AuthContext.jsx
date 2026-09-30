@@ -8,7 +8,6 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('auth_token'));
   const [loading, setLoading] = useState(!!localStorage.getItem('auth_token'));
 
-  // Carrega perfil do user ao iniciar se já tiver token
   useEffect(() => {
     if (token) {
       apiGetProfile(token)

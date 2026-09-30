@@ -1,7 +1,6 @@
 import re
 
 
-# Regras de senha segura
 PASSWORD_MIN_LENGTH = 8
 PASSWORD_RULES = [
     (lambda p: len(p) >= PASSWORD_MIN_LENGTH, f"Mínimo {PASSWORD_MIN_LENGTH} caracteres"),

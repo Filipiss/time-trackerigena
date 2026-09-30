@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import styles from './AdminCreateUserModal.module.css';
+import './AdminCreateUserModal.css';
 import { createAdminUser } from '../../../api';
 import { useLanguage } from '../../../contexts/LanguageContext';
 
@@ -36,15 +36,15 @@ export default function AdminCreateUserModal({ onClose, onSuccess }) {
     };
 
     return (
-        <div className={styles.modalOverlay}>
-            <div className={styles.modalContent}>
-                <h2>{t("Criar Usuário de Teste / Fake")}</h2>
-                <p>{t("O usuário gerado será ativado instantaneamente e poderá logar no sistema.")}</p>
+        <div className="c-admin-user-modal__overlay">
+            <div className="c-admin-user-modal">
+                <h2 className="c-admin-user-modal__title">{t("Criar Usuário de Teste / Fake")}</h2>
+                <p className="c-admin-user-modal__desc">{t("O usuário gerado será ativado instantaneamente e poderá logar no sistema.")}</p>
 
-                {error && <div className={styles.error}>{error}</div>}
+                {error && <div className="c-admin-user-modal__error">{error}</div>}
 
                 <form onSubmit={handleSubmit}>
-                    <div className={styles.formGroup}>
+                    <div className="c-admin-user-modal__form-group">
                         <label>{t("Nome de Usuário (Username)")}</label>
                         <input
                             type="text"
@@ -54,7 +54,7 @@ export default function AdminCreateUserModal({ onClose, onSuccess }) {
                             required
                         />
                     </div>
-                    <div className={styles.formGroup}>
+                    <div className="c-admin-user-modal__form-group">
                         <label>{t("Email de Teste (Opcional)")}</label>
                         <input
                             type="email"
@@ -64,7 +64,7 @@ export default function AdminCreateUserModal({ onClose, onSuccess }) {
                             placeholder={t("Deixe em branco para gerar aleatório")}
                         />
                     </div>
-                    <div className={styles.formGroup}>
+                    <div className="c-admin-user-modal__form-group">
                         <label>{t("Senha Padrão (Opcional)")}</label>
                         <input
                             type="text"
@@ -75,7 +75,7 @@ export default function AdminCreateUserModal({ onClose, onSuccess }) {
                         />
                     </div>
 
-                    <div className={styles.checkBoxGroup}>
+                    <div className="c-admin-user-modal__checkbox-group">
                         <input
                             type="checkbox"
                             name="is_admin"
@@ -86,11 +86,11 @@ export default function AdminCreateUserModal({ onClose, onSuccess }) {
                         <label htmlFor="checkAdmin">{t("Garantir acesso de Administrador?")}</label>
                     </div>
 
-                    <div className={styles.actions}>
-                        <button type="button" onClick={onClose} disabled={loading} className={styles.btnSecondary}>
+                    <div className="c-admin-user-modal__actions">
+                        <button type="button" onClick={onClose} disabled={loading} className="c-admin-user-modal__btn--secondary">
                             {t("Cancelar")}
                         </button>
-                        <button type="submit" disabled={loading} className={styles.btnPrimary}>
+                        <button type="submit" disabled={loading} className="c-admin-user-modal__btn--primary">
                             {loading ? t('Criando...') : t('Criar e Ativar Usuário')}
                         </button>
                     </div>

@@ -1,30 +1,30 @@
-﻿import { Navigate, Outlet, Link } from 'react-router-dom';
+import { Navigate, Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useLanguage } from '../../../contexts/LanguageContext';
-import styles from './AdminLayout.module.css';
+import './AdminLayout.css';
 
 export default function AdminLayout() {
     const { user, loading } = useAuth();
     const { t } = useLanguage();
 
-    if (loading) return <div className={styles.loader}>Acessando interface restrita...</div>;
+    if (loading) return <div className="l-admin-layout__loader">Acessando interface restrita...</div>;
     if (!user || user.is_admin !== true) return <Navigate to="/" replace />;
 
     return (
-        <div className={styles.adminLayout}>
-            <aside className={styles['l-sidebar']}>
-                <div className={styles.sidebarHeader}>
+        <div className="l-admin-layout">
+            <aside className="l-admin-layout__sidebar">
+                <div className="l-admin-layout__sidebar-header">
                     <h2>{t("Painel Admin")}</h2>
-                    <span className={styles.adminBadge}>Admin {user.username}</span>
+                    <span className="c-admin-badge">Admin {user.username}</span>
                 </div>
-                <nav className={styles.navMenu}>
+                <nav className="l-admin-layout__nav">
                     <ul>
                         <li>
-                            <Link to="/" className={styles.backLink}>
+                            <Link to="/" className="l-admin-layout__back-link">
                                 ⬅ {t("Voltar ao App")}
                             </Link>
                         </li>
-                        <div className={styles.divider}></div>
+                        <div className="l-admin-layout__divider"></div>
                         <li><Link to="/admin">{t("Dashboard Geral")}</Link></li>
                         <li><Link to="/admin/users">{t("Gerenciar Usuários")}</Link></li>
                         <li><Link to="/admin/support">{t("Helpdesk / Suporte")}</Link></li>
@@ -33,7 +33,7 @@ export default function AdminLayout() {
                     </ul>
                 </nav>
             </aside>
-            <main className={styles.content}>
+            <main className="l-admin-layout__content">
                 <Outlet />
             </main>
         </div>

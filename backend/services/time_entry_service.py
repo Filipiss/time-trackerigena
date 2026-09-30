@@ -41,7 +41,6 @@ class TimeEntryService:
         if not entry:
             return False
         if user_id is not None:
-            # Verifica ownership via task->project
             task = entry.task
             if not task or not task.project or task.project.user_id != user_id:
                 return False
@@ -58,7 +57,6 @@ class TimeEntryService:
             if not task or not task.project or task.project.user_id != user_id:
                 raise ValueError("Registro não encontrado")
                 
-        # If task_id changed, we update the relationship
         if "task_id" in data and data["task_id"] != entry.task_id:
             task = TaskRepository.get_by_id(db, data["task_id"])
             if not task or (user_id and task.project.user_id != user_id):
@@ -94,7 +92,6 @@ class TimeEntryService:
             for row in stats["task_stats"]
         ]
         
-        # Garante que o gráfico tenha todos os dias do período selecionado.
         day_map = {str(row.day): row.total_seconds for row in stats["day_stats"]}
         time_by_day = []
         range_days = (stats["end_day"] - stats["start_day"]).days + 1

@@ -1,21 +1,14 @@
 import { handleGuestRequest } from './utils/guestMock';
 
-// Serviço de API — comunicação com o backend Flask com tradução de categorias
 const RAW_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const API_URL = RAW_API_URL.replace(/\/+$/, '');
-
-// ===================== AUTH HELPER =====================
 
 function getToken() {
   return localStorage.getItem('auth_token');
 }
 
-
-/**
- * Helper para fazer requisições com tratamento de erro
- */
 async function request(endpoint, options = {}, requiresAuth = true) {
-  // Se a rota requer auth e não há token, intercepta para o Guest Mode (sessionStorage)
+
   if (requiresAuth && !getToken()) {
     return handleGuestRequest(endpoint, options);
   }
@@ -47,13 +40,11 @@ async function request(endpoint, options = {}, requiresAuth = true) {
     return await response.json();
   } catch (error) {
     if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
-      throw new Error('Não foi possível conectar ao servidor. Verifique se o backend está rodando.');
+      throw new Error('Não foi possível conectar ao servidor. Verifique se o backend está rodando.', { cause: error });
     }
     throw error;
   }
 }
-
-// ===================== AUTH =====================
 
 export async function apiRegister(username, email, password, phone) {
   return request('/api/auth/register', {
@@ -85,10 +76,6 @@ export async function updateSettings(data) {
     body: JSON.stringify(data),
   });
 }
-
-// ==========================================
-// Helpdesk Support API
-// ==========================================
 
 export async function createTicket(subject, message) {
   return request('/api/support', { method: 'POST', body: JSON.stringify({ subject, message }) });
@@ -142,15 +129,11 @@ export async function apiResetPassword(token, newPassword) {
   }, false);
 }
 
-// ===================== CATEGORIES =====================
-
 export const fetchCategories = () => request('/api/categories');
 export const createCategory = (name) => request('/api/categories', { method: 'POST', body: JSON.stringify({ name }) });
 export const updateCategory = (id, name) => request(`/api/categories/${id}`, { method: 'PUT', body: JSON.stringify({ name }) });
 export const deleteCategory = (id) => request(`/api/categories/${id}`, { method: 'DELETE' });
 export const reorderCategories = (orderData) => request('/api/categories/reorder', { method: 'PATCH', body: JSON.stringify(orderData) });
-
-// ===================== PROJECTS =====================
 
 export async function fetchProjects(category = null) {
   const params = category ? `?category=${encodeURIComponent(category)}` : '';
@@ -220,8 +203,6 @@ export async function updateProjectAttachment(projectId, attachmentId, data) {
   });
 }
 
-// ===================== TASKS =====================
-
 export async function fetchTasks(category = null) {
   const params = category ? `?category=${encodeURIComponent(category)}` : '';
   const data = await request(`/api/tasks${params}`);
@@ -264,10 +245,6 @@ export async function reorderTasks(orderData) {
   return request('/api/tasks/reorder', { method: 'PATCH', body: JSON.stringify(orderData) });
 }
 
-/* =========================================================================
-   CALENDAR EVENTS ENDPOINTS
-   ========================================================================= */
-
 export const getCalendarEvents = async () => {
   return request('/api/calendar_events');
 };
@@ -295,8 +272,6 @@ export const deleteCalendarEvent = async (eventId) => {
 export async function fetchTaskDeadlineHistory(id) {
   return request(`/api/tasks/${id}/deadline-history`);
 }
-
-// ===================== TIME ENTRIES =====================
 
 export async function fetchTimeEntries(filters = {}) {
   const params = new URLSearchParams();
@@ -361,8 +336,6 @@ export async function updateTimeEntry(id, data) {
   };
 }
 
-// ===================== STATS =====================
-
 export async function fetchStats(filters = {}) {
   const params = new URLSearchParams(filters);
   const stats = await request(`/api/time-entries/stats?${params}`);
@@ -380,8 +353,6 @@ export async function fetchStats(filters = {}) {
     time_by_day: stats.time_by_day || []
   };
 }
-
-// ===================== ADMIN =====================
 
 export async function fetchAdminMetrics() {
   return request('/api/admin/metrics');
@@ -421,8 +392,7 @@ export async function updateUserProfile(userId, profileData) {
 }
 
 export async function fetchSettings() {
-  // Public route, but requiresAuth=false so it doesn't bounce to Guest mock
-  // Added a cache breaker to ensure polling ignores 304 Not Modified browser caching
+
   return request(`/api/settings?t=${Date.now()}`, {}, false);
 }
 

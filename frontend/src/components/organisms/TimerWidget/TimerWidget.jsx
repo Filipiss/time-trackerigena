@@ -19,7 +19,6 @@ function formatTime(ms) {
   };
 }
 
-
 const TIMER_STATES = {
   STOPPED: 'stopped',
   RUNNING: 'is-running',
@@ -74,8 +73,6 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
     };
   }, [tick, timerState]);
 
-
-
   const handleStart = useCallback(() => {
     if (timerState === TIMER_STATES.RUNNING) return;
     startTimeRef.current = Date.now();
@@ -113,7 +110,6 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
     persistState(TIMER_STATES.STOPPED, 0, null);
   }, [persistState]);
 
-  // Se a task for deletada globalmente (selectedTask === null) e o timer tiver algo, reseta forçadamente
   useEffect(() => {
     if (!selectedTask && (timerState !== TIMER_STATES.STOPPED || elapsedTime > 0)) {
       const timer = setTimeout(() => {
@@ -123,7 +119,6 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
     }
     return undefined;
   }, [selectedTask, timerState, elapsedTime, handleRestart]);
-
 
   const handleSave = useCallback(async () => {
     if (!selectedTask || elapsedTime < 1000) return;
@@ -164,7 +159,7 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
 
   return (
     <div className="c-timer__bar">
-      {/* 1. Descrição ou Nota atual */}
+
       <div className="c-timer__input">
         <input
           type="text"
@@ -176,7 +171,6 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
         />
       </div>
 
-      {/* 2. Task Selecionada (Indicador Visual) */}
       <div className="c-timer__task-badge">
         {selectedTask ? (
           <div className="c-timer__task-info">
@@ -192,30 +186,28 @@ export default function TimerWidget({ selectedTask, onSaveSuccess }) {
         )}
       </div>
 
-      {/* 3. Cronômetro / Tempo Decorrido */}
       <div className={`c-timer__display ${timerState}`}>
         <span className="c-timer__digits">
           {time.hours}:{time.minutes}:{time.seconds}
         </span>
       </div>
 
-      {/* 4. Controles de Ação */}
       <div className="c-timer__controls">
         {timerState !== TIMER_STATES.RUNNING ? (
-          <button className="c-timer__btn start" onClick={handleStart} disabled={!canStart} title={t("Iniciar")}>
+          <button className="c-timer__btn c-timer__btn--start" onClick={handleStart} disabled={!canStart} title={t("Iniciar")}>
             <Play size={16} fill="currentColor" /> {t("Iniciar")}
           </button>
         ) : (
-          <button className="c-timer__btn pause" onClick={handlePause} title={t("Pausar")}>
+          <button className="c-timer__btn c-timer__btn--pause" onClick={handlePause} title={t("Pausar")}>
             <Pause size={16} fill="currentColor" /> {t("Pausar")}
           </button>
         )}
 
-        <button className="c-timer__btn restart" onClick={handleRestart} disabled={timerState === TIMER_STATES.STOPPED && elapsedTime === 0} title={t("Resetar")}>
+        <button className="c-timer__btn c-timer__btn--restart" onClick={handleRestart} disabled={timerState === TIMER_STATES.STOPPED && elapsedTime === 0} title={t("Resetar")}>
           <RotateCcw size={14} />
         </button>
 
-        <button className="c-timer__btn save" onClick={handleSave} disabled={!canSave || saving} title={t("Salvar Registro")}>
+        <button className="c-timer__btn c-timer__btn--save" onClick={handleSave} disabled={!canSave || saving} title={t("Salvar Registro")}>
           {saving ? '...' : t("Salvar")}
         </button>
       </div>

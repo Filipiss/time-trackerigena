@@ -3,10 +3,10 @@ import './StatusLegend.css';
 
 export default function StatusLegend({ items }) {
   return (
-    <div className="calendar-legend">
+    <div className="c-status-legend">
       {items.map((item) => (
-        <span key={item.key} className="legend-item">
-          <ColorDot className="legend-dot" color={item.color} size="10px" />
+        <span key={item.key} className="c-status-legend__item">
+          <ColorDot className="c-status-legend__dot" color={item.color} size="10px" />
           {item.label}
         </span>
       ))}

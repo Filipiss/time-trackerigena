@@ -15,24 +15,19 @@ class AuthService:
 
     def register(self, username: str, email: str, password: str, app=None) -> dict:
         """Registra novo usuário. Retorna dict com 'user' ou lança exceção."""
-        # Valida força da senha
         pwd_errors = validate_password_strength(password)
         if pwd_errors:
             raise ValueError(f"Senha inválida: {'; '.join(pwd_errors)}")
 
-        # Verifica duplicatas
         if self.repo.find_by_email(email):
             raise ValueError("Este e-mail já está cadastrado")
         if self.repo.find_by_username(username):
             raise ValueError("Este username já está em uso")
 
-        # Hash da senha
         password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
-        # Gera token de ativação
         token = User.generate_activation_token()
 
-        # Cria usuário já ativo para permitir login imediato
         user = self.repo.create(
             username=username,
             email=email,
@@ -41,7 +36,6 @@ class AuthService:
             is_active=True,
         )
 
-        # Dispara e-mail em background (não bloqueia a resposta)
         if app:
             from utils.mail import send_activation_email
             thread = threading.Thread(
@@ -105,7 +99,7 @@ class AuthService:
             user = self.repo.find_by_username(identifier)
 
         if not user or not user.is_active:
-            return  # não revela se o usuário existe
+            return
 
         token = str(uuid.uuid4())
         expires = datetime.utcnow() + timedelta(hours=1)

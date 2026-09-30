@@ -5,7 +5,6 @@ from sqlalchemy.orm import relationship
 
 from utils.database import Base
 
-# Status possíveis para o deadline de um projeto no calendário.
 PROJECT_STATUSES = ("em_andamento", "urgente", "em_revisao", "aguardando_cliente", "completo")
 
 
@@ -15,19 +14,17 @@ class Project(Base):
     __tablename__ = "projects"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # nullable para migração gradual
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     name = Column(String(100), nullable=False)
-    category = Column(String(20), nullable=False)  # 'Loco' ou 'Freelas'
+    category = Column(String(20), nullable=False)
     sort_order = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    # Campos do calendário de deadlines
-    deadline = Column(String(10), nullable=True)  # formato YYYY-MM-DD
+    deadline = Column(String(10), nullable=True)
     status = Column(String(30), default="em_andamento")
     notes = Column(Text, nullable=True)
     deadline_notified = Column(Boolean, default=False)
 
-    # Relacionamento com tarefas
     tasks = relationship("Task", back_populates="project", cascade="all, delete-orphan")
     deadline_history = relationship(
         "ProjectDeadlineHistory", back_populates="project", cascade="all, delete-orphan"

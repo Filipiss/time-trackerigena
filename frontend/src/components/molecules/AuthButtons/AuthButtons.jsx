@@ -7,25 +7,25 @@ import './AuthButtons.css';
 
 export default function AuthButtons() {
     const { user } = useAuth();
-    // null | 'login' | 'register' | 'forgot'
+
     const [modal, setModal] = useState(null);
 
-    if (user) return null; // Logado — não exibe botões
+    if (user) return null;
 
     return (
         <>
-            <div className="auth-buttons">
-                <span className="guest-indicator">Modo Visitante</span>
+            <div className="c-auth-buttons">
+                <span className="c-auth-buttons__guest-indicator">Modo Visitante</span>
                 <button
                     id="btn-login"
-                    className="auth-btn auth-btn--ghost"
+                    className="c-auth-buttons__btn c-auth-buttons__btn--ghost"
                     onClick={() => setModal('login')}
                 >
                     Entrar
                 </button>
                 <button
                     id="btn-register"
-                    className="auth-btn auth-btn--primary"
+                    className="c-auth-buttons__btn c-auth-buttons__btn--primary"
                     onClick={() => setModal('register')}
                 >
                     Cadastrar

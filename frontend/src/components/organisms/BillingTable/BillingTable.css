@@ -1,4 +1,4 @@
-﻿.values-section-card {
+.c-billing-card {
   padding: var(--space-6);
   background: var(--bg-card);
   border: 1px solid rgba(139, 92, 246, 0.15);
@@ -7,7 +7,7 @@
   margin-top: var(--space-4);
 }
 
-.values-section-header {
+.c-billing-card__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -18,51 +18,51 @@
   margin-bottom: var(--space-4);
 }
 
-.values-header-title-wrapper {
+.c-billing-card__title-wrap {
   display: flex;
   align-items: center;
   gap: var(--space-3);
 }
 
-.values-header-title {
+.c-billing-card__title {
   font-size: var(--text-lg);
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
 }
 
-.exchange-rate-input-wrapper {
+.c-billing-card__exchange-wrap {
   display: flex;
   align-items: center;
   gap: var(--space-3);
   flex-wrap: wrap;
 }
 
-.exchange-label {
+.c-billing-card__exchange-label {
   font-size: var(--text-sm);
   color: var(--text-secondary);
   font-weight: 600;
 }
 
-.exchange-rate-hint {
+.c-billing-card__exchange-hint {
   font-size: var(--text-xs);
   color: var(--text-muted);
   font-family: var(--font-mono);
   white-space: nowrap;
 }
 
-.no-values-message {
+.c-billing-card__empty {
   text-align: center;
   color: var(--text-muted);
   font-size: var(--text-sm);
   padding: var(--space-6) 0;
 }
 
-.values-content {
+.c-billing-card__content {
   overflow-x: auto;
 }
 
-.values-table {
+.c-billing-table {
   width: 100%;
   min-width: 760px;
   border-collapse: collapse;
@@ -70,7 +70,7 @@
   font-size: var(--text-sm);
 }
 
-.values-table th {
+.c-billing-table th {
   padding: var(--space-3) var(--space-4);
   color: var(--text-secondary);
   font-weight: 600;
@@ -80,22 +80,32 @@
   letter-spacing: 0.05em;
 }
 
-.values-table td {
+.c-billing-table td {
   padding: var(--space-4);
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-primary);
   vertical-align: middle;
 }
 
-.values-row {
+.c-billing-table__row {
   transition: background-color var(--transition-fast);
 }
 
-.values-row:hover {
+.c-billing-table__row:hover {
   background-color: rgba(255, 255, 255, 0.01);
 }
 
-.values-sec-details {
+.c-billing-table__task-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.c-billing-table__task-name {
+  font-weight: 500;
+}
+
+.c-billing-table__sec-details {
   display: block;
   font-size: var(--text-xs);
   color: var(--text-muted);
@@ -103,45 +113,44 @@
   margin-top: 2px;
 }
 
-.value-eur-highlight,
-.overall-eur-total {
+.c-billing-table__highlight,
+.c-billing-table__overall-total {
   color: var(--color-warning);
   font-weight: 700;
   font-size: var(--text-base);
 }
 
-.totals-label-cell {
+.c-billing-table__totals-label {
   text-align: right;
   font-weight: 700;
 }
 
 @media (max-width: 880px) {
-  .values-section-card {
+  .c-billing-card {
     padding: var(--space-5);
   }
 
-  .values-table th,
-  .values-table td {
+  .c-billing-table th,
+  .c-billing-table td {
     padding: var(--space-3);
   }
 }
 
 @media (max-width: 767px) {
-  .values-section-card {
+  .c-billing-card {
     padding: var(--space-4);
   }
 
-  .exchange-rate-hint {
+  .c-billing-card__exchange-hint {
     white-space: normal;
   }
 
-  .values-table {
+  .c-billing-table {
     min-width: 700px;
     font-size: var(--text-xs);
   }
 }
 
-/* Paginação da Tabela de Faturamento */
 .c-billing-table__pagination-row td {
   padding: var(--space-2) var(--space-4) !important;
   text-align: center;
@@ -159,7 +168,7 @@
   border-radius: var(--radius-full);
 }
 
-.c-entry-pagination-btn {
+.c-entry-pagination__btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -175,18 +184,18 @@
   transition: all var(--transition-base);
 }
 
-.c-entry-pagination-btn:hover:not(:disabled) {
+.c-entry-pagination__btn:hover:not(:disabled) {
   background: var(--bg-card-hover);
   color: var(--text-primary);
   border-color: var(--border-highlight);
 }
 
-.c-entry-pagination-btn:disabled {
+.c-entry-pagination__btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.c-entry-pagination-info {
+.c-entry-pagination__info {
   font-size: var(--text-xs);
   color: var(--text-secondary);
   font-weight: 500;

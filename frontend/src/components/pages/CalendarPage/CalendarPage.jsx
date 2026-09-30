@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Spinner from '../../atoms/Spinner/Spinner';
 import CalendarBoard from '../../organisms/CalendarBoard/CalendarBoard';
 import DeadlineModal from '../../organisms/DeadlineModal/DeadlineModal';
@@ -59,8 +59,8 @@ export default function CalendarPage() {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
   });
-  const [editingEventId, setEditingEventId] = useState(null); // replaces editingProjectId
-  const [editingType, setEditingType] = useState(null); // 'project' | 'task'
+  const [editingEventId, setEditingEventId] = useState(null);
+  const [editingType, setEditingType] = useState(null);
   const [creatingForDate, setCreatingForDate] = useState(null);
   const [formDeadline, setFormDeadline] = useState('');
   const [formStatus, setFormStatus] = useState('em_andamento');
@@ -206,11 +206,11 @@ export default function CalendarPage() {
   };
 
   if (loading) {
-    return <div className="calendar-loading"><Spinner /></div>;
+    return <div className="c-calendar-page__loading"><Spinner /></div>;
   }
 
   return (
-    <div className="calendar-page-shell u-fade-in">
+    <div className="c-calendar-page u-fade-in">
       <CalendarBoard
         monthDate={monthDate}
         monthGrid={monthGrid}
@@ -237,7 +237,7 @@ export default function CalendarPage() {
         formProjectId={formProjectId}
         setFormProjectId={(pid) => {
           setFormProjectId(pid);
-          // Auto-reset task when changing project
+
           setFormTaskId('');
         }}
         formTaskId={formTaskId}

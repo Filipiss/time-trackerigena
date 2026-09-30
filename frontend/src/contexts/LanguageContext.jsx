@@ -1,10 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const LanguageContext = createContext();
 
 const dictionary = {
     en: {
-        // Accessibility / General Widget
+
         "Acessibilidade": "Accessibility",
         "Zoom do Texto": "Text Zoom",
         "Diminuir Fonte": "Zoom Out",
@@ -22,7 +22,6 @@ const dictionary = {
         "Mudar para Tema Claro": "Switch to Light Theme",
         "Opções de Acessibilidade": "Accessibility Options",
 
-        // Sidebar
         "Timer": "Timer",
         "Tarefas": "Tasks",
         "Histórico": "History",
@@ -35,7 +34,6 @@ const dictionary = {
         "Sair": "Logout",
         "Voltar ao App": "Back to App",
 
-        // TimerWidget
         "No que você está trabalhando?": "What are you working on?",
         "Começar": "Start",
         "Parar": "Stop",
@@ -47,7 +45,6 @@ const dictionary = {
         "Categoria": "Category",
         "Observações...": "Notes...",
 
-        // TaskSelectorPanel / Timer Page
         "Opções do Timer": "Timer Options",
         "A fazer...": "To do...",
         "Buscar tarefa...": "Search task...",
@@ -55,7 +52,6 @@ const dictionary = {
         "Criando tarefa...": "Creating task...",
         "Nova Task": "New Task",
 
-        // TasksPage & TaskManagerBoard
         "Gerenciamento de Projetos e Tarefas": "Project & Task Management",
         "Nova Categoria": "New Category",
         "Nome da Categoria": "Category Name",
@@ -87,7 +83,6 @@ const dictionary = {
         "Ação Irreversível": "Irreversible Action",
         "Tem certeza que deseja excluir esta tarefa? todos os registros de tempo serão mantidos, mas a associação com a task será removida.": "Are you sure you want to delete this task? All time entries will be kept, but the association with the task will be removed.",
 
-        // History Page / HistoryTable
         "Histórico de Ajustes": "Adjustment History",
         "Mês": "Month",
         "Semana": "Week",
@@ -112,7 +107,6 @@ const dictionary = {
         "Editar": "Edit",
         "Editar Grupo/Task": "Edit Group/Task",
 
-        // Profile Page
         "Meu Perfil": "My Profile",
         "Informações Pessoais": "Personal Information",
         "Nome Completo": "Full Name",
@@ -137,7 +131,6 @@ const dictionary = {
         "Número": "Number",
         "Caractere especial": "Special character",
 
-        // Support Page
         "Suporte & Ajuda": "Support & Help",
         "Central de Ajuda": "Help Center",
         "Como podemos ajudar você hoje?": "How can we help you today?",
@@ -150,7 +143,6 @@ const dictionary = {
         "Sua mensagem foi enviada! Responderemos em breve no seu e-mail cadastrado.": "Your message has been sent! We will reply shortly to your registered email.",
         "Dúvidas Frequentes": "Frequently Asked Questions",
 
-        // Admin Dashboard / Support details
         "Painel de Gerenciamento": "Management Panel",
         "Gerenciar Usuários": "Manage Users",
         "Configurações Gerais": "General Settings",
@@ -168,7 +160,6 @@ const dictionary = {
         "Senha Administrador": "Admin Password",
         "Usuário criado com sucesso!": "User created successfully!",
 
-        // Calendar
         "Calendário de Atividades": "Activity Calendar",
         "Domingo": "Sunday",
         "Segunda": "Monday",
@@ -202,13 +193,11 @@ const dictionary = {
         "Novembro": "November",
         "Dezembro": "December",
 
-        // Toast etc
         "Cronômetro iniciado": "Timer started",
         "Cronômetro parado": "Timer stopped",
         "Erro ao iniciar cronômetro": "Error starting timer",
         "Erro ao parar cronômetro": "Error stopping timer",
 
-        // History / Billing / Profile additions
         "Total": "Total",
         "Editar Grupo/Tarefa": "Edit Group/Task",
         "Histórico de Sessões": "Session History",
@@ -257,12 +246,10 @@ const dictionary = {
         "As senhas não coincidem": "Passwords do not match",
         "Senha alterada com sucesso!": "Password changed successfully!",
 
-        // UserWidget
         "Painel Admin": "Admin Panel",
         "Perfil": "Profile",
         "Menu do usuário": "User menu",
 
-        // TimerPage
         "Registros de Hoje": "Today's Entries",
         "Carregando registros de hoje...": "Loading today's entries...",
         "Nenhum registro cronometrado hoje. Escolha uma tarefa ao lado e inicie o cronômetro!": "No entries tracked today. Choose a task and start the timer!",
@@ -272,9 +259,7 @@ const dictionary = {
         "Pausar": "Pause",
         "Resetar": "Reset",
         "Salvar Registro": "Save Entry",
-        "Salvar": "Save",
 
-        // DashboardOverview
         "Todas as categorias": "All categories",
         "Filtros": "Filters",
         "Total acumulado": "Accumulated total",
@@ -284,14 +269,11 @@ const dictionary = {
         "Horas trabalhadas": "Hours worked",
         "Tempo gasto por task": "Time spent per task",
 
-        // CalendarBoard / CalendarPage
         "Calendário de Compromissos": "Appointments Calendar",
-        "Hoje": "Today",
         "Mês anterior": "Previous month",
         "Próximo mês": "Next month",
         "Adicionar status/compromisso neste dia": "Add status/appointment on this day",
 
-        // DeadlineModal
         "Editar Compromisso": "Edit Appointment",
         "Novo Compromisso": "New Appointment",
         "Selecione um projeto...": "Select a project...",
@@ -305,7 +287,6 @@ const dictionary = {
         "Remover Compromisso": "Remove Appointment",
         "Salvando...": "Saving...",
 
-        // TaskManagerBoard — category form
         "GERENCIAR CATEGORIA": "MANAGE CATEGORY",
         "Selecionar categoria...": "Select category...",
         "MOEDA": "CURRENCY",
@@ -313,7 +294,6 @@ const dictionary = {
         "New Category": "New Category",
         "+ Create Category": "+ Create Category",
 
-        // Admin panel — AdminDashboardPage
         "Dashboard de Sistema": "System Dashboard",
         "Estatísticas holísticas de engajamento do Trackerígena.": "Holistic engagement statistics of Trackerígena.",
         "Carregando painel geral...": "Loading dashboard...",
@@ -323,35 +303,25 @@ const dictionary = {
         "Resumo": "Summary",
         "O aplicativo possui um volume constante de novos blocos faturados. Utilize o Google Analytics para visualizar o tráfego detalhado em tempo real.": "The application has a steady volume of new billed blocks. Use Google Analytics to view detailed real-time traffic.",
 
-        // Admin panel — UsersManagementPage
         "Gerenciamento de Usuários": "User Management",
         "+ Criar Novo Usuário": "+ Create New User",
         "Usuário": "User",
-        "Nome Completo": "Full Name",
         "Telefone": "Phone",
         "Status": "Status",
         "Papel": "Role",
-        "Ações": "Actions",
         "Carregando usuários...": "Loading users...",
-        "Ativo": "Active",
         "Pendente": "Pending",
         "Membro": "Member",
-        "Editar": "Edit",
         "Remover Admin": "Remove Admin",
         "Dar Admin": "Grant Admin",
-        "Excluir": "Delete",
         "Nenhum usuário encontrado": "No users found",
         "Deseja remover acesso de administrador para este usuário?": "Remove admin access for this user?",
         "Deseja conceder acesso de administrador para este usuário?": "Grant admin access to this user?",
         "Excluir este usuário APAGARÁ TODOS OS DADOS dele permanentemente. Tem certeza absoluta?": "Deleting this user will PERMANENTLY DELETE ALL THEIR DATA. Are you absolutely sure?",
 
-        // Admin panel — AdminEditUserModal
         "Editar Perfil de": "Edit Profile of",
-        "País": "Country",
         "⚠️ Para a segurança do usuário, senhas não podem ser editadas pelo administrador.": "⚠️ For user security, passwords cannot be edited by the administrator.",
-        "Salvar Alterações": "Save Changes",
 
-        // Admin panel — AdminCreateUserModal
         "Criar Usuário de Teste / Fake": "Create Test / Fake User",
         "O usuário gerado será ativado instantaneamente e poderá logar no sistema.": "The generated user will be instantly activated and can log in.",
         "Nome de Usuário (Username)": "Username",
@@ -363,7 +333,6 @@ const dictionary = {
         "Criando...": "Creating...",
         "Criar e Ativar Usuário": "Create and Activate User",
 
-        // Admin panel — AdminSupportPage
         "Gestão de Helpdesk (Admin)": "Helpdesk Management (Admin)",
         "Responda aos usuários e gerencie o pipeline de suporte.": "Reply to users and manage the support pipeline.",
         "Novos Chamados": "New Tickets",
@@ -382,7 +351,6 @@ const dictionary = {
         "🔒 Este chamado está resolvido. Os usuários não podem responder até que você reabra.": "🔒 This ticket is resolved. Users cannot reply until you reopen it.",
         "Enviar Resposta": "Send Reply",
 
-        // User Support Page
         "Suporte Técnico e Ajuda": "Technical Support & Help",
         "Relate problemas ou tire dúvidas com os administradores.": "Report problems or ask questions to administrators.",
         "Criar Chamado": "Create Ticket",
@@ -406,7 +374,6 @@ const dictionary = {
         "Erro ao carregar chamados:": "Error loading tickets:",
         "Autor:": "Author:",
 
-        // Admin panel — AdminSettingsPage
         "Configurações Base": "Base Settings",
         "Controle configurações globais, comunicação e bloqueios do sistema.": "Control global settings, communications and system locks.",
         "Banners de Comunicação": "Communication Banners",
@@ -424,7 +391,6 @@ const dictionary = {
         "Dashboard Geral": "General Dashboard",
         "Helpdesk / Suporte": "Helpdesk / Support",
         "⬅ Voltar ao App": "⬅ Back to App",
-        "Painel Admin": "Admin Panel",
         "Logs do Sistema": "System Logs",
         "Monitore as ações dos usuários e alterações administrativas em tempo real.": "Monitor user actions and administrative changes in real time.",
         "Todas as Ações": "All Actions",

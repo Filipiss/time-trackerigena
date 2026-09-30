@@ -20,7 +20,6 @@ class TaskSchema(Schema):
     notes = fields.Str(load_default=None, allow_none=True)
     deadline_notified = fields.Bool(dump_only=True)
 
-    # Campos extras de leitura (calculados no service/repository)
     total_time = fields.Int(dump_only=True, load_default=0)
     project_name = fields.Str(dump_only=True, load_default=None)
     project_category = fields.Str(dump_only=True, load_default=None)

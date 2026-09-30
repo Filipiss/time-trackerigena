@@ -1,5 +1,4 @@
-﻿/* ── Base modal (mesmos estilos de LoginModal.css para independência) ── */
-.modal-overlay {
+.c-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -24,7 +23,7 @@
     }
 }
 
-.modal-box {
+.c-modal {
     background: var(--bg-surface);
     border: 1px solid var(--border-default);
     border-radius: var(--radius-md);
@@ -50,7 +49,7 @@
     }
 }
 
-.modal-close {
+.c-modal__close {
     position: absolute;
     top: 14px;
     right: 16px;
@@ -65,19 +64,19 @@
     transition: all var(--transition-fast);
 }
 
-.modal-close:hover {
+.c-modal__close:hover {
     color: var(--text-primary);
     background: var(--bg-card-hover);
 }
 
-.modal-title {
+.c-modal__title {
     font-size: 20px;
     font-weight: 700;
     color: var(--text-primary);
     margin: 0 0 20px;
 }
 
-.modal-error {
+.c-modal__error {
     background: rgba(239, 68, 68, 0.08);
     border: 1px solid rgba(239, 68, 68, 0.25);
     color: var(--color-danger);
@@ -87,25 +86,25 @@
     margin-bottom: 16px;
 }
 
-.modal-form {
+.c-modal__form {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-.field-group {
+.c-modal__field-group {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-.field-group label {
+.c-modal__field-group label {
     font-size: 13px;
     font-weight: 500;
     color: var(--text-secondary);
 }
 
-.field-group input {
+.c-modal__field-group input {
     background: var(--bg-input);
     border: 1px solid var(--border-default);
     border-radius: var(--radius-sm);
@@ -116,20 +115,20 @@
     transition: border-color var(--transition-fast);
 }
 
-.field-group input:focus {
+.c-modal__field-group input:focus {
     border-color: var(--theme-accent);
 }
 
-.field-group input::placeholder {
+.c-modal__field-group input::placeholder {
     color: var(--text-placeholder);
 }
 
-.field-error {
+.c-modal__field-error {
     font-size: 12px;
     color: var(--color-danger);
 }
 
-.c-btn--primary {
+.c-modal__btn--primary {
     background: var(--theme-accent);
     color: var(--text-inverse);
     border: none;
@@ -143,23 +142,23 @@
     width: 100%;
 }
 
-.c-btn--primary:hover:not(:disabled) {
+.c-modal__btn--primary:hover:not(:disabled) {
     background: var(--theme-accent-hover);
 }
 
-.c-btn--primary:disabled {
+.c-modal__btn--primary:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.modal-footer-link {
+.c-modal__footer-link {
     text-align: center;
     margin-top: 18px;
     font-size: 13px;
     color: var(--text-muted);
 }
 
-.link-btn {
+.c-modal__link-btn {
     background: none;
     border: none;
     color: var(--theme-accent);
@@ -169,11 +168,11 @@
     text-decoration: underline;
 }
 
-.link-btn:hover {
+.c-modal__link-btn:hover {
     color: var(--theme-accent-hover);
 }
 
-.modal-success {
+.c-modal__success {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -182,23 +181,22 @@
     text-align: center;
 }
 
-.success-icon {
+.c-modal__success-icon {
     font-size: 48px;
 }
 
-.modal-success h2 {
+.c-modal__success h2 {
     color: var(--text-primary);
     margin: 0;
 }
 
-.modal-success p {
+.c-modal__success p {
     color: var(--text-muted);
     margin: 0;
     line-height: 1.5;
 }
 
-/* ── Indicador de força de senha ── */
-.strength-bar-wrap {
+.c-modal__strength-bar-wrap {
     height: 4px;
     background: rgba(255, 255, 255, 0.08);
     border-radius: 4px;
@@ -206,19 +204,19 @@
     margin-top: 6px;
 }
 
-.strength-bar {
+.c-modal__strength-bar {
     height: 100%;
     border-radius: 4px;
     transition: width 0.3s ease, background 0.3s ease;
 }
 
-.strength-label {
+.c-modal__strength-label {
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.05em;
 }
 
-.rules-list {
+.c-modal__rules-list {
     list-style: none;
     padding: 0;
     margin: 6px 0 0;
@@ -227,7 +225,7 @@
     gap: 4px;
 }
 
-.rules-list li {
+.c-modal__rules-list li {
     font-size: 12px;
     display: flex;
     align-items: center;
@@ -235,16 +233,16 @@
     transition: color 0.2s;
 }
 
-.rule-ok {
+.c-modal__rule--ok {
     color: #22c55e;
 }
 
-.rule-fail {
+.c-modal__rule--fail {
     color: #555;
 }
 
 @media (max-width: 480px) {
-    .modal-box {
+    .c-modal {
         padding: 24px 20px;
     }
 }
