@@ -15,7 +15,7 @@ export default function MainLayout({ settings }) {
   }, [settings]);
 
   useEffect(() => {
-    // Se o admin deletou a mensagem, limpa a memória de bloqueio da sessão
+
     if (settings && !settings.global_banner?.trim()) {
       setTimeout(() => {
         setDismissedBanner('');
@@ -25,7 +25,7 @@ export default function MainLayout({ settings }) {
   }, [settings]);
 
   useEffect(() => {
-    // Timer para fechar automaticamente após 30 segundos
+
     if (settings?.global_banner?.trim() && settings.global_banner !== dismissedBanner) {
       const timer = setTimeout(() => {
         handleCloseBanner();
@@ -40,7 +40,7 @@ export default function MainLayout({ settings }) {
       <Sidebar />
 
       <div className="l-app__content">
-        {/* Barra superior com botões de auth no canto direito */}
+
         <header className="l-app__topbar">
           <div className="l-app__topbar-spacer" />
           <div className="topbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>

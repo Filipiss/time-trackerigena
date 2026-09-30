@@ -44,7 +44,7 @@ function AppRoutes() {
     fetchSettings().then(setSettings).catch(console.error);
     const interval = setInterval(() => {
       fetchSettings().then(setSettings).catch(console.error);
-    }, 10000); // Poll a cada 10 segundos
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -107,7 +107,6 @@ export default function App() {
   const resetToken = params.get('reset_token');
   const isActivatePage = window.location.pathname === '/activate' && activationToken;
 
-  // Limpa o token da URL após detectá-lo (sem recarregar)
   const [activeResetToken] = useState(resetToken);
   useEffect(() => {
     if (resetToken) {

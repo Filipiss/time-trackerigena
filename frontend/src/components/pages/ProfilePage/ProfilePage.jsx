@@ -125,46 +125,45 @@ export default function ProfilePage() {
     const strengthColor = ['', '#ef4444', '#f97316', '#eab308', '#22c55e', '#10b981'][strength.score] || '#444';
 
     return (
-        <div className="profile-page">
+        <div className="c-profile-page">
             {toast && (
-                <div className={`profile-toast ${toast.isError ? 'profile-toast--error' : ''}`}>
+                <div className={`c-profile-toast ${toast.isError ? 'c-profile-toast--error' : ''}`}>
                     {toast.msg}
                 </div>
             )}
 
-            <h1 className="profile-title">{t("Meu Perfil")}</h1>
+            <h1 className="c-profile-page__title">{t("Meu Perfil")}</h1>
 
             {!user ? (
-                <div className="profile-guest-notice">
+                <div className="c-profile-page__guest-notice">
                     <p style={{ color: '#ccc' }}>{t("O perfil não está disponível no Modo Visitante.")}</p>
                     <p style={{ color: '#888', fontSize: '14px', marginTop: '8px' }}>{t("Cadastre-se para personalizar sua experiência e salvar seus dados na nuvem!")}</p>
                 </div>
             ) : (
-                <div className="profile-grid">
-                    {/* ── Card: Avatar + identidade ── */}
-                    <section className="profile-card">
-                        <h2 className="card-heading">{t("Foto e identidade")}</h2>
+                <div className="c-profile-page__grid">
+                    <section className="c-profile-card">
+                        <h2 className="c-profile-card__heading">{t("Foto e identidade")}</h2>
 
-                        <div className="avatar-area">
-                            <button className="avatar-btn" onClick={() => fileRef.current?.click()} title={t("Trocar foto")}>
+                        <div className="c-profile-card__avatar-area">
+                            <button className="c-profile-card__avatar-btn" onClick={() => fileRef.current?.click()} title={t("Trocar foto")}>
                                 {form.avatar_url ? (
-                                    <img src={form.avatar_url} alt="avatar" className="avatar-img" />
+                                    <img src={form.avatar_url} alt="avatar" className="c-profile-card__avatar-img" />
                                 ) : (
-                                    <div className="avatar-initials">{initials}</div>
+                                    <div className="c-profile-card__avatar-initials">{initials}</div>
                                 )}
-                                <div className="avatar-overlay"><Camera size={20} strokeWidth={1.5} /></div>
+                                <div className="c-profile-card__avatar-overlay"><Camera size={20} strokeWidth={1.5} /></div>
                             </button>
                             <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
-                            <p className="avatar-hint">{t("Clique para trocar a foto")}</p>
+                            <p className="c-profile-card__avatar-hint">{t("Clique para trocar a foto")}</p>
                         </div>
 
-                        <form onSubmit={handleSaveProfile} className="profile-form">
-                            <div className="field-group">
+                        <form onSubmit={handleSaveProfile} className="c-profile-form">
+                            <div className="c-profile-form__field">
                                 <label>{t("Username")}</label>
-                                <input value={user?.username || ''} readOnly className="field-readonly" />
+                                <input value={user?.username || ''} readOnly className="is-readonly" />
                             </div>
 
-                            <div className="field-group">
+                            <div className="c-profile-form__field">
                                 <label>{t("Nome completo")}</label>
                                 <input
                                     value={form.full_name}
@@ -173,12 +172,12 @@ export default function ProfilePage() {
                                 />
                             </div>
 
-                            <div className="field-group">
+                            <div className="c-profile-form__field">
                                 <label>{t("E-mail")}</label>
-                                <input value={user?.email || ''} readOnly className="field-readonly" />
+                                <input value={user?.email || ''} readOnly className="is-readonly" />
                             </div>
 
-                            <div className="field-group country-field">
+                            <div className="c-profile-form__field c-profile-form__field--country">
                                 <label>{t("País de origem")}</label>
                                 <input
                                     value={countrySearch}
@@ -193,7 +192,7 @@ export default function ProfilePage() {
                                     autoComplete="off"
                                 />
                                 {showCountryDropdown && filteredCountries.length > 0 && (
-                                    <ul className="country-dropdown">
+                                    <ul className="c-profile-form__country-dropdown">
                                         {filteredCountries.slice(0, 8).map(c => (
                                             <li key={c} onMouseDown={() => {
                                                 setForm(f => ({ ...f, country: c }));
@@ -205,7 +204,7 @@ export default function ProfilePage() {
                                 )}
                             </div>
 
-                            <div className="field-group">
+                            <div className="c-profile-form__field">
                                 <label>{t("Telefone / WhatsApp")}</label>
                                 <input
                                     type="tel"
@@ -216,39 +215,38 @@ export default function ProfilePage() {
                                 />
                             </div>
 
-                            <button type="submit" className="btn-save" disabled={saving}>
+                            <button type="submit" className="c-profile-form__btn-save" disabled={saving}>
                                 {saving ? t('Salvando…') : t('Salvar perfil')}
                             </button>
                         </form>
                     </section>
 
-                    {/* ── Card: Trocar senha ── */}
-                    <section className="profile-card">
-                        <h2 className="card-heading">{t("Alterar senha")}</h2>
+                    <section className="c-profile-card">
+                        <h2 className="c-profile-card__heading">{t("Alterar senha")}</h2>
 
-                        {pwdError && <div className="pwd-error">{pwdError}</div>}
+                        {pwdError && <div className="c-profile-form__pwd-error">{pwdError}</div>}
 
-                        <form onSubmit={handleChangePassword} className="profile-form">
-                            <div className="field-group">
+                        <form onSubmit={handleChangePassword} className="c-profile-form">
+                            <div className="c-profile-form__field">
                                 <label>{t("Senha atual")}</label>
                                 <input type="password" value={pwdForm.current}
                                     onChange={e => setPwdForm(f => ({ ...f, current: e.target.value }))}
                                     placeholder={t("Senha atual")} autoComplete="current-password" />
                             </div>
 
-                            <div className="field-group">
+                            <div className="c-profile-form__field">
                                 <label>{t("Nova senha")}</label>
                                 <input type="password" value={pwdForm.next}
                                     onChange={e => setPwdForm(f => ({ ...f, next: e.target.value }))}
                                     placeholder={t("Nova senha segura")} autoComplete="new-password" />
                                 {pwdForm.next && (
                                     <>
-                                        <div className="strength-bar-wrap">
-                                            <div className="strength-bar" style={{ width: `${strength.score * 20}%`, background: strengthColor }} />
+                                        <div className="c-profile-form__strength-wrap">
+                                            <div className="c-profile-form__strength-bar" style={{ width: `${strength.score * 20}%`, background: strengthColor }} />
                                         </div>
-                                        <ul className="rules-list">
+                                        <ul className="c-profile-form__rules-list">
                                             {pwdRules.map(r => (
-                                                <li key={r.label} className={r.ok ? 'rule-ok' : 'rule-fail'}>
+                                                <li key={r.label} className={r.ok ? 'is-valid' : 'is-invalid'}>
                                                     <span style={{ display: 'inline-flex', alignItems: 'center' }}>
                                                         {r.ok ? <Check size={14} strokeWidth={2} /> : <Circle size={14} strokeWidth={1.5} />}
                                                     </span> {r.label}
@@ -259,14 +257,14 @@ export default function ProfilePage() {
                                 )}
                             </div>
 
-                            <div className="field-group">
+                            <div className="c-profile-form__field">
                                 <label>{t("Confirmar nova senha")}</label>
                                 <input type="password" value={pwdForm.confirm}
                                     onChange={e => setPwdForm(f => ({ ...f, confirm: e.target.value }))}
                                     placeholder={t("Repita a nova senha")} autoComplete="new-password" />
                             </div>
 
-                            <button type="submit" className="btn-save" disabled={pwdSaving}>
+                            <button type="submit" className="c-profile-form__btn-save" disabled={pwdSaving}>
                                 {pwdSaving ? t('Alterando…') : t('Alterar senha')}
                             </button>
                         </form>

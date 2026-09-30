@@ -12,7 +12,6 @@ class TimeEntrySchema(Schema):
     notes = fields.Str(load_default=None, allow_none=True)
     created_at = fields.DateTime(dump_only=True)
 
-    # Campos extras de leitura
     task_name = fields.Str(dump_only=True, load_default=None)
     task_category = fields.Str(dump_only=True, load_default=None)
     task_color = fields.Str(dump_only=True, load_default=None)
@@ -22,7 +21,6 @@ class TimeEntrySchema(Schema):
     project_name = fields.Str(dump_only=True, load_default=None)
 
 
-# ─── Stats Schemas ──────────────────────────────────────────────────────────────
 
 
 class CategoryStatSchema(Schema):

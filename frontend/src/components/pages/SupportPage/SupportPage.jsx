@@ -3,20 +3,18 @@ import { fetchMyTickets, createTicket, fetchTicketMessages, replyTicket } from '
 import { useAuth } from '../../../contexts/AuthContext';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { formatBrasiliaDateTime, formatBrasiliaTime } from '../../../utils/dateUtils';
-import styles from './SupportPage.module.css';
+import './SupportPage.css';
 
 export default function SupportPage() {
     const { user } = useAuth();
     const { t, language } = useLanguage();
-    const [activeTab, setActiveTab] = useState('new'); // new, open, resolved
+    const [activeTab, setActiveTab] = useState('new');
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // Create Mode
     const [subject, setSubject] = useState('');
     const [message, setMessage] = useState('');
 
-    // Chat Mode
     const [selectedTicket, setSelectedTicket] = useState(null);
     const [chatMessages, setChatMessages] = useState([]);
     const [chatInput, setChatInput] = useState('');
@@ -33,7 +31,7 @@ export default function SupportPage() {
         setLoading(true);
         try {
             const data = await fetchMyTickets();
-            const openStates = ['open', 'answered']; // Em aberto ou respondido
+            const openStates = ['open', 'answered'];
             if (activeTab === 'open') {
                 setTickets(data.filter(t => openStates.includes(t.status)));
             } else {
@@ -69,7 +67,6 @@ export default function SupportPage() {
         try {
             const data = await fetchTicketMessages(ticketId);
             setChatMessages(data.messages);
-            // Verify if status changed
             setSelectedTicket(prev => ({ ...prev, status: data.ticket.status }));
         } catch (e) {
             alert('Erro: ' + e.message);
@@ -92,32 +89,31 @@ export default function SupportPage() {
     }
 
     return (
-        <div className={styles.container}>
-            <header className={styles.header}>
+        <div className="c-support">
+            <header className="c-support__header">
                 <h1>{t("Suporte Técnico e Ajuda")}</h1>
                 <p>{t("Relate problemas ou tire dúvidas com os administradores.")}</p>
             </header>
 
-            <div className={styles.tabs}>
+            <div className="c-support__tabs">
                 <button
-                    className={`${styles.tab} ${activeTab === 'new' ? styles.activeTab : ''}`}
+                    className={`c-support__tab ${activeTab === 'new' ? 'is-active' : ''}`}
                     onClick={() => setActiveTab('new')}
                 >{t("Criar Chamado")}</button>
                 <button
-                    className={`${styles.tab} ${activeTab === 'open' ? styles.activeTab : ''}`}
+                    className={`c-support__tab ${activeTab === 'open' ? 'is-active' : ''}`}
                     onClick={() => setActiveTab('open')}
                 >{t("Meus Chamados Ativos")}</button>
                 <button
-                    className={`${styles.tab} ${activeTab === 'resolved' ? styles.activeTab : ''}`}
+                    className={`c-support__tab ${activeTab === 'resolved' ? 'is-active' : ''}`}
                     onClick={() => setActiveTab('resolved')}
                 >{t("Resolvidos")}</button>
             </div>
 
-            <main className={styles.content}>
-                {/* CRIAR CHAMADO */}
+            <main className="c-support__content">
                 {activeTab === 'new' && (
-                    <form onSubmit={handleCreateTicket} className={styles.createForm}>
-                        <div className={styles.formGroup}>
+                    <form onSubmit={handleCreateTicket}>
+                        <div className="c-support__form-group">
                             <label>{t("Assunto (Resumo do problema)")}</label>
                             <input
                                 value={subject}
@@ -127,7 +123,7 @@ export default function SupportPage() {
                                 maxLength={150}
                             />
                         </div>
-                        <div className={styles.formGroup}>
+                        <div className="c-support__form-group">
                             <label>{t("Mensagem Detalhada")}</label>
                             <textarea
                                 value={message}
@@ -137,53 +133,51 @@ export default function SupportPage() {
                                 rows={6}
                             />
                         </div>
-                        <button type="submit" className={styles.btnPrimary}>{t("Enviar Novo Chamado")}</button>
+                        <button type="submit" className="c-support__btn--primary">{t("Enviar Novo Chamado")}</button>
                     </form>
                 )}
 
-                {/* LISTAGEM (ATIVOS OU RESOLVIDOS) */}
                 {(activeTab === 'open' || activeTab === 'resolved') && !selectedTicket && (
-                    <div className={styles.ticketList}>
+                    <div className="c-support__ticket-list">
                         {loading ? <p>{t("Carregando...")}</p> : (
-                            tickets.length === 0 ? <p className={styles.empty}>{t("Nenhum chamado listado aqui.")}</p> :
+                            tickets.length === 0 ? <p style={{ color: 'var(--text-muted)' }}>{t("Nenhum chamado listado aqui.")}</p> :
                                 tickets.map(ticketItem => (
-                                    <div key={ticketItem.id} className={styles.ticketCard} onClick={() => openChat(ticketItem)}>
-                                        <div className={styles.ticketHeader}>
+                                    <div key={ticketItem.id} className="c-support__ticket-card" onClick={() => openChat(ticketItem)}>
+                                        <div className="c-support__ticket-header">
                                             <h3>{ticketItem.subject}</h3>
-                                            <span className={`${styles['o-badge']} ${styles[ticketItem.status]}`}>
+                                            <span className={`o-badge o-badge--${ticketItem.status}`}>
                                                 {ticketItem.status === 'open' ? t('Aguardando Atendimento') : ticketItem.status === 'answered' ? t('Respondido') : t('Resolvido')}
                                             </span>
                                         </div>
-                                        <small className={styles.ticketDate}>{t("Atualizado em:")} {formatBrasiliaDateTime(ticketItem.updated_at, language)}</small>
+                                        <small className="c-support__ticket-date">{t("Atualizado em:")} {formatBrasiliaDateTime(ticketItem.updated_at, language)}</small>
                                     </div>
                                 ))
                         )}
                     </div>
                 )}
 
-                {/* MODAL/JANELA DE CHAT */}
                 {selectedTicket && (
-                    <div className={styles.chatWindow}>
-                        <div className={styles.chatHeader}>
-                            <button className={styles.btnBack} onClick={() => setSelectedTicket(null)}>{t("⬅ Voltar para lista")}</button>
+                    <div className="c-support__chat-window">
+                        <div className="c-support__chat-header">
+                            <button className="c-support__btn--back" onClick={() => setSelectedTicket(null)}>{t("⬅ Voltar para lista")}</button>
                             <h2>{selectedTicket.subject}</h2>
-                            <span className={`${styles['o-badge']} ${styles[selectedTicket.status]}`}>
+                            <span className={`o-badge o-badge--${selectedTicket.status}`}>
                                 {selectedTicket.status === 'open' ? t('Aguardando Atendimento') : selectedTicket.status === 'answered' ? t('Respondido') : t('Resolvido')}
                             </span>
                         </div>
 
-                        <div className={styles.chatMessages}>
+                        <div className="c-support__chat-messages">
                             {chatLoading ? <p>{t("Montando histórico...")}</p> : (
                                 chatMessages.map(msg => {
                                     const isMe = msg.sender_id === user.id;
                                     return (
-                                        <div key={msg.id} className={`${styles.messageWrap} ${isMe ? styles.alignRight : styles.alignLeft}`}>
-                                            <div className={`${styles.messageBubble} ${isMe ? styles.bubbleMe : styles.bubbleThem}`}>
-                                                <div className={styles.msgMeta}>
+                                        <div key={msg.id} className={`c-support__message-wrap ${isMe ? 'c-support__message-wrap--right' : 'c-support__message-wrap--left'}`}>
+                                            <div className={`c-support__message-bubble ${isMe ? 'c-support__message-bubble--me' : 'c-support__message-bubble--them'}`}>
+                                                <div className="c-support__msg-meta">
                                                     <strong>{isMe ? t('Você') : (msg.is_admin ? t('🛡️ Suporte') : msg.sender_name)}</strong>
                                                     <small>{formatBrasiliaTime(msg.created_at, language)}</small>
                                                 </div>
-                                                <div className={styles.msgText}>{msg.message}</div>
+                                                <div className="c-support__msg-text">{msg.message}</div>
                                             </div>
                                         </div>
                                     )
@@ -192,11 +186,11 @@ export default function SupportPage() {
                         </div>
 
                         {selectedTicket.status === 'resolved' ? (
-                            <div className={styles.chatClosedNotice}>
+                            <div className="c-support__chat-closed">
                                 {t("🔒 Este chamado foi encerrado pelo suporte. Não é possível enviar novas mensagens.")}
                             </div>
                         ) : (
-                            <form onSubmit={handleSendMessage} className={styles.chatForm}>
+                            <form onSubmit={handleSendMessage} className="c-support__chat-form">
                                 <textarea
                                     value={chatInput}
                                     onChange={e => setChatInput(e.target.value)}
@@ -204,7 +198,7 @@ export default function SupportPage() {
                                     rows={3}
                                     disabled={chatLoading}
                                 />
-                                <button type="submit" disabled={chatLoading} className={styles.btnPrimary}>{t("Enviar")}</button>
+                                <button type="submit" disabled={chatLoading} className="c-support__btn--primary">{t("Enviar")}</button>
                             </form>
                         )}
                     </div>

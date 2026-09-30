@@ -14,7 +14,6 @@ def _dispatch_email(app, subject: str, recipients: list, html_content: str, bcc:
     mail_server = os.getenv("MAIL_SERVER") or "smtp.gmail.com"
     default_sender = os.getenv("MAIL_DEFAULT_SENDER") or ("Time Trackerígena", mail_user)
 
-    # 1. Tentativa via Flask-Mail
     try:
         with app.app_context():
             msg = Message(
@@ -30,7 +29,6 @@ def _dispatch_email(app, subject: str, recipients: list, html_content: str, bcc:
     except Exception as e:
         print(f"[Mail Warning] Flask-Mail failed: {e}. Trying direct SMTP_SSL fallback...")
 
-    # 2. Fallback direto via smtplib.SMTP_SSL (Porta 465 - garantida na nuvem)
     try:
         sender_email = mail_user
         all_to = list(recipients or []) + list(bcc or [])

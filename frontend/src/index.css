@@ -1,22 +1,19 @@
-﻿/* Breakpoints: Desktop ≥1367px | Laptop ≤1366px | Tablet Extra ≤1200px | Tablet ≤1024px | Mobile Extra ≤880px | Mobile ≤767px */
 
-/* ---- CSS Custom Properties ---- */
+
 :root {
 
-  /* Fundos */
   --bg-deep: #f8fafc;
-  /* Slate 50 - Fundo principal da página */
+  
   --bg-surface: #ffffff;
-  /* Superfície Principal */
+  
   --bg-card: #ffffff;
-  /* Cards */
+  
   --bg-card-hover: #f1f5f9;
-  /* Hover */
+  
   --bg-card-active: #e2e8f0;
-  /* Active */
+  
   --bg-input: #ffffff;
 
-  /* Sidebar Design Tokens */
   --sidebar-bg: var(--bg-surface);
   --sidebar-border: var(--border-default);
   --sidebar-text-title: var(--text-primary);
@@ -24,51 +21,43 @@
   --sidebar-hover-bg: var(--bg-card-hover);
   --sidebar-hover-text: var(--text-primary);
 
-  /* Bordas */
   --border-subtle: #f1f5f9;
   --border-default: #e2e8f0;
   --border-highlight: #cbd5e1;
 
-  /* Textos */
   --text-primary: #0f172a;
-  /* Slate 900 */
+  
   --text-secondary: #475569;
-  /* Slate 600 */
+  
   --text-muted: #64748b;
-  /* Slate 500 */
+  
   --text-placeholder: #94a3b8;
-  /* Slate 400 */
+  
   --text-inverse: #ffffff;
 
-  /* Accent Blue (Clockify Brand) */
   --theme-accent: #03a9f4;
   --theme-accent-hover: #0288d1;
   --theme-accent-subtle: rgba(3, 169, 244, 0.08);
 
-  /* Variáveis legadas remapeadas para o novo Accent */
   --gradient-primary: var(--theme-accent);
   --gradient-primary-hover: var(--theme-accent-hover);
   --gradient-loco: #64748b;
   --gradient-freelas: #f97316;
   --gradient-danger: #ef4444;
 
-  /* Cores de Categoria (Neutras e profissionais) */
   --color-loco: #0288d1;
   --color-loco-soft: rgba(2, 136, 209, 0.08);
   --color-freelas: #f97316;
   --color-freelas-soft: rgba(249, 115, 22, 0.08);
 
-  /* Status */
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
   --color-info: #3b82f6;
 
-  /* Tipografia */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
 
-  /* Tamanhos */
   --text-xs: 0.75rem;
   --text-sm: 0.85rem;
   --text-base: 1rem;
@@ -78,7 +67,6 @@
   --text-3xl: 1.875rem;
   --text-4xl: 2.25rem;
 
-  /* Espaçamento */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -90,14 +78,12 @@
   --space-12: 3rem;
   --space-16: 4rem;
 
-  /* Bordas arredondadas (Estrutura UI mais chique e sóbria) */
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-xl: 12px;
   --radius-full: 9999px;
 
-  /* Sombras Clean */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
@@ -106,13 +92,11 @@
   --shadow-glow-warning: none;
   --shadow-glow-danger: none;
 
-  /* Transições */
   --transition-fast: 0.1s ease-out;
   --transition-base: 0.2s ease-out;
   --transition-slow: 0.3s ease;
 }
 
-/* ---- Dark Theme Overrides ---- */
 :root[data-theme='dark'] {
   --bg-deep: #0f172a;
   --bg-surface: #1e293b;
@@ -121,7 +105,6 @@
   --bg-card-active: #475569;
   --bg-input: #0f172a;
 
-  /* Sidebar Design Tokens */
   --sidebar-bg: #0f172a;
   --sidebar-border: #1e293b;
   --sidebar-text-title: #f8fafc;
@@ -146,7 +129,6 @@
   --gradient-primary-hover: var(--theme-accent-hover);
 }
 
-/* ---- CSS Reset ---- */
 *,
 *::before,
 *::after {
@@ -170,7 +152,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Fundo limpo e corporativo */
 body::before {
   content: '';
   position: fixed;
@@ -212,7 +193,6 @@ select {
   color: inherit;
 }
 
-/* ---- Scrollbar Customizada ---- */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -231,13 +211,11 @@ select {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* Firefox */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
 
-/* ---- SaaS Card ---- */
 .o-card {
   background: var(--bg-card);
   border: 1px solid var(--border-default);
@@ -259,7 +237,6 @@ select {
   box-shadow: var(--shadow-sm);
 }
 
-/* ---- BotÃµes ---- */
 button {
   cursor: pointer;
   border: none;
@@ -303,7 +280,7 @@ button {
 .c-btn--primary {
   background: var(--gradient-primary);
   color: var(--text-inverse);
-  /* High contrast */
+  
   box-shadow: var(--shadow-sm);
   font-weight: 700;
 }
@@ -384,7 +361,6 @@ button {
   transform: scale(0.95);
 }
 
-/* ---- Badges ---- */
 .o-badge {
   display: inline-flex;
   align-items: center;
@@ -409,8 +385,7 @@ button {
   border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
-/* ---- Inputs ---- */
-.input {
+.c-input {
   width: 100%;
   padding: var(--space-3) var(--space-4);
   background: var(--bg-input);
@@ -422,34 +397,33 @@ button {
   outline: none;
 }
 
-.input::placeholder {
+.c-input::placeholder {
   color: var(--text-placeholder);
 }
 
-.input::-webkit-calendar-picker-indicator {
+.c-input::-webkit-calendar-picker-indicator {
   filter: none;
 }
 
-:root[data-theme='dark'] .input::-webkit-calendar-picker-indicator {
+:root[data-theme='dark'] .c-input::-webkit-calendar-picker-indicator {
   filter: invert(0.8) sepia(1) hue-rotate(180deg) saturate(0) brightness(1.2);
 }
 
-.input:focus {
+.c-input:focus {
   border-color: var(--theme-accent-hover);
   box-shadow: 0 0 0 2px var(--theme-accent-subtle);
   background: var(--bg-card);
 }
 
-.input:hover:not(:focus) {
+.c-input:hover:not(:focus) {
   border-color: var(--border-highlight);
 }
 
-textarea.input {
+textarea.c-input {
   resize: vertical;
   min-height: 80px;
 }
 
-/* ---- AnimaÃ§Ãµes Keyframes ---- */
 @keyframes pulse {
 
   0%,
@@ -554,7 +528,6 @@ textarea.input {
   }
 }
 
-/* ---- UtilitÃ¡rios ---- */
 .u-fade-in {
   animation: fadeIn 0.4s ease forwards;
 }
@@ -576,7 +549,6 @@ textarea.input {
   white-space: nowrap;
 }
 
-/* ---- Estado Vazio ---- */
 .c-empty-state {
   display: flex;
   flex-direction: column;
@@ -604,7 +576,6 @@ textarea.input {
   max-width: 300px;
 }
 
-/* ---- Loading ---- */
 .c-loading__spinner {
   width: 24px;
   height: 24px;

@@ -1,4 +1,3 @@
-// Utilitário de moedas — símbolos, cotações e conversão
 
 export const CURRENCIES = ['EUR', 'USD', 'BRL'];
 
@@ -14,10 +13,6 @@ export const CURRENCY_LABELS = {
   BRL: 'Real (R$)',
 };
 
-/**
- * Busca as cotações atuais (EUR-BRL e USD-BRL) na AwesomeAPI.
- * Retorna um objeto { EURBRL, USDBRL } com os valores em BRL.
- */
 export async function fetchExchangeRates() {
   const res = await fetch('https://economia.awesomeapi.com.br/last/EUR-BRL,USD-BRL');
   const data = await res.json();
@@ -27,10 +22,6 @@ export async function fetchExchangeRates() {
   };
 }
 
-/**
- * Converte um valor de uma moeda para outra usando o Real (BRL) como moeda-ponte.
- * `rates` deve conter { EURBRL, USDBRL } (quantos BRL vale 1 EUR / 1 USD).
- */
 export function convertCurrency(amount, fromCurrency, toCurrency, rates) {
   if (!amount || fromCurrency === toCurrency) return amount || 0;
 

@@ -1,4 +1,4 @@
-﻿.c-timer__bar {
+.c-timer__bar {
   display: flex;
   align-items: center;
   width: 100%;
@@ -136,36 +136,36 @@
   cursor: not-allowed;
 }
 
-.c-timer__btn.start {
+.c-timer__btn.c-timer__btn--start {
   background: var(--theme-accent);
   color: var(--text-inverse);
   border-color: var(--theme-accent);
 }
 
-.c-timer__btn.start:hover:not(:disabled) {
+.c-timer__btn.c-timer__btn--start:hover:not(:disabled) {
   background: var(--theme-accent-hover);
   border-color: var(--theme-accent-hover);
 }
 
-.c-timer__btn.pause {
+.c-timer__btn.c-timer__btn--pause {
   background: var(--color-warning);
   color: var(--text-inverse);
   border-color: var(--color-warning);
 }
 
-.c-timer__btn.stop {
+.c-timer__btn.c-timer__btn--stop {
   background: var(--color-danger);
   color: var(--text-inverse);
   border-color: var(--color-danger);
 }
 
-.c-timer__btn.save {
+.c-timer__btn.c-timer__btn--save {
   background: var(--theme-accent);
   color: var(--text-inverse);
   border-color: var(--theme-accent);
 }
 
-.c-timer__btn.save:hover:not(:disabled) {
+.c-timer__btn.c-timer__btn--save:hover:not(:disabled) {
   background: var(--theme-accent-hover);
   border-color: var(--theme-accent-hover);
 }

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import Input from '../../atoms/Input/Input';
 import Select from '../../atoms/Select/Select';
@@ -89,9 +89,9 @@ export default function DashboardOverview({ refreshTrigger }) {
   }
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-header">
-        <h2 className="dashboard-title u-gradient-text">Dashboard</h2>
+    <div className="c-dashboard">
+      <div className="c-dashboard__header">
+        <h2 className="c-dashboard__title u-gradient-text">Dashboard</h2>
         <div className="c-dashboard__filters">
           <Select value={filters.category} onChange={(event) => update('category', event.target.value)}>
             <option value="">{t("Todas as categorias")}</option>
@@ -135,17 +135,17 @@ export default function DashboardOverview({ refreshTrigger }) {
         </div>
       </div>
 
-      <div className="summary-cards">
-        {filters.type === 'total' ? <StatCard label={t("Tempo Total Acumulado")} value={formatTime(stats?.total_seconds)} className="overall-card" /> : null}
+      <div className="c-dashboard__summary">
+        {filters.type === 'total' ? <StatCard label={t("Tempo Total Acumulado")} value={formatTime(stats?.total_seconds)} className="c-stat-card--overall" /> : null}
         {categories.map((item, index) => (
           <StatCard key={item.category} label={item.category} value={formatTime(item.total_seconds)} valueStyle={{ color: COLORS[index % COLORS.length] }} />
         ))}
       </div>
 
-      <div className="charts-grid">
-        <div className="o-card chart-card">
-          <h3 className="chart-card-title">{t("Proporção por categoria")}</h3>
-          <div className="chart-wrapper">
+      <div className="c-dashboard__charts">
+        <div className="o-card c-chart-card">
+          <h3 className="c-chart-card__title">{t("Proporção por categoria")}</h3>
+          <div className="c-chart-card__wrapper">
             <ResponsiveContainer width="100%" height={260}>
               <PieChart>
                 <Pie data={categories} dataKey="total_seconds" nameKey="category" innerRadius={55} outerRadius={90}>
@@ -157,9 +157,9 @@ export default function DashboardOverview({ refreshTrigger }) {
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="o-card chart-card">
-          <h3 className="chart-card-title">{t("Horas trabalhadas")}</h3>
-          <div className="chart-wrapper">
+        <div className="o-card c-chart-card">
+          <h3 className="c-chart-card__title">{t("Horas trabalhadas")}</h3>
+          <div className="c-chart-card__wrapper">
             <ResponsiveContainer width="100%" height={260}>
               <AreaChart data={days}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -171,9 +171,9 @@ export default function DashboardOverview({ refreshTrigger }) {
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="o-card chart-card span-2-desktop">
-          <h3 className="chart-card-title">{t("Tempo gasto por task")}</h3>
-          <div className="chart-wrapper">
+        <div className="o-card c-chart-card c-dashboard__col-span-2">
+          <h3 className="c-chart-card__title">{t("Tempo gasto por task")}</h3>
+          <div className="c-chart-card__wrapper">
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={tasks}>
                 <CartesianGrid strokeDasharray="3 3" />

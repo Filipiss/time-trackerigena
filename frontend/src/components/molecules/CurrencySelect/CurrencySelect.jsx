@@ -4,7 +4,7 @@ import './CurrencySelect.css';
 
 export default function CurrencySelect({ className = '', ...props }) {
   return (
-    <Select className={`currency-select ${className}`.trim()} {...props}>
+    <Select className={`c-currency-select ${className}`.trim()} {...props}>
       {CURRENCIES.map((currency) => (
         <option key={currency} value={currency}>
           {CURRENCY_SYMBOLS[currency]} {currency}

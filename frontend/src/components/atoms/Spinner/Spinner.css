@@ -1,5 +1,5 @@
-.spinner-atom {
+.c-spinner-atom {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }

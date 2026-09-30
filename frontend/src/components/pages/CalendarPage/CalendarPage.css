@@ -1,8 +1,8 @@
-﻿.calendar-page-shell {
+.c-calendar-page {
   width: 100%;
 }
 
-.calendar-loading {
+.c-calendar-page__loading {
   display: flex;
   justify-content: center;
   padding: var(--space-16);

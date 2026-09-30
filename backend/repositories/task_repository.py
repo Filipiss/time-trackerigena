@@ -35,7 +35,7 @@ class TaskRepository:
                 new_deadline=update_data["deadline"],
             )
             db.add(history)
-            update_data["deadline_notified"] = False  # Reset notification state on new deadline
+            update_data["deadline_notified"] = False
 
         for key, value in update_data.items():
             setattr(task, key, value)

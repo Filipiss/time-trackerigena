@@ -8,4 +8,3 @@ class SystemSetting(Base):
     maintenance_mode = Column(Boolean, default=False, nullable=False)
     global_banner = Column(Text, nullable=True, default="")
     
-    # We only need one row for system settings, typically id=1.

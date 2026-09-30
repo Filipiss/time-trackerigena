@@ -1,9 +1,9 @@
-﻿import TaskManagerBoard from '../../organisms/TaskManagerBoard/TaskManagerBoard';
+import TaskManagerBoard from '../../organisms/TaskManagerBoard/TaskManagerBoard';
 import './TasksPage.css';
 
 export default function TasksPage({ onTaskChange }) {
   return (
-    <div className="tasks-page u-fade-in">
+    <div className="c-tasks-page u-fade-in">
       <TaskManagerBoard onTaskChange={onTaskChange} />
     </div>
   );

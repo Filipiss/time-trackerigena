@@ -1,4 +1,4 @@
-.modalOverlay {
+.c-admin-user-modal__overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -11,7 +11,7 @@
     z-index: 1000;
 }
 
-.modalContent {
+.c-admin-user-modal {
     background: var(--bg-surface);
     padding: 2rem;
     border-radius: var(--radius-md);
@@ -21,23 +21,23 @@
     box-shadow: var(--shadow-lg);
 }
 
-.modalContent h2 {
+.c-admin-user-modal__title {
     margin-top: 0;
     margin-bottom: 0.5rem;
     color: var(--text-primary);
 }
 
-.modalContent p {
+.c-admin-user-modal__desc {
     color: var(--text-muted);
     font-size: 0.9rem;
     margin-bottom: 1.5rem;
 }
 
-.formGroup {
+.c-admin-user-modal__form-group {
     margin-bottom: 1.25rem;
 }
 
-.formGroup label {
+.c-admin-user-modal__form-group label {
     display: block;
     margin-bottom: 0.5rem;
     color: var(--text-secondary);
@@ -45,8 +45,8 @@
     font-weight: 500;
 }
 
-.formGroup input[type="text"],
-.formGroup input[type="email"] {
+.c-admin-user-modal__form-group input[type="text"],
+.c-admin-user-modal__form-group input[type="email"] {
     width: 100%;
     padding: 10px;
     background: var(--bg-input);
@@ -55,7 +55,7 @@
     color: var(--text-primary);
 }
 
-.checkBoxGroup {
+.c-admin-user-modal__checkbox-group {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -66,19 +66,19 @@
     border-left: 3px solid var(--theme-accent);
 }
 
-.checkBoxGroup label {
+.c-admin-user-modal__checkbox-group label {
     color: var(--theme-accent);
     font-size: 0.9rem;
     cursor: pointer;
 }
 
-.actions {
+.c-admin-user-modal__actions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
 }
 
-.btnPrimary {
+.c-admin-user-modal__btn--primary {
     background: var(--theme-accent);
     color: var(--text-inverse);
     border: none;
@@ -88,11 +88,11 @@
     font-weight: 600;
 }
 
-.btnPrimary:hover {
+.c-admin-user-modal__btn--primary:hover {
     background: var(--theme-accent-hover);
 }
 
-.btnSecondary {
+.c-admin-user-modal__btn--secondary {
     background: var(--bg-card-hover);
     color: var(--text-secondary);
     border: 1px solid var(--border-default);
@@ -101,12 +101,12 @@
     cursor: pointer;
 }
 
-.btnSecondary:hover {
+.c-admin-user-modal__btn--secondary:hover {
     background: var(--bg-card-active);
     color: var(--text-primary);
 }
 
-.error {
+.c-admin-user-modal__error {
     background: rgba(239, 68, 68, 0.08);
     color: var(--color-danger);
     padding: 10px;

@@ -30,7 +30,6 @@ def create_event():
     data = request.json
     db: Session = get_db_session()
     try:
-        # data may contain project_id, task_id, date, status, notes
         event = CalendarEventService.create_event(db, data, user_id)
         return jsonify({
             "id": event.id,

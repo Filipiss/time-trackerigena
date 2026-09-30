@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Eye, EyeOff } from 'lucide-react';
@@ -31,15 +31,15 @@ export default function LoginModal({ onClose, onSwitchToRegister, onForgotPasswo
     }
 
     return createPortal(
-        <div className="modal-overlay">
-            <div className="modal-box">
-                <button className="modal-close" onClick={onClose}>✕</button>
-                <h2 className="modal-title">Entrar</h2>
+        <div className="c-modal-overlay">
+            <div className="c-modal">
+                <button className="c-modal__close" onClick={onClose}>✕</button>
+                <h2 className="c-modal__title">Entrar</h2>
 
-                {error && <div className="modal-error">{error}</div>}
+                {error && <div className="c-modal__error">{error}</div>}
 
-                <form onSubmit={handleSubmit} className="modal-form">
-                    <div className="field-group">
+                <form onSubmit={handleSubmit} className="c-modal__form">
+                    <div className="c-modal__field-group">
                         <label>E-mail ou usuário</label>
                         <input
                             name="identifier"
@@ -52,9 +52,9 @@ export default function LoginModal({ onClose, onSwitchToRegister, onForgotPasswo
                         />
                     </div>
 
-                    <div className="field-group">
+                    <div className="c-modal__field-group">
                         <label>Senha</label>
-                        <div className="password-wrapper">
+                        <div className="c-modal__password-wrapper">
                             <input
                                 name="password"
                                 type={showPassword ? 'text' : 'password'}
@@ -65,32 +65,39 @@ export default function LoginModal({ onClose, onSwitchToRegister, onForgotPasswo
                             />
                             <button
                                 type="button"
-                                className="password-toggle"
+                                className="c-modal__password-toggle"
                                 onClick={() => setShowPassword(v => !v)}
                                 tabIndex={-1}
-                                aria-label={showPassword ? 'Ocultar senha' : 'Exibir senha'}
+                                aria-label={showPassword ? 'Ocultar senha' : 'Ver senha'}
                             >
-                                {showPassword ? <EyeOff size={18} strokeWidth={1.5} /> : <Eye size={18} strokeWidth={1.5} />}
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
                         </div>
                         {onForgotPassword && (
                             <button
                                 type="button"
-                                className="link-btn forgot-link"
+                                className="c-modal__link-btn c-modal__forgot-link"
                                 onClick={onForgotPassword}
                             >
-                                Esqueci minha senha
+                                Esqueceu a senha?
                             </button>
                         )}
                     </div>
 
-                    <button type="submit" className="c-btn--primary" disabled={loading}>
-                        {loading ? 'Entrando…' : 'Entrar'}
+                    <button
+                        type="submit"
+                        className="c-modal__btn--primary"
+                        disabled={loading}
+                    >
+                        {loading ? 'Entrando...' : 'Entrar'}
                     </button>
                 </form>
 
-                <p className="modal-footer-link">
-                    Não tem conta? <button className="link-btn" onClick={onSwitchToRegister}>Criar conta</button>
+                <p className="c-modal__footer-link">
+                    Não tem uma conta?{' '}
+                    <button type="button" className="c-modal__link-btn" onClick={onSwitchToRegister}>
+                        Cadastre-se
+                    </button>
                 </p>
             </div>
         </div>,

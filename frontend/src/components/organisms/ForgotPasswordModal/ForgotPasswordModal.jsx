@@ -1,6 +1,7 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { apiForgotPassword } from '../../../api';
+import '../LoginModal/LoginModal.css';
 
 export default function ForgotPasswordModal({ onClose, onSwitchToLogin }) {
     const [identifier, setIdentifier] = useState('');
@@ -24,28 +25,28 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }) {
     }
 
     return createPortal(
-        <div className="modal-overlay">
-            <div className="modal-box">
-                <button className="modal-close" onClick={onClose}>✕</button>
+        <div className="c-modal-overlay">
+            <div className="c-modal">
+                <button className="c-modal__close" onClick={onClose}>✕</button>
 
                 {sent ? (
-                    <div className="modal-success">
-                        <span className="success-icon">📧</span>
+                    <div className="c-modal__success">
+                        <span className="c-modal__success-icon">📧</span>
                         <h2>E-mail enviado!</h2>
                         <p>Se o e-mail/usuário existir, você receberá um link válido por 1 hora para redefinir sua senha.</p>
-                        <button className="c-btn--primary" onClick={onSwitchToLogin}>Voltar ao login</button>
+                        <button className="c-modal__btn--primary" onClick={onSwitchToLogin}>Voltar ao login</button>
                     </div>
                 ) : (
                     <>
-                        <h2 className="modal-title">Esqueci minha senha</h2>
+                        <h2 className="c-modal__title">Esqueci minha senha</h2>
                         <p style={{ color: '#aaa', fontSize: '14px', marginBottom: '20px' }}>
                             Informe seu e-mail ou username cadastrado e enviaremos um link de recuperação.
                         </p>
 
-                        {error && <div className="modal-error">{error}</div>}
+                        {error && <div className="c-modal__error">{error}</div>}
 
-                        <form onSubmit={handleSubmit} className="modal-form">
-                            <div className="field-group">
+                        <form onSubmit={handleSubmit} className="c-modal__form">
+                            <div className="c-modal__field-group">
                                 <label>E-mail ou usuário</label>
                                 <input
                                     type="text"
@@ -56,13 +57,13 @@ export default function ForgotPasswordModal({ onClose, onSwitchToLogin }) {
                                 />
                             </div>
 
-                            <button type="submit" className="c-btn--primary" disabled={loading}>
+                            <button type="submit" className="c-modal__btn--primary" disabled={loading}>
                                 {loading ? 'Enviando…' : 'Enviar link de recuperação'}
                             </button>
                         </form>
 
-                        <p className="modal-footer-link">
-                            Lembrou a senha? <button className="link-btn" onClick={onSwitchToLogin}>Voltar ao login</button>
+                        <p className="c-modal__footer-link">
+                            Lembrou a senha? <button type="button" className="c-modal__link-btn" onClick={onSwitchToLogin}>Voltar ao login</button>
                         </p>
                     </>
                 )}

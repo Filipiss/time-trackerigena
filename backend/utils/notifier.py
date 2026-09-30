@@ -18,7 +18,6 @@ def check_and_notify_deadlines(app):
     try:
         today_iso = datetime.now().strftime("%Y-%m-%d")
         
-        # Projetos
         projects = db.query(Project).filter(
             Project.deadline == today_iso,
             Project.status.in_(["deadline", "urgente"]),
@@ -36,8 +35,6 @@ def check_and_notify_deadlines(app):
                     print(f"[Notifier] Erro ao enviar email do Projeto id={project.id}: {e}")
                     db.rollback()
 
-        # Tasks
-        # precisamos recuperar o owner da task atravessando o project.
         tasks = db.query(Task).join(Project, Task.project_id == Project.id).filter(
             Task.deadline == today_iso,
             Task.status.in_(["deadline", "urgente"]),
@@ -62,7 +59,6 @@ def check_and_notify_deadlines(app):
 
 
 def run_notifier_loop(app):
-    # Roda a cada minuto para disparo quase imediato
     while True:
         check_and_notify_deadlines(app)
         time.sleep(60)

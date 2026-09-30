@@ -1,4 +1,4 @@
-﻿.container {
+.c-admin-logs {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -6,7 +6,7 @@
     animation: fadeIn 0.3s ease-out;
 }
 
-.header h1 {
+.c-admin-logs__header h1 {
     font-size: 1.8rem;
     font-weight: 700;
     margin-bottom: 0.25rem;
@@ -16,12 +16,12 @@
     -webkit-text-fill-color: transparent;
 }
 
-.header p {
+.c-admin-logs__header p {
     color: var(--text-secondary);
     font-size: 0.95rem;
 }
 
-.filterForm {
+.c-admin-logs__filter-form {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
@@ -34,13 +34,13 @@
     border-radius: 12px;
 }
 
-.formGroup {
+.c-admin-logs__form-group {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.formGroup label {
+.c-admin-logs__form-group label {
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-secondary);
@@ -48,8 +48,8 @@
     letter-spacing: 0.05em;
 }
 
-.input,
-.select {
+.c-admin-logs__input,
+.c-admin-logs__select {
     background: var(--bg-input, rgba(255, 255, 255, 0.05));
     border: 1px solid var(--border-default);
     color: var(--text-primary);
@@ -60,13 +60,13 @@
     transition: all 0.2s ease;
 }
 
-.input:focus,
-.select:focus {
+.c-admin-logs__input:focus,
+.c-admin-logs__select:focus {
     border-color: var(--color-primary);
     box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.2);
 }
 
-.btnSearch {
+.c-admin-logs__btn--search {
     background: var(--color-primary);
     color: #fff;
     border: none;
@@ -78,12 +78,12 @@
     transition: all 0.2s ease;
 }
 
-.btnSearch:hover {
+.c-admin-logs__btn--search:hover {
     background: var(--color-primary-dark, #e11d48);
     transform: translateY(-1px);
 }
 
-.tableWrapper {
+.c-admin-logs__table-wrapper {
     background: var(--bg-card);
     backdrop-filter: blur(12px);
     border: 1px solid var(--border-default);
@@ -93,14 +93,14 @@
     min-height: 200px;
 }
 
-.spinnerWrapper {
+.c-admin-logs__spinner-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 3rem 0;
 }
 
-.spinner {
+.c-admin-logs__spinner {
     width: 32px;
     height: 32px;
     border: 3px solid rgba(255, 255, 255, 0.1);
@@ -115,38 +115,38 @@
     }
 }
 
-.noLogs {
+.c-admin-logs__empty {
     text-align: center;
     padding: 3rem;
     color: var(--text-secondary);
 }
 
-.table {
+.c-admin-logs__table {
     width: 100%;
     border-collapse: collapse;
     text-align: left;
 }
 
 @media (max-width: 767px) {
-    .table {
+    .c-admin-logs__table {
         min-width: 720px;
     }
 }
 
-.table th,
-.table td {
+.c-admin-logs__table th,
+.c-admin-logs__table td {
     padding: 0.9rem 1.2rem;
     border-bottom: 1px solid var(--border-default);
     font-size: 0.9rem;
 }
 
-.table th {
+.c-admin-logs__table th {
     background: rgba(0, 0, 0, 0.15);
     font-weight: 600;
     color: var(--text-secondary);
 }
 
-.username {
+.c-admin-logs__username {
     font-weight: 600;
     color: var(--text-primary);
 }
@@ -160,48 +160,48 @@
     text-transform: uppercase;
 }
 
-.badgeSuccess {
+.o-badge--success {
     background: rgba(16, 185, 129, 0.15);
     color: #10b981;
 }
 
-.badgeDanger {
+.o-badge--danger {
     background: rgba(239, 68, 68, 0.15);
     color: #ef4444;
 }
 
-.badgeWarning {
+.o-badge--warning {
     background: rgba(245, 158, 11, 0.15);
     color: #f59e0b;
 }
 
-.badgeInfo {
+.o-badge--info {
     background: rgba(59, 130, 246, 0.15);
     color: #3b82f6;
 }
 
-.badgeDefault {
+.o-badge--default {
     background: rgba(107, 114, 128, 0.15);
     color: #6b7280;
 }
 
-.timestampCell {
+.c-admin-logs__timestamp {
     white-space: nowrap;
     color: var(--text-secondary);
 }
 
-.ipCell {
+.c-admin-logs__ip {
     font-family: monospace;
     color: var(--text-secondary);
 }
 
-.descCell {
+.c-admin-logs__desc-cell {
     max-width: 400px;
     text-overflow: ellipsis;
     overflow: hidden;
 }
 
-.actionsHeader {
+.c-admin-logs__actions-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -209,7 +209,7 @@
     min-height: 40px;
 }
 
-.bulkActions {
+.c-admin-logs__bulk-actions {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -221,7 +221,7 @@
     color: var(--color-danger);
 }
 
-.btnBulkDelete {
+.c-admin-logs__btn--bulk-delete {
     background: var(--color-danger);
     color: var(--text-inverse);
     border: none;
@@ -235,11 +235,11 @@
     transition: all var(--transition-fast);
 }
 
-.btnBulkDelete:hover {
+.c-admin-logs__btn--bulk-delete:hover {
     background: #dc2626;
 }
 
-.btnClearAll {
+.c-admin-logs__btn--clear-all {
     background: rgba(255, 255, 255, 0.05);
     color: var(--text-muted);
     border: 1px solid var(--border-default);
@@ -253,13 +253,13 @@
     transition: all var(--transition-fast);
 }
 
-.btnClearAll:hover {
+.c-admin-logs__btn--clear-all:hover {
     background: rgba(239, 68, 68, 0.1);
     color: var(--color-danger);
     border-color: rgba(239, 68, 68, 0.3);
 }
 
-.btnRowDelete {
+.c-admin-logs__btn--row-delete {
     background: transparent;
     color: var(--text-muted);
     border: none;
@@ -272,21 +272,21 @@
     transition: all var(--transition-fast);
 }
 
-.btnRowDelete:hover {
+.c-admin-logs__btn--row-delete:hover {
     background: rgba(239, 68, 68, 0.1);
     color: var(--color-danger);
 }
 
-.checkbox {
+.c-admin-logs__checkbox {
     cursor: pointer;
     accent-color: var(--color-danger);
 }
 
-.rowSelected {
+.c-admin-logs__table tr.is-selected {
     background: rgba(225, 29, 72, 0.05) !important;
 }
 
-.highlight {
+.u-highlight {
     background-color: var(--theme-accent, #3b82f6);
     color: #ffffff;
     border-radius: 2px;

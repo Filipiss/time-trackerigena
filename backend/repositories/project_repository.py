@@ -27,7 +27,6 @@ class ProjectRepository:
 
     @staticmethod
     def update(db: Session, project: Project, update_data: dict) -> Project:
-        # Registra a mudança de deadline no histórico antes de aplicar
         if "deadline" in update_data and update_data["deadline"] != project.deadline:
             history = ProjectDeadlineHistory(
                 project_id=project.id,
@@ -35,7 +34,7 @@ class ProjectRepository:
                 new_deadline=update_data["deadline"],
             )
             db.add(history)
-            update_data["deadline_notified"] = False  # Reset notification state on new deadline
+            update_data["deadline_notified"] = False
 
         for key, value in update_data.items():
             setattr(project, key, value)

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { validate_password_strength_js } from '../../../utils/passwordStrength';
@@ -69,19 +69,19 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
         { label: 'Letra minúscula', ok: /[a-z]/.test(form.password) },
         { label: 'Letra maiúscula', ok: /[A-Z]/.test(form.password) },
         { label: 'Número', ok: /\d/.test(form.password) },
-        { label: 'Caractere especial', ok: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(form.password) },
+        { label: 'Caractere especial', ok: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(form.password) },
     ];
 
     if (success) return createPortal(
-        <div className="modal-overlay">
-            <div className="modal-box">
-                <div className="modal-success">
-                    <span className="success-icon" style={{ color: 'var(--color-success)', display: 'flex', justifyContent: 'center' }}>
+        <div className="c-modal-overlay">
+            <div className="c-modal">
+                <div className="c-modal__success">
+                    <span className="c-modal__success-icon" style={{ color: 'var(--color-success)', display: 'flex', justifyContent: 'center' }}>
                         <CheckCircle size={48} strokeWidth={1.5} />
                     </span>
                     <h2>Cadastro realizado!</h2>
                     <p>Verifique seu e-mail para ativar a conta antes de fazer login.</p>
-                    <button className="c-btn--primary" onClick={onSwitchToLogin}>Ir para o Login</button>
+                    <button className="c-modal__btn--primary" onClick={onSwitchToLogin}>Ir para o Login</button>
                 </div>
             </div>
         </div>,
@@ -89,41 +89,41 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
     );
 
     return createPortal(
-        <div className="modal-overlay">
-            <div className="modal-box">
-                <button className="modal-close" onClick={onClose}>✕</button>
-                <h2 className="modal-title">Criar conta</h2>
+        <div className="c-modal-overlay">
+            <div className="c-modal">
+                <button className="c-modal__close" onClick={onClose}>✕</button>
+                <h2 className="c-modal__title">Criar conta</h2>
 
-                {serverError && <div className="modal-error">{serverError}</div>}
+                {serverError && <div className="c-modal__error">{serverError}</div>}
 
-                <form onSubmit={handleSubmit} className="modal-form">
-                    <div className="field-group">
+                <form onSubmit={handleSubmit} className="c-modal__form">
+                    <div className="c-modal__field-group">
                         <label>Username</label>
                         <input name="username" value={form.username} onChange={handleChange}
                             placeholder="apenasletrasounumeros" autoComplete="username" />
-                        {errors.username && <span className="field-error">{errors.username}</span>}
+                        {errors.username && <span className="c-modal__field-error">{errors.username}</span>}
                     </div>
 
-                    <div className="field-group">
+                    <div className="c-modal__field-group">
                         <label>E-mail</label>
                         <input name="email" type="email" value={form.email} onChange={handleChange}
                             placeholder="seu@email.com" autoComplete="email" />
-                        {errors.email && <span className="field-error">{errors.email}</span>}
+                        {errors.email && <span className="c-modal__field-error">{errors.email}</span>}
                     </div>
 
-                    <div className="field-group">
+                    <div className="c-modal__field-group">
                         <label>Senha</label>
                         <input name="password" type="password" value={form.password} onChange={handleChange}
                             placeholder="Senha segura" autoComplete="new-password" />
                         {form.password && (
                             <>
-                                <div className="strength-bar-wrap">
-                                    <div className="strength-bar" style={{ width: `${strength.score * 20}%`, background: strengthColor }} />
+                                <div className="c-modal__strength-bar-wrap">
+                                    <div className="c-modal__strength-bar" style={{ width: `${strength.score * 20}%`, background: strengthColor }} />
                                 </div>
-                                <span className="strength-label" style={{ color: strengthColor }}>{strengthLabel}</span>
-                                <ul className="rules-list">
+                                <span className="c-modal__strength-label" style={{ color: strengthColor }}>{strengthLabel}</span>
+                                <ul className="c-modal__rules-list">
                                     {rules.map(r => (
-                                        <li key={r.label} className={r.ok ? 'rule-ok' : 'rule-fail'}>
+                                        <li key={r.label} className={r.ok ? 'c-modal__rule--ok' : 'c-modal__rule--fail'}>
                                             <span style={{ display: 'inline-flex', alignItems: 'center' }}>
                                                 {r.ok ? <Check size={14} strokeWidth={2} /> : <Circle size={14} strokeWidth={1.5} />}
                                             </span> {r.label}
@@ -132,29 +132,29 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
                                 </ul>
                             </>
                         )}
-                        {errors.password && <span className="field-error">{errors.password}</span>}
+                        {errors.password && <span className="c-modal__field-error">{errors.password}</span>}
                     </div>
 
-                    <div className="field-group">
+                    <div className="c-modal__field-group">
                         <label>Confirmar senha</label>
                         <input name="confirm" type="password" value={form.confirm} onChange={handleChange}
                             placeholder="Repita a senha" autoComplete="new-password" />
-                        {errors.confirm && <span className="field-error">{errors.confirm}</span>}
+                        {errors.confirm && <span className="c-modal__field-error">{errors.confirm}</span>}
                     </div>
 
-                    <div className="field-group">
+                    <div className="c-modal__field-group">
                         <label>Telefone <span style={{ color: '#666', fontWeight: 400 }}>(opcional)</span></label>
                         <input name="phone" type="tel" value={form.phone} onChange={handleChange}
                             placeholder="+55 11 99999-9999" autoComplete="tel" />
                     </div>
 
-                    <button type="submit" className="c-btn--primary" disabled={loading}>
+                    <button type="submit" className="c-modal__btn--primary" disabled={loading}>
                         {loading ? 'Criando conta…' : 'Criar conta'}
                     </button>
                 </form>
 
-                <p className="modal-footer-link">
-                    Já tem conta? <button className="link-btn" onClick={onSwitchToLogin}>Entrar</button>
+                <p className="c-modal__footer-link">
+                    Já tem conta? <button type="button" className="c-modal__link-btn" onClick={onSwitchToLogin}>Entrar</button>
                 </p>
             </div>
         </div>,

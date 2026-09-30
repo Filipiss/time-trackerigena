@@ -1,9 +1,9 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchAllUsers, toggleAdminRole, deleteAdminUser, updateUserProfile } from '../../../api';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import AdminEditUserModal from './AdminEditUserModal';
 import AdminCreateUserModal from '../../organisms/AdminCreateUserModal/AdminCreateUserModal';
-import styles from './UsersManagementPage.module.css';
+import './UsersManagementPage.css';
 
 export default function UsersManagementPage() {
     const { t } = useLanguage();
@@ -61,22 +61,22 @@ export default function UsersManagementPage() {
         }
     }
 
-    if (loading) return <p className={styles.loading}>{t("Carregando usuários...")}</p>;
+    if (loading) return <p className="c-users-management__loading">{t("Carregando usuários...")}</p>;
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
+        <div className="c-users-management">
+            <div className="c-users-management__header">
                 <h1>{t("Gerenciamento de Usuários")}</h1>
                 <button
-                    className={styles.btnCreate}
+                    className="c-users-management__btn--create"
                     onClick={() => setIsCreatingUser(true)}
                 >
                     {t("+ Criar Novo Usuário")}
                 </button>
             </div>
 
-            <div className={styles.tableWrapper}>
-                <table className={styles.table}>
+            <div className="c-users-management__table-wrapper">
+                <table className="c-users-management__table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -100,27 +100,27 @@ export default function UsersManagementPage() {
                                 <td>{u.country || <span style={{ color: '#a0aab2' }}>---</span>}</td>
                                 <td>{u.phone || <span style={{ color: '#a0aab2' }}>---</span>}</td>
                                 <td>
-                                    <span className={`${styles['o-badge']} ${u.is_active ? styles['is-active'] : styles.inactive}`}>
+                                    <span className={`o-badge ${u.is_active ? 'o-badge--active' : 'o-badge--inactive'}`}>
                                         {u.is_active ? t('Ativo') : t('Pendente')}
                                     </span>
                                 </td>
                                 <td>
-                                    <span className={`${styles['o-badge']} ${u.is_admin ? styles.admin : styles.member}`}>
+                                    <span className={`o-badge ${u.is_admin ? 'o-badge--admin' : 'o-badge--member'}`}>
                                         {u.is_admin ? 'Admin' : t('Membro')}
                                     </span>
                                 </td>
-                                <td className={styles.actions}>
-                                    <div className={styles.actionsContainer}>
-                                        <button className={styles['c-btn']} onClick={() => setEditingUser(u)}>
+                                <td className="c-users-management__actions">
+                                    <div className="c-users-management__actions-container">
+                                        <button className="c-btn" onClick={() => setEditingUser(u)}>
                                             {t('Editar')}
                                         </button>
                                         {!u.is_admin && (
-                                            <button className={styles['c-btn']} onClick={() => handleToggleAdmin(u.id, u.is_admin)}>
+                                            <button className="c-btn" onClick={() => handleToggleAdmin(u.id, u.is_admin)}>
                                                 {t('Dar Admin')}
                                             </button>
                                         )}
                                         {!u.is_admin && (
-                                            <button className={`${styles['c-btn']} ${styles.btnDelete}`} onClick={() => handleDelete(u.id)}>
+                                            <button className="c-btn c-btn--delete" onClick={() => handleDelete(u.id)}>
                                                 {t('Excluir')}
                                             </button>
                                         )}

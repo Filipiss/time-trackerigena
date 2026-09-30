@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Trash2, Check, X, Clock, Pencil, ChevronDown, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import './HistoryTable.css';
@@ -47,7 +47,7 @@ export default function HistoryTable({
     const rows = [];
 
     dayGroups.forEach((group) => {
-      // 1. Push the day header row as a subheader separating the entries
+
       rows.push(
         <tr key={`header-${group.dateStr}`} className="c-history-table__day-header-row">
           <td colSpan={6}>
@@ -58,7 +58,7 @@ export default function HistoryTable({
                 style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
                 title={!collapsedDays.has(group.dateStr) ? t("Recolher registros") : t("Expandir registros")}
               >
-                <span className="btn-icon-collapse" style={{ display: 'inline-flex', alignItems: 'center', opacity: 0.7 }}>
+                <span className="c-history-table__collapse-btn" style={{ display: 'inline-flex', alignItems: 'center', opacity: 0.7 }}>
                   {!collapsedDays.has(group.dateStr) ? <ChevronDown size={16} strokeWidth={1.5} /> : <ChevronRight size={16} strokeWidth={1.5} />}
                 </span>
                 <span className="c-history-table__day-title">{t(group.weekdayLabel)}</span>
@@ -73,13 +73,12 @@ export default function HistoryTable({
         </tr>
       );
 
-      // 2. Push entries rows for this day if expanded
       if (!collapsedDays.has(group.dateStr)) {
-        let groupItems = [];
+        let groupItems;
         if (categoryFilter === 'all') {
           groupItems = group.entries || [];
         } else {
-          // Grouped by task/project if filtered by category (original logic)
+
           const taskGroups = {};
           (group.entries || []).forEach((entry) => {
             const groupKey = entry.task_id ?? `deleted-${entry.id}`;
@@ -116,17 +115,17 @@ export default function HistoryTable({
             rows.push(
               <tr key={entry.id} className="c-history-table__row">
                 <td>
-                  <span className="project-badge-text">{t(entry.project_name || 'Sem Projeto')}</span>
+                  <span className="c-history-table__project-badge">{t(entry.project_name || 'Sem Projeto')}</span>
                 </td>
                 <td>
-                  <div className="task-cell">
+                  <div className="c-history-table__task-cell">
                     <span className="o-color-dot" style={{ backgroundColor: entry.task_color || 'var(--color-info)' }} />
-                    <span className="task-name-text" title={entry.task_name}>{entry.task_name || t('Tarefa Excluída')}</span>
+                    <span className="c-history-table__task-name" title={entry.task_name}>{entry.task_name || t('Tarefa Excluída')}</span>
                   </div>
                 </td>
-                <td className="duration-cell font-mono">{formatDuration(entry.duration_seconds)}</td>
-                <td className="date-cell">{formatDate(entry.start_time)}</td>
-                <td className="notes-cell" title={entry.notes}>{entry.notes || <span className="no-notes">-</span>}</td>
+                <td className="c-history-table__duration font-mono">{formatDuration(entry.duration_seconds)}</td>
+                <td className="c-history-table__date-cell">{formatDate(entry.start_time)}</td>
+                <td className="c-history-table__notes" title={entry.notes}>{entry.notes || <span className="c-history-table__no-notes">-</span>}</td>
                 <td className="c-history-table__actions-cell">
                   {deletingId === entry.id ? (
                     <div className="c-history-table__delete-confirm">
@@ -149,18 +148,18 @@ export default function HistoryTable({
             rows.push(
               <tr key={`taskGroup-${deleteKey}`} className="c-history-table__row">
                 <td>
-                  <span className="project-badge-text">{t(tGroup.project_name || 'Sem Projeto')}</span>
+                  <span className="c-history-table__project-badge">{t(tGroup.project_name || 'Sem Projeto')}</span>
                 </td>
                 <td>
-                  <div className="task-cell">
+                  <div className="c-history-table__task-cell">
                     <span className="o-color-dot" style={{ backgroundColor: tGroup.task_color || 'var(--color-info)' }} />
-                    <span className="task-name-text" title={tGroup.task_name}>{tGroup.task_name || t('Tarefa Excluída')}</span>
-                    {tGroup.ids.length > 1 ? <span className="group-count-badge">{tGroup.ids.length}x</span> : null}
+                    <span className="c-history-table__task-name" title={tGroup.task_name}>{tGroup.task_name || t('Tarefa Excluída')}</span>
+                    {tGroup.ids.length > 1 ? <span className="c-history-table__group-badge">{tGroup.ids.length}x</span> : null}
                   </div>
                 </td>
-                <td className="duration-cell font-mono">{formatDuration(tGroup.duration_seconds)}</td>
-                <td className="date-cell">{formatDate(tGroup.start_time)}</td>
-                <td className="notes-cell" title={tGroup.notes.join(' | ')}>{tGroup.notes.join(' | ') || <span className="no-notes">-</span>}</td>
+                <td className="c-history-table__duration font-mono">{formatDuration(tGroup.duration_seconds)}</td>
+                <td className="c-history-table__date-cell">{formatDate(tGroup.start_time)}</td>
+                <td className="c-history-table__notes" title={tGroup.notes.join(' | ')}>{tGroup.notes.join(' | ') || <span className="c-history-table__no-notes">-</span>}</td>
                 <td className="c-history-table__actions-cell">
                   {deletingId === deleteKey ? (
                     <div className="c-history-table__delete-confirm">

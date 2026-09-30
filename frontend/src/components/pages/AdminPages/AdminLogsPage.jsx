@@ -3,7 +3,7 @@ import { fetchAuditLogs, deleteAuditLog, deleteAuditLogsBulk, clearAllAuditLogs 
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { formatBrasiliaDateTime } from '../../../utils/dateUtils';
 import { Trash2 } from 'lucide-react';
-import styles from './AdminLogsPage.module.css';
+import './AdminLogsPage.css';
 
 export default function AdminLogsPage() {
     const { t, language } = useLanguage();
@@ -14,7 +14,6 @@ export default function AdminLogsPage() {
     const [limitFilter, setLimitFilter] = useState('100');
     const [selectedLogIds, setSelectedLogIds] = useState(new Set());
 
-    // List of typical log actions for dropdown filter
     const logActionsList = [
         { value: '', label: t('Todas as Ações') },
         { value: 'LOGIN', label: 'LOGIN' },
@@ -34,7 +33,7 @@ export default function AdminLogsPage() {
 
     useEffect(() => {
         loadLogs();
-    }, [actionFilter, limitFilter, userFilter]); // Reload automatically on filter changes
+    }, [actionFilter, limitFilter, userFilter]);
 
     useEffect(() => {
         setSelectedLogIds(new Set());
@@ -68,7 +67,7 @@ export default function AdminLogsPage() {
         return (
             <>
                 {before}
-                <mark className={styles.highlight}>{match}</mark>
+                <mark className="u-highlight">{match}</mark>
                 {after}
             </>
         );
@@ -137,27 +136,27 @@ export default function AdminLogsPage() {
     }
 
     function getActionBadgeClass(action) {
-        if (action.startsWith('CREATE')) return styles.badgeSuccess;
-        if (action.startsWith('DELETE')) return styles.badgeDanger;
-        if (action.startsWith('UPDATE')) return styles.badgeWarning;
-        if (action.includes('LOGIN')) return styles.badgeInfo;
-        return styles.badgeDefault;
+        if (action.startsWith('CREATE')) return 'o-badge--success';
+        if (action.startsWith('DELETE')) return 'o-badge--danger';
+        if (action.startsWith('UPDATE')) return 'o-badge--warning';
+        if (action.includes('LOGIN')) return 'o-badge--info';
+        return 'o-badge--default';
     }
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
+        <div className="c-admin-logs">
+            <div className="c-admin-logs__header">
                 <h1>{t("Logs do Sistema")}</h1>
                 <p>{t("Monitore as ações dos usuários e alterações administrativas em tempo real.")}</p>
             </div>
 
-            <form onSubmit={handleSearchSubmit} className={styles.filterForm}>
-                <div className={styles.formGroup}>
+            <form onSubmit={handleSearchSubmit} className="c-admin-logs__filter-form">
+                <div className="c-admin-logs__form-group">
                     <label>{t("Ação")}</label>
                     <select
                         value={actionFilter}
                         onChange={(e) => setActionFilter(e.target.value)}
-                        className={styles.select}
+                        className="c-admin-logs__select"
                     >
                         {logActionsList.map(a => (
                             <option key={a.value} value={a.value}>{a.label}</option>
@@ -165,23 +164,23 @@ export default function AdminLogsPage() {
                     </select>
                 </div>
 
-                <div className={styles.formGroup}>
+                <div className="c-admin-logs__form-group">
                     <label>{t("Usuário")}</label>
                     <input
                         type="text"
                         placeholder={t("Nome de usuário")}
                         value={userFilter}
                         onChange={(e) => setUserFilter(e.target.value)}
-                        className={styles.input}
+                        className="c-admin-logs__input"
                     />
                 </div>
 
-                <div className={styles.formGroup}>
+                <div className="c-admin-logs__form-group">
                     <label>{t("Exibir")}</label>
                     <select
                         value={limitFilter}
                         onChange={(e) => setLimitFilter(e.target.value)}
-                        className={styles.select}
+                        className="c-admin-logs__select"
                         style={{ minWidth: '80px' }}
                     >
                         <option value="20">20</option>
@@ -192,34 +191,34 @@ export default function AdminLogsPage() {
                 </div>
             </form>
 
-            <div className={styles.actionsHeader}>
+            <div className="c-admin-logs__actions-header">
                 {selectedLogIds.size > 0 ? (
-                    <div className={styles.bulkActions}>
+                    <div className="c-admin-logs__bulk-actions">
                         <span>{t("{{count}} selecionado(s)").replace("{{count}}", selectedLogIds.size)}</span>
-                        <button type="button" onClick={handleDeleteBulk} className={styles.btnBulkDelete}>
+                        <button type="button" onClick={handleDeleteBulk} className="c-admin-logs__btn--bulk-delete">
                             <Trash2 size={13} style={{ marginRight: '6px' }} />
                             {t("Excluir Selecionados")}
                         </button>
                     </div>
                 ) : <div />}
 
-                <button type="button" onClick={handleClearAll} className={styles.btnClearAll}>
+                <button type="button" onClick={handleClearAll} className="c-admin-logs__btn--clear-all">
                     <Trash2 size={13} style={{ marginRight: '6px' }} />
                     {t("Limpar Todos os Logs")}
                 </button>
             </div>
 
-            <div className={styles.tableWrapper}>
+            <div className="c-admin-logs__table-wrapper">
                 {loading ? (
-                    <div className={styles.spinnerWrapper}>
-                        <div className={styles.spinner}></div>
+                    <div className="c-admin-logs__spinner-wrapper">
+                        <div className="c-admin-logs__spinner"></div>
                     </div>
                 ) : logs.length === 0 ? (
-                    <div className={styles.noLogs}>
+                    <div className="c-admin-logs__empty">
                         {t("Sem logs correspondentes aos filtros.")}
                     </div>
                 ) : (
-                    <table className={styles.table}>
+                    <table className="c-admin-logs__table">
                         <thead>
                             <tr>
                                 <th style={{ width: '40px', textAlign: 'center' }}>
@@ -227,7 +226,7 @@ export default function AdminLogsPage() {
                                         type="checkbox"
                                         checked={logs.length > 0 && selectedLogIds.size === logs.length}
                                         onChange={handleToggleSelectAll}
-                                        className={styles.checkbox}
+                                        className="c-admin-logs__checkbox"
                                     />
                                 </th>
                                 <th>{t("Data e Hora")}</th>
@@ -240,33 +239,33 @@ export default function AdminLogsPage() {
                         </thead>
                         <tbody>
                             {logs.map((log) => (
-                                <tr key={log.id} className={selectedLogIds.has(log.id) ? styles.rowSelected : ''}>
+                                <tr key={log.id} className={selectedLogIds.has(log.id) ? 'is-selected' : ''}>
                                     <td style={{ textAlign: 'center' }}>
                                         <input
                                             type="checkbox"
                                             checked={selectedLogIds.has(log.id)}
                                             onChange={() => handleToggleSelectLog(log.id)}
-                                            className={styles.checkbox}
+                                            className="c-admin-logs__checkbox"
                                         />
                                     </td>
-                                    <td className={styles.timestampCell}>{formatLogDate(log.created_at)}</td>
+                                    <td className="c-admin-logs__timestamp">{formatLogDate(log.created_at)}</td>
                                     <td>
-                                        <span className={styles.username}>
+                                        <span className="c-admin-logs__username">
                                             {highlightText(log.username || 'System/Guest', userFilter)}
                                         </span>
                                     </td>
                                     <td>
-                                        <span className={`${styles['o-badge']} ${getActionBadgeClass(log.action)}`}>
+                                        <span className={`o-badge ${getActionBadgeClass(log.action)}`}>
                                             {log.action}
                                         </span>
                                     </td>
-                                    <td className={styles.ipCell}>{log.ip_address || '—'}</td>
-                                    <td className={styles.descCell}>{log.description || '—'}</td>
+                                    <td className="c-admin-logs__ip">{log.ip_address || '—'}</td>
+                                    <td className="c-admin-logs__desc-cell">{log.description || '—'}</td>
                                     <td style={{ textAlign: 'center' }}>
                                         <button
                                             type="button"
                                             onClick={() => handleDeleteSingle(log.id)}
-                                            className={styles.btnRowDelete}
+                                            className="c-admin-logs__btn--row-delete"
                                             title={t("Excluir registro")}
                                         >
                                             <Trash2 size={15} strokeWidth={1.5} />

@@ -109,7 +109,6 @@ def forgot_password():
             identifier=validated["identifier"],
             app=current_app._get_current_object(),
         )
-        # Resposta genérica para não revelar se o usuário existe
         return jsonify({"message": "Se o e-mail/usuário existir, um link de recuperação foi enviado."}), 200
     finally:
         service.close()

@@ -19,7 +19,6 @@ class TimeEntry(Base):
     notes = Column(String(500), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    # Relacionamento com tarefa
     task = relationship("Task", back_populates="time_entries")
 
     def __repr__(self):

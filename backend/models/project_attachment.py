@@ -11,8 +11,8 @@ class ProjectAttachment(Base):
     project_id = Column(Integer, ForeignKey('projects.id', ondelete='CASCADE'), nullable=False)
     file_name = Column(String(255), nullable=False)
     file_url = Column(String(512), nullable=False)
-    file_size = Column(Integer, nullable=True) # in bytes
-    color = Column(String(7), nullable=True) # hex color code
+    file_size = Column(Integer, nullable=True)
+    color = Column(String(7), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     project = relationship("Project", back_populates="attachments")

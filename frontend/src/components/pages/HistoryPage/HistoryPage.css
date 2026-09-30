@@ -1,11 +1,11 @@
-﻿.time-history {
+.c-history-page {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
   animation: fadeIn 0.4s ease forwards;
 }
 
-.time-history-header {
+.c-history-page__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -13,7 +13,7 @@
   gap: var(--space-4);
 }
 
-.time-history-title {
+.c-history-page__title {
   font-size: var(--text-2xl);
   font-weight: 700;
   margin: 0;
@@ -29,7 +29,7 @@
   flex-wrap: wrap;
 }
 
-.filter-month-input {
+.c-history-page__month-input {
   min-width: 155px;
 }
 
@@ -54,7 +54,7 @@
   box-shadow: 0 2px 8px rgba(6, 182, 212, 0.2);
 }
 
-.history-content-layout {
+.c-history-page__content {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
@@ -92,19 +92,12 @@
   border-color: var(--border-highlight);
 }
 
-.horizontal-tab-btn.is-active {
+.c-horizontal-tabs__btn.is-active {
   background: var(--theme-accent-subtle);
   border-color: var(--theme-accent);
   color: var(--theme-accent);
 }
 
-.faturamento-tab.is-active {
-  background: rgba(139, 92, 246, 0.08);
-  border-color: #8b5cf6;
-  color: #a78bfa;
-}
-
-/* ---- Filtros de Periodo do Histórico (Dropdowns) ---- */
 .c-period-filter {
   display: flex;
   align-items: center;
@@ -155,11 +148,11 @@
   box-shadow: 0 0 0 2px var(--theme-accent-subtle);
 }
 
-.empty-card {
+.c-history-page__empty-card {
   padding: var(--space-4);
 }
 
-.no-tab-selected-message {
+.c-history-page__no-tab-msg {
   text-align: center;
   color: var(--text-muted);
   margin-top: var(--space-6);
@@ -203,13 +196,13 @@
     width: 100%;
   }
 
-  .filter-group>div {
+  .c-filter-group > div {
     display: flex;
     width: 100%;
     gap: var(--space-2);
   }
 
-  .filter-group>div>select {
+  .c-filter-group > div > select {
     flex: 1;
     min-width: 0 !important;
   }
@@ -235,7 +228,7 @@
     padding: var(--space-2);
   }
 
-  .filter-group>div>select,
+  .c-filter-group > div > select,
   .c-filter-select {
     font-size: var(--text-xs);
     padding: var(--space-1);

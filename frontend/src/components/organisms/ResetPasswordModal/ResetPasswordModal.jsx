@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { apiResetPassword } from '../../../api';
 import { validate_password_strength_js } from '../../../utils/passwordStrength';
@@ -19,7 +19,7 @@ export default function ResetPasswordModal({ token, onClose, onSwitchToLogin }) 
         { label: 'Letra minúscula', ok: /[a-z]/.test(form.password) },
         { label: 'Letra maiúscula', ok: /[A-Z]/.test(form.password) },
         { label: 'Número', ok: /\d/.test(form.password) },
-        { label: 'Caractere especial', ok: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(form.password) },
+        { label: 'Caractere especial', ok: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(form.password) },
     ];
 
     async function handleSubmit(e) {
@@ -39,9 +39,9 @@ export default function ResetPasswordModal({ token, onClose, onSwitchToLogin }) 
     }
 
     return createPortal(
-        <div className="modal-overlay">
-            <div className="modal-box">
-                <button className="modal-close" onClick={onClose}>✕</button>
+        <div className="c-modal-overlay modal-overlay">
+            <div className="c-modal modal-box">
+                <button className="c-modal__close modal-close" onClick={onClose}>✕</button>
 
                 {success ? (
                     <div className="modal-success">

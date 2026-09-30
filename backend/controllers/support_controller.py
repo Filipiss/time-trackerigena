@@ -8,7 +8,6 @@ from utils.database import get_db_session
 from controllers.admin_controller import admin_required
 from utils.mail import send_new_ticket_email_to_admins
 
-# --- User Methods ---
 
 @jwt_required()
 def create_ticket():
@@ -36,7 +35,6 @@ def create_ticket():
         db.add(first_message)
         db.commit()
         
-        # Dispara email para admins em thread separada
         user = db.query(User).filter(User.id == user_id).first()
         admins = db.query(User).filter(User.is_admin == True).all()
         admin_emails = [admin.email for admin in admins if admin.email]
@@ -79,7 +77,6 @@ def get_ticket_messages(ticket_id):
     user_id = int(get_jwt_identity())
     db = get_db_session()
     try:
-        # User is either the owner OR an admin
         user = db.query(User).filter(User.id == user_id).first()
         ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
         
@@ -143,7 +140,6 @@ def reply_ticket(ticket_id):
         )
         db.add(new_message)
         
-        # Smart Status update
         if user.is_admin and ticket.user_id != user_id:
             ticket.status = "answered"
         elif not user.is_admin:
@@ -158,7 +154,6 @@ def reply_ticket(ticket_id):
         db.close()
 
 
-# --- Admin Methods ---
 
 @admin_required()
 def get_all_tickets_admin():

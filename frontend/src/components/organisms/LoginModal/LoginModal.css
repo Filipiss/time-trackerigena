@@ -1,4 +1,4 @@
-﻿.modal-overlay {
+.c-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -23,7 +23,7 @@
   }
 }
 
-.modal-box {
+.c-modal {
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
@@ -49,7 +49,7 @@
   }
 }
 
-.modal-close {
+.c-modal__close {
   position: absolute;
   top: 14px;
   right: 16px;
@@ -64,19 +64,19 @@
   transition: all var(--transition-fast);
 }
 
-.modal-close:hover {
+.c-modal__close:hover {
   color: var(--text-primary);
   background: var(--bg-card-hover);
 }
 
-.modal-title {
+.c-modal__title {
   font-size: 20px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 20px;
 }
 
-.modal-error {
+.c-modal__error {
   background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.25);
   color: var(--color-danger);
@@ -86,26 +86,26 @@
   margin-bottom: 16px;
 }
 
-.modal-form {
+.c-modal__form {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.field-group {
+.c-modal__field-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.field-group label {
+.c-modal__field-group label {
   font-size: 13px;
   font-weight: 500;
   color: var(--text-secondary);
 }
 
-.field-group input,
-.field-group select {
+.c-modal__field-group input,
+.c-modal__field-group select {
   background: var(--bg-input);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
@@ -116,27 +116,27 @@
   transition: border-color var(--transition-fast);
 }
 
-.field-group input:focus,
-.field-group select:focus {
+.c-modal__field-group input:focus,
+.c-modal__field-group select:focus {
   border-color: var(--theme-accent);
 }
 
-.field-group input::placeholder {
+.c-modal__field-group input::placeholder {
   color: var(--text-placeholder);
 }
 
-.password-wrapper {
+.c-modal__password-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.password-wrapper input {
+.c-modal__password-wrapper input {
   width: 100%;
   padding-right: 42px;
 }
 
-.password-toggle {
+.c-modal__password-toggle {
   position: absolute;
   right: 10px;
   background: none;
@@ -151,16 +151,16 @@
   align-items: center;
 }
 
-.password-toggle:hover {
+.c-modal__password-toggle:hover {
   color: var(--text-primary);
 }
 
-.field-error {
+.c-modal__field-error {
   font-size: 12px;
   color: var(--color-danger);
 }
 
-.c-btn--primary {
+.c-modal__btn--primary {
   background: var(--theme-accent);
   color: var(--text-inverse);
   border: none;
@@ -174,23 +174,23 @@
   width: 100%;
 }
 
-.c-btn--primary:hover:not(:disabled) {
+.c-modal__btn--primary:hover:not(:disabled) {
   background: var(--theme-accent-hover);
 }
 
-.c-btn--primary:disabled {
+.c-modal__btn--primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.modal-footer-link {
+.c-modal__footer-link {
   text-align: center;
   margin-top: 18px;
   font-size: 13px;
   color: var(--text-muted);
 }
 
-.link-btn {
+.c-modal__link-btn {
   background: none;
   border: none;
   color: var(--theme-accent);
@@ -200,18 +200,18 @@
   text-decoration: underline;
 }
 
-.link-btn:hover {
+.c-modal__link-btn:hover {
   color: var(--theme-accent-hover);
 }
 
-.forgot-link {
+.c-modal__forgot-link {
   display: block;
   text-align: right;
   margin-top: 4px;
   font-size: 12px;
 }
 
-.modal-success {
+.c-modal__success {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -220,23 +220,23 @@
   text-align: center;
 }
 
-.success-icon {
+.c-modal__success-icon {
   font-size: 48px;
 }
 
-.modal-success h2 {
+.c-modal__success h2 {
   color: var(--text-primary);
   margin: 0;
 }
 
-.modal-success p {
+.c-modal__success p {
   color: var(--text-muted);
   margin: 0;
   line-height: 1.5;
 }
 
 @media (max-width: 480px) {
-  .modal-box {
+  .c-modal {
     padding: 24px 20px;
   }
 }
