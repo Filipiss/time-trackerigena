@@ -1,12 +1,13 @@
 # Time Trackerígena
 
-> Plataforma full stack para rastreamento de tempo, gestão de projetos, estimativa de custos multi-moeda e telemetria de produtividade, com arquitetura em camadas, modo visitante zero-friction e acessibilidade inclusiva.
+> Plataforma full stack para rastreamento de tempo, gestão de projetos, estimativa de custos multi-moeda e telemetria de produtividade, construída com arquitetura em camadas, Atomic Design + metodologia BEMIT, modo visitante zero-friction e acessibilidade inclusiva.
 
 [![React 19](https://img.shields.io/badge/Frontend-React%2019%20%7C%20Vite-blue?style=flat-square&logo=react)](https://react.dev)
 [![Flask](https://img.shields.io/badge/Backend-Flask%203.1%20%7C%20Python%203.11+-000000?style=flat-square&logo=flask)](https://flask.palletsprojects.com/)
 [![SQLAlchemy](https://img.shields.io/badge/ORM-SQLAlchemy%202.0-red?style=flat-square&logo=sqlalchemy)](https://www.sqlalchemy.org/)
 [![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL%20%7C%20SQLite-4169E1?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
 [![JWT Auth](https://img.shields.io/badge/Auth-JWT%20%2B%20RBAC-green?style=flat-square)](https://jwt.io/)
+[![BEMIT CSS](https://img.shields.io/badge/CSS-BEMIT%20Architecture-purple?style=flat-square)](https://csswizardry.com/2015/08/bemit-taking-the-bem-naming-convention-a-step-further/)
 [![WCAG 2.1 AA](https://img.shields.io/badge/Accessibility-WCAG%202.1%20AA-success?style=flat-square)](https://www.w3.org/WAI/standards-guidelines/wcag/)
 [![License MIT](https://img.shields.io/badge/License-MIT-gray?style=flat-square)](LICENSE)
 
@@ -26,8 +27,10 @@
 8. [Variáveis de Ambiente](#variáveis-de-ambiente)
 9. [Especificação de Endpoints da API](#especificação-de-endpoints-da-api)
 10. [Estrutura do Repositório](#estrutura-do-repositório)
-11. [Acessibilidade (WCAG 2.1 AA) & Design System](#acessibilidade-wcag-21-aa--design-system)
-12. [Segurança e Resiliência em Produção](#segurança-e-resiliência-em-produção)
+11. [Metodologia CSS (Atomic Design + BEMIT)](#metodologia-css-atomic-design--bemit)
+12. [Acessibilidade (WCAG 2.1 AA) & Design System](#acessibilidade-wcag-21-aa--design-system)
+13. [Segurança e Resiliência em Produção](#segurança-e-resiliência-em-produção)
+14. [Licença](#licença)
 
 ---
 
@@ -40,6 +43,7 @@ A solução resolve os seguintes desafios do dia a dia:
 - **Rastreamento Contínuo sem Interrupção**: Um widget flutuante e responsivo permite que a contagem do tempo persista de forma fluida enquanto o usuário navega por relatórios, calendários ou gerenciadores de tarefas.
 - **Modo Visitante (Zero Friction)**: Avaliadores e novos usuários podem experimentar 100% dos recursos da plataforma imediatamente no navegador através de persistência em memória/`sessionStorage`, dispensando cadastro prévio ou backend ativo para testes exploratórios.
 - **Inclusão e Acessibilidade Universal**: Interface projetada seguindo as diretrizes WCAG 2.1 AA, contendo ajuste dinâmico de zoom, modo de leitura para dislexia, alto contraste calibrado, leitor por voz via Web Speech API e alternância de temas.
+- **Código Limpo e Autoexplicativo**: Código-fonte de nível de produção, sem comentários ruidosos, com nomenclatura semântica estrita e tipagem de contratos.
 
 ---
 
@@ -56,7 +60,7 @@ O projeto adapta-se automaticamente ao ambiente:
 - Em **produção (Render / Neon / Supabase)**, utiliza PostgreSQL com pool inteligente de conexões (`pool_pre_ping=True`, `pool_recycle=300`), mitigando desconexões espúrias por inatividade (*SSL SYSCALL EOF*).
 
 ### 3. Orquestração de Deadlines e Notificações Assíncronas
-O backend executa um serviço em segundo plano (*background daemon thread*) que analisa diariamente os prazos de projetos e tarefas ativas, disparando alertas por e-mail via SMTP com fallbacks automáticos de portas (587 TLS / 465 SSL).
+O backend executa um serviço em segundo plano (*background daemon thread*) que analisa periodicamente os prazos de projetos e tarefas ativas, disparando alertas por e-mail via SMTP com fallbacks automáticos de portas (587 TLS / 465 SSL).
 
 ### 4. Gestão Avançada com Auditoria e Suporte Integrados
 Diferente de simples MVPs, a plataforma contempla um módulo administrativo completo com:
@@ -65,8 +69,8 @@ Diferente de simples MVPs, a plataforma contempla um módulo administrativo comp
 - Helpdesk e central de chamados com troca de mensagens bidirecional em tempo real.
 - Modo de manutenção global configurável dinamicamente em tempo de execução.
 
-### 5. Frontend Atômico e Interativo
-Desenvolvido em **React 19** com metodologia **Atomic Design**, separando a interface em Átomos, Moléculas, Organismos, Páginas e Modelos. A reordenação de projetos e tarefas é fluida através de drag-and-drop moderno (`@dnd-kit/core` e `@dnd-kit/sortable`).
+### 5. Frontend Atômico Padronizado em BEMIT
+Desenvolvido em **React 19** com metodologia **Atomic Design** aliada à convenção **BEMIT** (`c-`, `o-`, `l-`, `u-`, `is-`/`has-`), garantindo zero poluição de escopo global, estilos nativos de altíssima performance e manutenibilidade contínua. A reordenação de projetos e tarefas é fluida através de drag-and-drop moderno (`@dnd-kit/core` e `@dnd-kit/sortable`).
 
 ---
 
@@ -75,7 +79,7 @@ Desenvolvido em **React 19** com metodologia **Atomic Design**, separando a inte
 | Decisão | Alternativa Rejeitada | Motivo da Escolha |
 | :--- | :--- | :--- |
 | **Flask + Marshmallow** | FastAPI / Django Monolítico | Flask oferece simplicidade modular sem o overhead de convenções forçadas do Django, mantendo total controle sobre os ciclos de vida da requisição, middlewares de segurança e validação declarativa com Marshmallow. |
-| **Atomic Design no React 19** | Estrutura plana em pasta única | Garante que componentes de base (botões, badges, inputs) sejam estritamente reutilizáveis, desacoplando estilos e comportamentos dos nós de estado globais. |
+| **Atomic Design + BEMIT** | CSS Modules / TailwindCSS / CSS-in-JS | Estruturação previsível, sem overhead de runtime, sem dependências de compilação pesadas e com total isolamento de escopo por convenção semântica (`c-`, `o-`, `l-`, `u-`). |
 | **Persistência Híbrida (SQLite/PostgreSQL)** | PostgreSQL compulsório | Permite que qualquer pessoa clone o repositório e execute a aplicação localmente em segundos com zero dependências externas ou containers pesados. |
 | **Mock DB para Modo Visitante** | LocalStorage simples sem contrato | Simula fielmente os contratos de resposta da API REST em memória/`sessionStorage`, permitindo a navegação completa sem gerar lixo no banco de dados principal. |
 | **Web Speech API Nativa** | Bibliotecas externas de áudio | Acessibilidade por voz em tempo real para elementos sob foco ou hover sem custo de largura de banda adicional nem latência de requisições externas. |
@@ -89,6 +93,7 @@ Desenvolvido em **React 19** com metodologia **Atomic Design**, separando a inte
 graph TD
     subgraph Client ["Frontend (React 19 + Vite)"]
         UI["Atomic Design (Atoms, Molecules, Organisms)"]
+        BEMIT["BEMIT Styling (c-, o-, l-, u-)"]
         State["Contexts (AuthContext, LanguageContext)"]
         Router["React Router v7"]
         GuestMock["Guest Mode Interceptor (sessionStorage)"]
@@ -169,7 +174,7 @@ graph TD
 - Notificador automatizado que varre o banco e envia alertas aos responsáveis no dia do deadline.
 
 ### 6. Painel Administrativo Completo
-- Gestão de usuários: listagem, alteração de privilégios (User <-> Admin), edição e exclusão.
+- Gestão de usuários: listagem, alteração de privilégios (User <-> Admin), criação, edição e exclusão.
 - Trilha de logs de auditoria detalhada com opção de exclusão unitária ou em massa.
 - Modo de manutenção acionável em tempo real (bloqueia o app para usuários comuns exibindo aviso amigável).
 - Central de Helpdesk/Suporte para recebimento, resposta e encerramento de chamados.
@@ -179,17 +184,17 @@ graph TD
 ## Stack Tecnológica & Justificativas
 
 ### Frontend
-- **React 19**: Versão de ponta da biblioteca de interfaces reativas, aproveitando novas otimizações no ciclo de renderização.
-- **Vite 8**: Ferramenta de build de última geração com inicialização instantânea e *Hot Module Replacement* (HMR) ultrarrápido.
+- **React 19**: Versão moderna da biblioteca de interfaces reativas, aproveitando otimizações avançadas no ciclo de renderização.
+- **Vite 8**: Ferramenta de build com inicialização instantânea e *Hot Module Replacement* (HMR) ultrarrápido.
 - **React Router 7**: Gerenciamento de rotas e layouts protegidos.
 - **@dnd-kit**: Conjunto de ferramentas de drag-and-drop leve, performático e acessível.
 - **Recharts 3**: Gráficos declarativos e responsivos baseados em SVG.
 - **Lucide React**: Pacote consistente de ícones modernos em SVG.
-- **Vanilla CSS**: Estilização pura com variáveis CSS (Custom Properties), garantindo máximo desempenho sem a complexidade de transpiladores pesados de CSS.
+- **Vanilla CSS (Design Tokens + BEMIT)**: Estilização pura com variáveis CSS (Custom Properties) e arquitetura BEMIT, garantindo zero runtime overhead e isolamento de escopo.
 
 ### Backend
 - **Python 3.11+ / Flask 3.1**: Microsserviço robusto, enxuto e escalável.
-- **SQLAlchemy 2.0**: ORM moderno com suporte completo à nova sintaxe declarativa 2.0.
+- **SQLAlchemy 2.0**: ORM moderno com suporte completo à sintaxe declarativa 2.0.
 - **Marshmallow & Marshmallow-SQLAlchemy**: Serialização, deserialização e sanitização estrita de dados.
 - **Flask-JWT-Extended**: Gestão de tokens de autenticação sem estado com expiração configurável.
 - **Flask-Mail**: Envio transacional de e-mails para ativação de contas e notificações de prazos.
@@ -240,13 +245,12 @@ pip install -r requirements.txt
 
 # 4. Configure o arquivo de ambiente
 cp .env.example .env
-# Edite o .env se desejar configurar JWT, SMTP ou conexão com PostgreSQL
 
 # 5. (Opcional) Popule o banco com dados de demonstração realistas
 python seed.py
 
 # 6. Inicie o servidor da API
-flask run --debug --port 8000
+python main.py
 ```
 > O backend iniciará em `http://127.0.0.1:8000`. Em desenvolvimento local sem `DATABASE_URL` declarada, o banco SQLite é gerado automaticamente em `database/timetracker.db`.
 
@@ -263,40 +267,33 @@ cd frontend
 # 2. Instale as dependências
 npm install
 
-# 3. Inicie o servidor de desenvolvimento
+# 3. Configure as variáveis de ambiente (se necessário)
+cp .env.example .env
+
+# 4. Inicie o servidor de desenvolvimento
 npm run dev
 ```
+
 > O frontend estará acessível em `http://localhost:5173`.
-
----
-
-### Credenciais de Demonstração (Seed)
-Caso tenha executado o comando `python seed.py`, você pode autenticar imediatamente com:
-- **Usuário:** `demo` (ou `demo@timetracker.dev`)
-- **Senha:** `Demo@1234`
 
 ---
 
 ## Variáveis de Ambiente
 
 ### Backend (`backend/.env`)
-
-| Variável | Obrigatória? | Padrão / Exemplo | Descrição |
+| Variável | Obrigatória? | Exemplo / Padrão | Descrição |
 | :--- | :---: | :--- | :--- |
-| `DATABASE_URL` | Não | `sqlite:///.../timetracker.db` | String de conexão com PostgreSQL (se omitido, usa SQLite local) |
-| `JWT_SECRET_KEY` | Sim (em prod) | `dev-insecure-key-...` | Chave secreta de assinatura dos tokens JWT |
-| `FRONTEND_URL` | Não | `http://localhost:5173` | URL de origem do frontend para geração de links nos e-mails |
-| `MAIL_SERVER` | Não | `smtp.gmail.com` | Host do servidor SMTP |
-| `MAIL_PORT` | Não | `587` | Porta do serviço de e-mail (587 TLS / 465 SSL) |
-| `MAIL_USE_TLS` | Não | `True` | Ativa criptografia STARTTLS |
-| `MAIL_USE_SSL` | Não | `False` | Ativa criptografia SSL direta |
-| `MAIL_USERNAME` | Não | `seuemail@gmail.com` | Usuário/e-mail para autenticação SMTP |
-| `MAIL_PASSWORD` | Não | `sua-senha-de-app` | Senha de aplicativo do servidor SMTP |
-| `MAIL_DEFAULT_SENDER`| Não | `seuemail@gmail.com` | Endereço do remetente das mensagens do sistema |
+| `FLASK_ENV` | Não | `development` | Modo de execução (`development` ou `production`) |
+| `SECRET_KEY` | Sim | `sua-chave-secreta-longa` | Assinatura de sessão e tokens de segurança |
+| `JWT_SECRET_KEY` | Sim | `jwt-secret-aleatoria` | Chave de assinatura criptográfica dos tokens JWT |
+| `DATABASE_URL` | Não | *(vazio = SQLite)* | URI de conexão com PostgreSQL |
+| `MAIL_SERVER` | Não | `smtp.gmail.com` | Host do servidor SMTP para e-mails |
+| `MAIL_PORT` | Não | `587` | Porta do servidor SMTP |
+| `MAIL_USERNAME` | Não | `seu-email@gmail.com` | Usuário do servidor de envio |
+| `MAIL_PASSWORD` | Não | `senha-de-aplicativo` | Senha ou token de app para SMTP |
 
 ### Frontend (`frontend/.env`)
-
-| Variável | Obrigatória? | Padrão / Exemplo | Descrição |
+| Variável | Obrigatória? | Exemplo / Padrão | Descrição |
 | :--- | :---: | :--- | :--- |
 | `VITE_API_URL` | Não | `http://localhost:8000` | URL base do backend Flask |
 | `VITE_SUPABASE_URL` | Não | `https://xyz.supabase.co` | URL do projeto Supabase para upload de arquivos |
@@ -409,7 +406,6 @@ time-trackerigena/
 │   ├── services/             # Regras de negócio, cálculos e orquestração
 │   ├── utils/                # Database engine, audit logger, mailer e notifier
 │   ├── .env.example          # Modelo de configuração de variáveis do backend
-│   ├── app.py                # Wrapper para execução em servidores de produção
 │   ├── main.py               # Fábrica da aplicação Flask e registros centrais
 │   ├── requirements.txt      # Dependências Python do ecossistema
 │   └── seed.py               # Script de povoamento com dados demonstrativos
@@ -427,6 +423,7 @@ time-trackerigena/
 │   │   ├── utils/            # GuestMock, formatação de moeda, datas e senhas
 │   │   ├── api.js            # Cliente HTTP unificado com interceptor para Guest
 │   │   ├── App.jsx           # Árvore principal de rotas e injeção de contexto
+│   │   ├── index.css         # Design tokens globais e estilos base
 │   │   └── main.jsx          # Ponto de montagem da raiz React no DOM
 │   ├── package.json          # Metadados e dependências do frontend
 │   └── vite.config.js        # Configuração do bundler Vite
@@ -436,6 +433,25 @@ time-trackerigena/
 ├── README.md                 # Documentação principal em Português
 └── README_EN.md              # Documentação completa em Inglês
 ```
+
+---
+
+## Metodologia CSS (Atomic Design + BEMIT)
+
+Para garantir previsibilidade, ausência de colisão de nomes e alta performance sem custo de compilação ou overhead de runtime, o frontend adota a convenção **BEMIT** (*BEM + Inverted Triangle CSS*):
+
+| Prefixo | Camada | Propósito | Exemplo |
+| :--- | :--- | :--- | :--- |
+| `c-` | **Component** | Componentes discretos, autocontidos e estilizados | `.c-button`, `.c-timer__bar`, `.c-task-card` |
+| `o-` | **Object** | Padrões estruturais sem propriedades cosméticas | `.o-card`, `.o-color-dot` |
+| `l-` | **Layout** | Estruturas de grid, sidebar e organização de página | `.l-sidebar`, `.l-main-layout` |
+| `u-` | **Utility** | Utilitários de propósito único de alta especificidade | `.u-fade-in`, `.u-truncate`, `.u-spin` |
+| `is-` / `has-` | **State** | Estados dinâmicos e temporários de elementos | `.is-active`, `.is-running`, `.is-disabled` |
+
+**Benefícios Práticos:**
+- Eliminação total de classes ambíguas ou duplas.
+- Código 100% legível diretamente no JSX sem dependência de mapeamento `styles[className]`.
+- Performance nativa do navegador com zero computação de estilos em tempo de execução.
 
 ---
 
